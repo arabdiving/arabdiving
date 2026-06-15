@@ -12,6 +12,7 @@ const navLinks = [
   { href: "/", label: "الرئيسية" },
   { href: "/dive-sites", label: "مواقع الغوص" },
   { href: "/trips", label: "الرحلات" },
+  { href: "/guide", label: "الدليل" },
   { href: "/community", label: "المجتمع" },
   { href: "/youth", label: "الشباب" },
   { href: "/women", label: "النساء" },

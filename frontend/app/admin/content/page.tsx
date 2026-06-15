@@ -10,6 +10,7 @@ const PAGES = [
   { key: "women", label: "النساء" },
   { key: "youth", label: "الشباب" },
   { key: "trips", label: "الرحلات" },
+  { key: "guide", label: "دليل الغوص" },
 ];
 
 const LABELS: Record<string, string> = {
