@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useContent } from "@/app/lib/useContent";
+import ShareButtons from "../components/ShareButtons";
 
 export default function GuidePage() {
   const c = useContent("guide");
@@ -154,6 +155,7 @@ export default function GuidePage() {
       <section style={{ background: "var(--navy)", color: "white", padding: "70px 20px", textAlign: "center" }}>
         <h2 style={{ fontSize: "32px", marginBottom: "16px" }}>{cta.title}</h2>
         <p style={{ opacity: 0.9, fontSize: "18px", maxWidth: "640px", marginInline: "auto", marginBottom: "30px", lineHeight: 1.9 }}>{cta.text}</p>
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "24px" }}><ShareButtons title="دليل الغوص في مصر" /></div>
         <Link href={cta.href || "/dive-sites"} style={{ background: "#c9952a", color: "white", padding: "15px 34px", borderRadius: "10px", fontSize: "17px" }}>{cta.label}</Link>
       </section>
     </main>

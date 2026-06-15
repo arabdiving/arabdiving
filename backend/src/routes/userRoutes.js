@@ -36,7 +36,19 @@ router.put(
 router.post(
   "/profile/image",
   protect,
-  upload.single("image"),
+  (req, res, next) => {
+    upload.single("image")(req, res, (err) => {
+      if (err) {
+        return res.status(400).json({
+          success: false,
+          message:
+            "تعذّر رفع الصورة. تأكد من إعداد مفاتيح Cloudinary على الخادم. (" +
+            err.message + ")",
+        });
+      }
+      next();
+    });
+  },
   uploadProfileImage
 );
 

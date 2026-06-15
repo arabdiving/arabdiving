@@ -1,6 +1,7 @@
 import ReviewForm from "../../components/ReviewForm";
 import { API_BASE } from "@/app/lib/api";
 import { siteImageSrc, imagePlaceholder } from "@/app/lib/image";
+import ShareButtons from "../../components/ShareButtons";
 import { difficultyAr } from "@/app/lib/labels";
 
 async function getDiveSite(id: string) {
@@ -67,6 +68,10 @@ export default async function DiveSiteDetails({
       <div style={{ display: "flex", gap: "20px", marginTop: "10px", marginBottom: "20px" }}>
         <span>⭐ {site.averageRating?.toFixed(1) || "0.0"}</span>
         <span>📝 {site.reviewsCount || 0} تقييم</span>
+      </div>
+
+      <div style={{ margin: "6px 0 22px" }}>
+        <ShareButtons title={site.name} />
       </div>
 
       <p style={{ fontSize: "18px", lineHeight: "1.8" }}>{site.description}</p>

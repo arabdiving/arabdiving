@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { API_BASE } from "@/app/lib/api";
+import ShareButtons from "../components/ShareButtons";
 
 const API = API_BASE;
 
@@ -31,6 +32,8 @@ export default function CommunityPage() {
   const [commentsEnabled, setCommentsEnabled] = useState(true);
   const [comments, setComments] = useState<Record<string, Comment[]>>({});
   const [commentInputs, setCommentInputs] = useState<Record<string, string>>({});
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editingText, setEditingText] = useState("");
 
   const getCurrentUser = (): User | null => {
     try {
@@ -145,6 +148,25 @@ export default function CommunityPage() {
     }
   };
 
+  const saveCommentEdit = async (postId: string, commentId: string) => {
+    const token = getToken();
+    if (!token) return;
+    if (!editingText.trim()) return;
+    const res = await fetch(`${API}/api/comments/${commentId}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+      body: JSON.stringify({ content: editingText }),
+    });
+    const data = await res.json();
+    if (data.success) {
+      setEditingId(null);
+      setEditingText("");
+      loadComments(postId);
+    } else {
+      alert(data.message || "تعذّر تعديل التعليق.");
+    }
+  };
+
   if (loading) {
     return <div style={{ padding: "40px", textAlign: "center", color: "#666" }}>جارٍ التحميل...</div>;
   }
@@ -153,8 +175,13 @@ export default function CommunityPage() {
   }
 
   const btn = (bg: string): React.CSSProperties => ({
-    background: bg, color: "#fff", border: "none", padding: "8px 15px",
-    borderRadius: "8px", cursor: "pointer", fontFamily: "inherit",
+    background: bg,
+    color: "#fff",
+    border: "none",
+    padding: "8px 15px",
+    borderRadius: "8px",
+    cursor: "pointer",
+    fontFamily: "inherit",
   });
 
   return (
@@ -177,13 +204,16 @@ export default function CommunityPage() {
           <h3 style={{ color: "var(--navy)" }}>{post.user?.name || "عضو غير معروف"}</h3>
           <p style={{ marginTop: "10px", marginBottom: "15px" }}>{post.content}</p>
 
-          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
             <button onClick={() => likePost(post._id)} style={btn("#0f3d75")}>
               ❤️ {post.likes?.length || 0}
             </button>
             {(currentUser?.role === "admin" || currentUser?._id === post.user?._id) && (
               <button onClick={() => deletePost(post._id)} style={btn("#b91c1c")}>🗑 حذف</button>
             )}
+            <div style={{ marginInlineStart: "auto" }}>
+              <ShareButtons title={post.content?.slice(0, 60)} compact />
+            </div>
           </div>
 
           <div style={{ marginTop: "20px" }}>
@@ -206,12 +236,40 @@ export default function CommunityPage() {
 
             <div style={{ marginTop: "15px" }}>
               {comments[post._id]?.length ? (
-                comments[post._id].map((c) => (
-                  <div key={c._id} style={{ borderTop: "1px solid #eee", padding: "10px 0" }}>
-                    <strong>{c.user?.name || "عضو"}</strong>
-                    <p>{c.content}</p>
-                  </div>
-                ))
+                comments[post._id].map((c) => {
+                  const canEdit = currentUser?.role === "admin" || currentUser?._id === c.user?._id;
+                  const isEditing = editingId === c._id;
+                  return (
+                    <div key={c._id} style={{ borderTop: "1px solid #eee", padding: "10px 0" }}>
+                      <strong>{c.user?.name || "عضو"}</strong>
+                      {isEditing ? (
+                        <div style={{ marginTop: "6px" }}>
+                          <input
+                            value={editingText}
+                            onChange={(e) => setEditingText(e.target.value)}
+                            style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #ddd", fontFamily: "inherit", marginBottom: "8px" }}
+                          />
+                          <div style={{ display: "flex", gap: "8px" }}>
+                            <button onClick={() => saveCommentEdit(post._id, c._id)} style={{ ...btn("#1e7e34"), padding: "6px 14px", fontSize: "13px" }}>حفظ</button>
+                            <button onClick={() => { setEditingId(null); setEditingText(""); }} style={{ ...btn("#64748b"), padding: "6px 14px", fontSize: "13px" }}>إلغاء</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <p>{c.content}</p>
+                          {canEdit && (
+                            <button
+                              onClick={() => { setEditingId(c._id); setEditingText(c.content); }}
+                              style={{ background: "transparent", color: "var(--mid)", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "13px", padding: 0 }}
+                            >
+                              ✏️ تعديل
+                            </button>
+                          )}
+                        </>
+                      )}
+                    </div>
+                  );
+                })
               ) : (
                 <p style={{ color: "#666" }}>كن أول غوّاص يعلّق.</p>
               )}
