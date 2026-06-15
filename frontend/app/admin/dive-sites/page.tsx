@@ -77,6 +77,17 @@ export default function AdminDiveSites() {
     load();
   };
 
+  const importDefaults = async () => {
+    if (!confirm("استيراد قائمة مواقع الغوص الافتراضية (41 موقعًا)؟ لن تتكرّر المواقع الموجودة.")) return;
+    setMsg("");
+    const res = await fetch(`${API_BASE}/api/admin/dive-sites/seed-defaults`, { method: "POST", headers: authHeaders() });
+    const d = await res.json();
+    if (d.success) {
+      setMsg(`تم الاستيراد ✅ (${d.created} جديد، ${d.updated} محدّث)`);
+      load();
+    } else setMsg(d.message || "تعذّر الاستيراد");
+  };
+
   const imgSrc = form.image ? (/^https?:\/\//.test(form.image) ? form.image : `/images/${form.image}`) : "";
 
   return (
@@ -122,7 +133,14 @@ export default function AdminDiveSites() {
         </div>
       </form>
 
-      <h2 style={{ color: "var(--navy)", fontSize: "20px", marginBottom: "14px" }}>كل المواقع ({sites.length})</h2>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", marginBottom: "14px" }}>
+        <h2 style={{ color: "var(--navy)", fontSize: "20px" }}>كل المواقع ({sites.length})</h2>
+        {sites.length === 0 && (
+          <button onClick={importDefaults} style={{ background: "#1e7e34", color: "white", border: "none", padding: "10px 18px", borderRadius: "9px", cursor: "pointer", fontFamily: "inherit", fontSize: "14px" }}>
+            استيراد المواقع الافتراضية (41)
+          </button>
+        )}
+      </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
         {sites.map((s) => (
           <div key={s._id} style={{ background: "white", borderRadius: "12px", padding: "16px", boxShadow: "0 6px 18px rgba(0,0,0,0.05)" }}>

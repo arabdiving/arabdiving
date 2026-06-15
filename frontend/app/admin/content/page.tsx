@@ -175,7 +175,7 @@ export default function AdminContent() {
     setSaving(true);
     setMsg("");
     try {
-      const res = await fetch(`${API_BASE}/api/admin/content/${page}`, {
+      const res = await fetch(`${API_BASE}/api/content/${page}`, {
         method: "PUT",
         headers: authHeaders(),
         body: JSON.stringify({ data }),

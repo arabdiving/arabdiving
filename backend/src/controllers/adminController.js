@@ -4,6 +4,7 @@ const DiveSite = require("../models/DiveSite");
 const Review = require("../models/Review");
 const Post = require("../models/Post");
 const Comment = require("../models/Comment");
+const diveSitesData = require("../data/diveSites");
 
 const updateUserRole = async (req, res) => {
   try {
@@ -118,6 +119,22 @@ const adminDeleteComment = async (req, res) => {
   }
 };
 
+// Bulk-import the default Egyptian Red Sea dive sites (idempotent upsert).
+const seedDiveSites = async (req, res) => {
+  try {
+    let created = 0;
+    let updated = 0;
+    for (const site of diveSitesData) {
+      const r = await DiveSite.updateOne({ name: site.name }, { $set: site }, { upsert: true });
+      if (r.upsertedCount) created += 1;
+      else if (r.matchedCount) updated += 1;
+    }
+    res.json({ success: true, created, updated, total: diveSitesData.length });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   updateUserRole,
   createUser,
@@ -127,4 +144,5 @@ module.exports = {
   getAllPosts,
   adminDeletePost,
   adminDeleteComment,
+  seedDiveSites,
 };

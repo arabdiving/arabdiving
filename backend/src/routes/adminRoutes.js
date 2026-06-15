@@ -10,6 +10,7 @@ const {
   getAllPosts,
   adminDeletePost,
   adminDeleteComment,
+  seedDiveSites,
 } = require("../controllers/adminController");
 const { uploadImage } = require("../controllers/uploadController");
 
@@ -39,6 +40,8 @@ router.delete("/posts/:id", adminDeletePost);
 router.delete("/comments/:id", adminDeleteComment);
 
 // Dive sites management
+router.post("/dive-sites/seed-defaults", seedDiveSites);
+
 router.post("/dive-sites", async (req, res) => {
   try {
     const diveSite = await DiveSite.create(req.body);
