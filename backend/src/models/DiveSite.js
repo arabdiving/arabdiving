@@ -38,6 +38,11 @@ const DiveSiteSchema = new mongoose.Schema(
       default: "",
     },
 
+    images: {
+      type: [String],
+      default: [],
+    },
+
     averageRating: {
       type: Number,
       default: 0,

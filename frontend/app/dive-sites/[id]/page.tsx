@@ -1,6 +1,6 @@
 import ReviewForm from "../../components/ReviewForm";
 import { API_BASE } from "@/app/lib/api";
-import { siteImageSrc, imagePlaceholder } from "@/app/lib/image";
+import Gallery from "../../components/Gallery";
 import ShareButtons from "../../components/ShareButtons";
 import { difficultyAr } from "@/app/lib/labels";
 
@@ -46,20 +46,11 @@ export default async function DiveSiteDetails({
     );
   }
 
-  const src = siteImageSrc(site.image);
+  const gallery = site.images && site.images.length ? site.images : site.image ? [site.image] : [];
 
   return (
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px" }}>
-      {src ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={src}
-          alt={site.name}
-          style={{ width: "100%", height: "500px", objectFit: "cover", borderRadius: "20px" }}
-        />
-      ) : (
-        <div style={{ width: "100%", height: "500px", borderRadius: "20px", background: imagePlaceholder }} />
-      )}
+      <Gallery images={gallery} alt={site.name} />
 
       <h1 style={{ marginTop: "30px", fontSize: "42px", color: "var(--navy)" }}>{site.name}</h1>
 

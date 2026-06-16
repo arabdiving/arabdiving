@@ -16,6 +16,7 @@ const adminRoutes = require("./routes/adminRoutes");
 const statsRoutes = require("./routes/statsRoutes");
 const contentRoutes = require("./routes/contentRoutes");
 const settingsRoutes = require("./routes/settingsRoutes");
+const uploadRoutes = require("./routes/uploadRoutes");
 const logbookRoutes = require("./routes/logbookRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 
@@ -68,6 +69,7 @@ app.use("/api/dive-sites", diveSiteRoutes);
 app.use("/api/stats", statsRoutes);
 app.use("/api/content", contentRoutes);
 app.use("/api/settings", settingsRoutes);
+app.use("/api/upload", uploadRoutes);
 app.use("/api/reviews", reviewRoutes);
 app.use("/api/logbook", logbookRoutes);
 app.use("/api/comments", commentRoutes);
