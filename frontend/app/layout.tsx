@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Cairo } from "next/font/google";
 import Script from "next/script";
 
@@ -7,6 +7,7 @@ import "./globals.css";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import ChatWidget from "./components/ChatWidget";
+import PwaRegister from "./components/PwaRegister";
 
 const cairo = Cairo({
   subsets: ["arabic"],
@@ -24,6 +25,8 @@ export const metadata: Metadata = {
     template: "%s | ArabDiving",
   },
   description: DESC,
+  icons: { icon: "/icon-192.png", apple: "/icon-192.png" },
+  appleWebApp: { capable: true, statusBarStyle: "default", title: "ArabDiving" },
   openGraph: {
     type: "website",
     siteName: "ArabDiving",
@@ -39,6 +42,10 @@ export const metadata: Metadata = {
     description: DESC,
     images: [`${SITE_URL}/og-default.png`],
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#0B2C59",
 };
 
 export default function RootLayout({
@@ -68,6 +75,7 @@ gtag('config', '${GA_ID}');`}
         <Footer />
 
         <ChatWidget />
+        <PwaRegister />
       </body>
     </html>
   );
