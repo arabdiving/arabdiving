@@ -83,4 +83,14 @@ const getPostsByUser = async (req, res) => {
   }
 };
 
-module.exports = { createPost, updatePost, getPosts, getPostsByUser, likePost, deletePost };
+const getPostById = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id).populate("user", "name");
+    if (!post) return res.status(404).json({ success: false, message: "المنشور غير موجود" });
+    res.json({ success: true, post });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+module.exports = { createPost, updatePost, getPosts, getPostById, getPostsByUser, likePost, deletePost };

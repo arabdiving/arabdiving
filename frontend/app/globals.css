@@ -134,3 +134,8 @@ img {
   color: #666;
   font-size: 18px;
 }
+/* Prevent stray horizontal scroll on small screens */
+html, body {
+  overflow-x: hidden;
+  max-width: 100%;
+}

@@ -281,7 +281,7 @@ export default function CommunityPage() {
                 </>
               )}
               <div style={{ marginInlineStart: "auto" }}>
-                <ShareButtons title={post.content?.slice(0, 60)} compact />
+                <ShareButtons title={post.content?.slice(0, 60)} url={`${typeof window !== "undefined" ? window.location.origin : ""}/community/${post._id}`} compact />
               </div>
             </div>
 

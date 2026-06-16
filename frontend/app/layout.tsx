@@ -30,13 +30,13 @@ export const metadata: Metadata = {
     url: SITE_URL,
     title: "ArabDiving — مجتمع الغوص العربي",
     description: DESC,
-    images: [{ url: "/og-default.png", width: 1200, height: 630, alt: "ArabDiving" }],
+    images: [{ url: `${SITE_URL}/og-default.png`, secureUrl: `${SITE_URL}/og-default.png`, width: 1200, height: 630, type: "image/png", alt: "ArabDiving" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "ArabDiving — مجتمع الغوص العربي",
     description: DESC,
-    images: ["/og-default.png"],
+    images: [`${SITE_URL}/og-default.png`],
   },
 };
 

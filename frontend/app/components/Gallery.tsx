@@ -8,7 +8,7 @@ export default function Gallery({ images, alt = "" }: { images?: string[]; alt?:
   const [active, setActive] = useState(0);
 
   if (valid.length === 0) {
-    return <div style={{ width: "100%", height: "460px", borderRadius: "20px", background: imagePlaceholder }} />;
+    return <div style={{ width: "100%", height: "clamp(220px, 55vw, 460px)", borderRadius: "20px", background: imagePlaceholder }} />;
   }
 
   return (

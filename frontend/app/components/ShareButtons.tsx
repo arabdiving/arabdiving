@@ -2,12 +2,20 @@
 
 import { useEffect, useRef, useState } from "react";
 
-export default function ShareButtons({ title = "", compact = false }: { title?: string; compact?: boolean }) {
+export default function ShareButtons({
+  title = "",
+  url: urlProp,
+  compact = false,
+}: {
+  title?: string;
+  url?: string;
+  compact?: boolean;
+}) {
   const [open, setOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
-  const url = typeof window !== "undefined" ? window.location.href : "";
+  const url = urlProp || (typeof window !== "undefined" ? window.location.href : "");
   const shareText = title ? `${title} | ArabDiving` : "ArabDiving";
   const e = (s: string) => encodeURIComponent(s);
 
@@ -29,7 +37,6 @@ export default function ShareButtons({ title = "", compact = false }: { title?: 
     }
   };
 
-  // On mobile, open the native share sheet (covers Instagram, Messenger, etc.).
   const onTrigger = async () => {
     const nav = navigator as Navigator & { share?: (d: any) => Promise<void> };
     if (nav.share) {
@@ -37,7 +44,7 @@ export default function ShareButtons({ title = "", compact = false }: { title?: 
         await nav.share({ title: shareText, text: shareText, url });
         return;
       } catch {
-        /* user cancelled — fall through to menu */
+        /* cancelled */
       }
     }
     setOpen((o) => !o);
@@ -96,14 +103,7 @@ export default function ShareButtons({ title = "", compact = false }: { title?: 
         >
           {items.map((it) =>
             it.href ? (
-              <a
-                key={it.label}
-                href={it.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                onClick={() => setOpen(false)}
-                style={menuItem}
-              >
+              <a key={it.label} href={it.href} target="_blank" rel="noopener noreferrer" onClick={() => setOpen(false)} style={menuItem}>
                 <span style={{ ...iconChip, background: it.color }}>{it.icon}</span>
                 {it.label}
               </a>
@@ -121,25 +121,10 @@ export default function ShareButtons({ title = "", compact = false }: { title?: 
 }
 
 const menuItem: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: "10px",
-  padding: "9px 10px",
-  borderRadius: "8px",
-  color: "#222",
-  fontSize: "14px",
-  fontFamily: "inherit",
-  textDecoration: "none",
+  display: "flex", alignItems: "center", gap: "10px", padding: "9px 10px",
+  borderRadius: "8px", color: "#222", fontSize: "14px", fontFamily: "inherit", textDecoration: "none",
 };
 const iconChip: React.CSSProperties = {
-  width: "26px",
-  height: "26px",
-  borderRadius: "50%",
-  color: "white",
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "13px",
-  fontWeight: 700,
-  flexShrink: 0,
+  width: "26px", height: "26px", borderRadius: "50%", color: "white",
+  display: "inline-flex", alignItems: "center", justifyContent: "center", fontSize: "13px", fontWeight: 700, flexShrink: 0,
 };

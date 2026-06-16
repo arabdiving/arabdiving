@@ -4,6 +4,8 @@ import Gallery from "../../components/Gallery";
 import ShareButtons from "../../components/ShareButtons";
 import { difficultyAr } from "@/app/lib/labels";
 
+const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://arabdiving.com";
+
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   try {
     const { id } = await params;
@@ -12,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const s = d?.diveSite;
     if (!s) return { title: "موقع غوص" };
     const img = (s.images && s.images[0]) || s.image;
-    const ogImage = img ? (/^https?:\/\//.test(img) ? img : `/images/${img}`) : "/og-default.png";
+    const ogImage = img ? (/^https?:\/\//.test(img) ? img : `${SITE_URL}/images/${img}`) : `${SITE_URL}/og-default.png`;
     const desc = s.description || "موقع غوص في البحر الأحمر";
     return {
       title: s.name,
@@ -70,14 +72,14 @@ export default async function DiveSiteDetails({
   const gallery = site.images && site.images.length ? site.images : site.image ? [site.image] : [];
 
   return (
-    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "40px" }}>
+    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "clamp(16px, 4vw, 40px)" }}>
       <Gallery images={gallery} alt={site.name} />
 
-      <h1 style={{ marginTop: "30px", fontSize: "42px", color: "var(--navy)" }}>{site.name}</h1>
+      <h1 style={{ marginTop: "26px", fontSize: "clamp(26px, 6vw, 42px)", color: "var(--navy)", lineHeight: 1.3 }}>{site.name}</h1>
 
       <h3>📍 {site.city}، {site.country}</h3>
 
-      <div style={{ display: "flex", gap: "20px", marginTop: "10px", marginBottom: "20px" }}>
+      <div style={{ display: "flex", gap: "20px", marginTop: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
         <span>⭐ {site.averageRating?.toFixed(1) || "0.0"}</span>
         <span>📝 {site.reviewsCount || 0} تقييم</span>
       </div>
@@ -88,7 +90,7 @@ export default async function DiveSiteDetails({
 
       <p style={{ fontSize: "18px", lineHeight: "1.8" }}>{site.description}</p>
 
-      <div style={{ display: "flex", gap: "20px", marginTop: "30px" }}>
+      <div style={{ display: "flex", gap: "14px", marginTop: "30px", flexWrap: "wrap" }}>
         <div style={{ padding: "15px", border: "1px solid #e2e8f0", borderRadius: "12px" }}>
           🌊 العمق: {site.depth} متر
         </div>
