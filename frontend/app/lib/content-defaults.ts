@@ -43,8 +43,8 @@ export const contentDefaults: Record<string, any> = {
       subtitle: "خلّي أطفالك يكتشفوا سحر العالم تحت الماء بأمان تام، تحت إشراف مدرّبين متخصصين، وفي أنقى مياه على وجه الأرض.",
       primaryLabel: "سجّل طفلك الآن",
       primaryHref: "/register",
-      secondaryLabel: "استكشف المواقع",
-      secondaryHref: "/dive-sites",
+      secondaryLabel: "🤿 جهّز معداتك (لعبة الأطفال)",
+      secondaryHref: "/game",
     },
     whyTitle: "لماذا الغوص لطفلك؟",
     reasons: [
