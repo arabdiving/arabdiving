@@ -20,6 +20,8 @@ const uploadRoutes = require("./routes/uploadRoutes");
 const logbookRoutes = require("./routes/logbookRoutes");
 const commentRoutes = require("./routes/commentRoutes");
 const childProfileRoutes = require("./routes/childProfileRoutes");
+const partnerCenterRoutes = require("./routes/partnerCenterRoutes");
+const bookingRoutes = require("./routes/bookingRoutes");
 
 const app = express();
 
@@ -75,6 +77,8 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/logbook", logbookRoutes);
 app.use("/api/comments", commentRoutes);
 app.use("/api/child-profiles", childProfileRoutes);
+app.use("/api/partner-centers", partnerCenterRoutes);
+app.use("/api/bookings", bookingRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/uploads", express.static("uploads"));
 
