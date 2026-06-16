@@ -139,3 +139,15 @@ html, body {
   overflow-x: hidden;
   max-width: 100%;
 }
+
+/* Responsive navbar: inline links on desktop, hamburger on mobile */
+.nav-desktop { display: flex; }
+.nav-burger { display: none; }
+
+@media (max-width: 900px) {
+  .nav-desktop { display: none !important; }
+  .nav-burger { display: inline-block !important; }
+}
+@media (min-width: 901px) {
+  .nav-mobile-panel { display: none !important; }
+}
