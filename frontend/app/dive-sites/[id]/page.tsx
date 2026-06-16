@@ -4,6 +4,27 @@ import Gallery from "../../components/Gallery";
 import ShareButtons from "../../components/ShareButtons";
 import { difficultyAr } from "@/app/lib/labels";
 
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
+  try {
+    const { id } = await params;
+    const res = await fetch(`${API_BASE}/api/dive-sites/${id}`, { cache: "no-store" });
+    const d = await res.json();
+    const s = d?.diveSite;
+    if (!s) return { title: "موقع غوص" };
+    const img = (s.images && s.images[0]) || s.image;
+    const ogImage = img ? (/^https?:\/\//.test(img) ? img : `/images/${img}`) : "/og-default.png";
+    const desc = s.description || "موقع غوص في البحر الأحمر";
+    return {
+      title: s.name,
+      description: desc,
+      openGraph: { title: `${s.name} | ArabDiving`, description: desc, images: [ogImage] },
+      twitter: { card: "summary_large_image", title: `${s.name} | ArabDiving`, description: desc, images: [ogImage] },
+    };
+  } catch {
+    return { title: "موقع غوص" };
+  }
+}
+
 async function getDiveSite(id: string) {
   try {
     const res = await fetch(`${API_BASE}/api/dive-sites/${id}`, { cache: "no-store" });
