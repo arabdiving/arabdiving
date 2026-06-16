@@ -10,7 +10,7 @@ const getSettings = async () => {
 const readSettings = async (req, res) => {
   try {
     const s = await getSettings();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [] } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -26,8 +26,14 @@ const updateSettings = async (req, res) => {
     if (Array.isArray(req.body.hiddenPages)) {
       s.hiddenPages = req.body.hiddenPages.map((x) => String(x));
     }
+    if (typeof req.body.whatsappNumber === "string") {
+      s.whatsappNumber = req.body.whatsappNumber.trim();
+    }
+    if (typeof req.body.chatEnabled === "boolean") {
+      s.chatEnabled = req.body.chatEnabled;
+    }
     await s.save();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [] } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

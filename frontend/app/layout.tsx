@@ -6,6 +6,7 @@ import "./globals.css";
 
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+import ChatWidget from "./components/ChatWidget";
 
 const cairo = Cairo({
   subsets: ["arabic"],
@@ -65,6 +66,8 @@ gtag('config', '${GA_ID}');`}
         {children}
 
         <Footer />
+
+        <ChatWidget />
       </body>
     </html>
   );
