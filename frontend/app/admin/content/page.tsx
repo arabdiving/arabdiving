@@ -11,6 +11,7 @@ const PAGES = [
   { key: "youth", label: "الشباب" },
   { key: "trips", label: "الرحلات" },
   { key: "guide", label: "دليل الغوص" },
+  { key: "stories", label: "القصص والمسابقة" },
 ];
 
 const LABELS: Record<string, string> = {

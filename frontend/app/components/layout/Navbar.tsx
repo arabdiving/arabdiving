@@ -14,6 +14,7 @@ const navLinks = [
   { href: "/trips", label: "الرحلات" },
   { href: "/guide", label: "الدليل" },
   { href: "/community", label: "المجتمع" },
+  { href: "/stories", label: "القصص" },
   { href: "/youth", label: "الشباب" },
   { href: "/women", label: "النساء" },
   { href: "/kids", label: "الأطفال" },
