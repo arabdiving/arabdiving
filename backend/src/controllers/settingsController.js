@@ -10,7 +10,7 @@ const getSettings = async () => {
 const readSettings = async (req, res) => {
   try {
     const s = await getSettings();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -23,8 +23,11 @@ const updateSettings = async (req, res) => {
     if (typeof req.body.commentsEnabled === "boolean") {
       s.commentsEnabled = req.body.commentsEnabled;
     }
+    if (Array.isArray(req.body.hiddenPages)) {
+      s.hiddenPages = req.body.hiddenPages.map((x) => String(x));
+    }
     await s.save();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

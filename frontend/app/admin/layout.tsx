@@ -6,6 +6,7 @@ import Link from "next/link";
 const links = [
   { href: "/admin", label: "لوحة المعلومات", icon: "📊" },
   { href: "/admin/content", label: "محتوى الصفحات", icon: "📝" },
+  { href: "/admin/pages", label: "ظهور الصفحات", icon: "👁️" },
   { href: "/admin/dive-sites", label: "مواقع الغوص", icon: "🤿" },
   { href: "/admin/partner-centers", label: "المراكز الشريكة", icon: "🏝️" },
   { href: "/admin/bookings", label: "الحجوزات", icon: "🎟️" },

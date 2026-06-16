@@ -5,6 +5,7 @@ const SettingsSchema = new mongoose.Schema(
   {
     key: { type: String, default: "site", unique: true },
     commentsEnabled: { type: Boolean, default: true },
+    hiddenPages: { type: [String], default: [] },
   },
   { timestamps: true }
 );

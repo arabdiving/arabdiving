@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { API_BASE } from "@/app/lib/api";
 
 interface CurrentUser {
   name?: string;
@@ -26,6 +27,7 @@ const navLinks = [
 export default function Navbar() {
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [open, setOpen] = useState(false);
+  const [hidden, setHidden] = useState<string[]>([]);
 
   useEffect(() => {
     try {
@@ -34,6 +36,10 @@ export default function Navbar() {
     } catch {
       setUser(null);
     }
+    fetch(`${API_BASE}/api/settings`)
+      .then((r) => r.json())
+      .then((d) => setHidden(d.settings?.hiddenPages || []))
+      .catch(() => {});
   }, []);
 
   const logout = () => {
@@ -66,7 +72,7 @@ export default function Navbar() {
 
         {/* Desktop links */}
         <div className="nav-desktop" style={{ alignItems: "center", gap: "18px", flexWrap: "wrap" }}>
-          {navLinks.map((l) => (
+          {navLinks.filter((l) => !hidden.includes(l.href)).map((l) => (
             <Link key={l.href} href={l.href} style={linkStyle}>{l.label}</Link>
           ))}
           {user && <Link href="/profile" style={linkStyle}>ملفي الشخصي</Link>}
@@ -87,7 +93,7 @@ export default function Navbar() {
       {/* Mobile dropdown panel */}
       {open && (
         <div className="nav-mobile-panel" style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "16px 4px 6px", maxWidth: "1280px", margin: "0 auto" }}>
-          {navLinks.map((l) => (
+          {navLinks.filter((l) => !hidden.includes(l.href)).map((l) => (
             <Link key={l.href} href={l.href} style={linkStyle} onClick={() => setOpen(false)}>{l.label}</Link>
           ))}
           {user && <Link href="/profile" style={linkStyle} onClick={() => setOpen(false)}>ملفي الشخصي</Link>}
