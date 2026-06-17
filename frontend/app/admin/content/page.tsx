@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { API_BASE, authHeaders } from "@/app/lib/adminFetch";
 import { contentDefaults } from "@/app/lib/content-defaults";
+import VideoEmbed from "@/app/components/VideoEmbed";
 
 const PAGES = [
   { key: "home", label: "الرئيسية" },
@@ -20,7 +21,7 @@ const LABELS: Record<string, string> = {
   desc: "الوصف", description: "الوصف", primaryLabel: "زر رئيسي — النص",
   primaryHref: "زر رئيسي — الرابط", secondaryLabel: "زر ثانوي — النص",
   secondaryHref: "زر ثانوي — الرابط", label: "نص الزر", href: "رابط الزر",
-  icon: "الأيقونة", image: "الصورة", age: "العمر", n: "الرقم", duration: "المدة",
+  icon: "الأيقونة", image: "الصورة", video: "الفيديو", videoTitle: "عنوان قسم الفيديو", age: "العمر", n: "الرقم", duration: "المدة",
   level: "المستوى", highlights: "أبرز النقاط", color: "اللون",
   hero: "القسم العلوي", gulf: "قسم الخليج", community: "قسم المجتمع",
   reasons: "الأسباب", countries: "الدول", segments: "الفئات", features: "المميزات",
@@ -75,10 +76,43 @@ function ImageField({ value, onChange }: { value: string; onChange: (v: string) 
   );
 }
 
+function VideoField({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const [busy, setBusy] = useState(false);
+  const upload = async (file: File) => {
+    setBusy(true);
+    const fd = new FormData();
+    fd.append("image", file);
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/upload`, { method: "POST", headers: authHeaders(false), body: fd });
+      const d = await res.json();
+      if (d.success) onChange(d.url);
+      else alert(d.message || "تعذّر رفع الفيديو");
+    } catch {
+      alert("تعذّر الاتصال بالخادم");
+    } finally {
+      setBusy(false);
+    }
+  };
+  return (
+    <div>
+      <input value={value || ""} onChange={(e) => onChange(e.target.value)} placeholder="رابط يوتيوب/فيميو أو رابط ملف فيديو" style={inp} />
+      <div style={{ display: "flex", gap: "8px", alignItems: "center", flexWrap: "wrap", marginTop: "6px" }}>
+        <label style={{ cursor: "pointer", background: "#eef4fa", color: "#0d6cb0", padding: "6px 12px", borderRadius: "8px", fontSize: "13px" }}>
+          🎬 رفع فيديو
+          <input type="file" accept="video/*" hidden onChange={(e) => e.target.files && upload(e.target.files[0])} />
+        </label>
+        {busy && <span style={{ color: "#666", fontSize: "13px" }}>جارٍ الرفع...</span>}
+      </div>
+      {value && <div style={{ marginTop: "8px" }}><VideoEmbed src={value} /></div>}
+    </div>
+  );
+}
+
 function Field({ k, value, onChange }: { k: string; value: any; onChange: (v: any) => void }) {
   // string / number
   if (typeof value === "string" || typeof value === "number") {
     if (k === "image") return <Row k={k}><ImageField value={String(value)} onChange={onChange} /></Row>;
+    if (k === "video") return <Row k={k}><VideoField value={String(value)} onChange={onChange} /></Row>;
     const long = LONG.includes(k) || (typeof value === "string" && (value.length > 60 || value.includes("\n")));
     return (
       <Row k={k}>

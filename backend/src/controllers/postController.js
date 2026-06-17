@@ -24,6 +24,7 @@ const createPost = async (req, res) => {
       user: req.user._id,
       content: req.body.content,
       image: req.body.image || "",
+      video: req.body.video || "",
     });
     res.status(201).json({ success: true, post });
   } catch (error) {
@@ -41,6 +42,7 @@ const updatePost = async (req, res) => {
     }
     if (typeof req.body.content === "string") post.content = req.body.content;
     if (typeof req.body.image === "string") post.image = req.body.image;
+    if (typeof req.body.video === "string") post.video = req.body.video;
     await post.save();
     res.json({ success: true, post });
   } catch (error) {

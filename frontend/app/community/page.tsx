@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import { API_BASE } from "@/app/lib/api";
 import { uploadImage } from "@/app/lib/uploadImage";
 import ShareButtons from "../components/ShareButtons";
+import VideoEmbed from "../components/VideoEmbed";
 
 const API = API_BASE;
 
@@ -21,6 +22,7 @@ interface Post {
   _id: string;
   content: string;
   image?: string;
+  video?: string;
   user?: User;
   likes: string[];
   createdAt: string;
@@ -41,6 +43,8 @@ export default function CommunityPage() {
   const [editingPost, setEditingPost] = useState<string | null>(null);
   const [editPostText, setEditPostText] = useState("");
   const [editPostImage, setEditPostImage] = useState("");
+  const [postVideo, setPostVideo] = useState("");
+  const [editPostVideo, setEditPostVideo] = useState("");
   const fileRef = useRef<HTMLInputElement>(null);
 
   const getCurrentUser = (): User | null => {
@@ -109,17 +113,18 @@ export default function CommunityPage() {
       setError("يرجى تسجيل الدخول لنشر مشاركة.");
       return;
     }
-    if (!content.trim() && !postImage) return;
+    if (!content.trim() && !postImage && !postVideo) return;
     try {
       const res = await fetch(`${API}/api/posts`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ content, image: postImage }),
+        body: JSON.stringify({ content, image: postImage, video: postVideo }),
       });
       const data = await res.json();
       if (data.success) {
         setContent("");
         setPostImage("");
+        setPostVideo("");
         if (fileRef.current) fileRef.current.value = "";
         loadPosts();
       }
@@ -134,7 +139,7 @@ export default function CommunityPage() {
     const res = await fetch(`${API}/api/posts/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ content: editPostText, image: editPostImage }),
+      body: JSON.stringify({ content: editPostText, image: editPostImage, video: editPostVideo }),
     });
     const data = await res.json();
     if (data.success) {
@@ -222,6 +227,15 @@ export default function CommunityPage() {
           // eslint-disable-next-line @next/next/no-img-element
           <img src={postImage} alt="" style={{ maxHeight: "180px", borderRadius: "10px", marginTop: "10px" }} />
         )}
+        <div style={{ marginTop: "10px", display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
+          <input value={postVideo} onChange={(e) => setPostVideo(e.target.value)} placeholder="🔗 رابط فيديو (YouTube/Vimeo) أو ارفع ملفًا" style={{ flex: "1 1 220px", padding: "10px", borderRadius: "10px", border: "1px solid #ddd", fontFamily: "inherit" }} />
+          <label style={{ ...btn("#64748b"), display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px" }}>
+            🎬 رفع فيديو
+            <input type="file" accept="video/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setPostVideo)} />
+          </label>
+          {postVideo && <button type="button" onClick={() => setPostVideo("")} style={{ ...btn("#b91c1c"), padding: "6px 12px", fontSize: "13px" }}>إزالة الفيديو</button>}
+        </div>
+        {postVideo && <div style={{ marginTop: "10px" }}><VideoEmbed src={postVideo} /></div>}
         <div style={{ display: "flex", gap: "10px", alignItems: "center", marginTop: "12px", flexWrap: "wrap" }}>
           <label style={{ ...btn("#64748b"), display: "inline-flex", alignItems: "center", gap: "6px" }}>
             🖼️ إضافة صورة
@@ -252,6 +266,15 @@ export default function CommunityPage() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={editPostImage} alt="" style={{ maxHeight: "160px", borderRadius: "10px", marginTop: "8px" }} />
                 )}
+                <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap", alignItems: "center" }}>
+                  <input value={editPostVideo} onChange={(e) => setEditPostVideo(e.target.value)} placeholder="🔗 رابط فيديو أو ارفع ملفًا" style={{ flex: "1 1 200px", padding: "8px", borderRadius: "8px", border: "1px solid #ddd", fontFamily: "inherit" }} />
+                  <label style={{ ...btn("#64748b"), padding: "6px 12px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
+                    🎬 رفع فيديو
+                    <input type="file" accept="video/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setEditPostVideo)} />
+                  </label>
+                  {editPostVideo && <button onClick={() => setEditPostVideo("")} style={{ ...btn("#b91c1c"), padding: "6px 12px", fontSize: "13px" }}>إزالة الفيديو</button>}
+                </div>
+                {editPostVideo && <div style={{ marginTop: "8px" }}><VideoEmbed src={editPostVideo} /></div>}
                 <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap" }}>
                   <label style={{ ...btn("#64748b"), padding: "6px 12px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
                     🖼️ تغيير الصورة
@@ -269,6 +292,11 @@ export default function CommunityPage() {
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={post.image} alt="" style={{ width: "100%", maxHeight: "420px", objectFit: "cover", borderRadius: "12px", marginBottom: "12px" }} />
                 )}
+                {post.video && (
+                  <div style={{ marginBottom: "12px" }}>
+                    <VideoEmbed src={post.video} />
+                  </div>
+                )}
               </>
             )}
 
@@ -276,7 +304,7 @@ export default function CommunityPage() {
               <button onClick={() => likePost(post._id)} style={btn("#0f3d75")}>❤️ {post.likes?.length || 0}</button>
               {canManage && !isEditing && (
                 <>
-                  <button onClick={() => { setEditingPost(post._id); setEditPostText(post.content); setEditPostImage(post.image || ""); }} style={btn("#2e75b6")}>✏️ تعديل</button>
+                  <button onClick={() => { setEditingPost(post._id); setEditPostText(post.content); setEditPostImage(post.image || ""); setEditPostVideo(post.video || ""); }} style={btn("#2e75b6")}>✏️ تعديل</button>
                   <button onClick={() => deletePost(post._id)} style={btn("#b91c1c")}>🗑 حذف</button>
                 </>
               )}

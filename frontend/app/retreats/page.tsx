@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { useContent } from "@/app/lib/useContent";
 import { siteImageSrc } from "@/app/lib/image";
+import VideoEmbed from "@/app/components/VideoEmbed";
 
 const NAVY = "#0B1D3A";
 const GOLD = "#C8A97E";
@@ -109,6 +110,16 @@ export default function RetreatsPage() {
           })}
         </div>
       </section>
+
+      {/* Video */}
+      {c.video && (
+        <section style={{ padding: "clamp(50px, 8vw, 80px) 20px", background: "#fff", textAlign: "center" }}>
+          <h2 style={{ color: NAVY, fontSize: "clamp(24px, 5vw, 36px)", marginBottom: "30px" }}>{c.videoTitle}</h2>
+          <div style={{ maxWidth: "900px", margin: "0 auto" }}>
+            <VideoEmbed src={c.video} title={c.videoTitle} />
+          </div>
+        </section>
+      )}
 
       {/* Custom CTA */}
       {cta.title && (

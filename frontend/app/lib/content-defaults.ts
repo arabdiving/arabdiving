@@ -254,6 +254,8 @@ export const contentDefaults: Record<string, any> = {
     ],
     sectionTitle: "ملاذات مصمّمة خصيصًا لك",
     sectionSubtitle: "اختر تجربتك الفاخرة القادمة بعيدًا عن صخب الحياة",
+    videoTitle: "شاهد التجربة قبل أن تعيشها",
+    video: "",
     packages: [
       { image: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?q=80&w=2070&auto=format&fit=crop", title: "بوابة الأعماق: التنفّس الأول", desc: "خطوتك الأولى نحو عالم خالٍ من الجاذبية. تجربة غوص مخصّصة للمبتدئين مع استقبال VIP ومعدات شخصية معقّمة.", price: "يبدأ من 1,200 ر.س", href: "/family-booking" },
       { image: "https://images.unsplash.com/photo-1544550581-5f7ceaf7f992?q=80&w=2070&auto=format&fit=crop", title: "فن التحليق: انعدام الوزن", desc: "للمحترفين الباحثين عن الهدوء. أتقِن فن الطفو المحايد واستكشف حطام السفن الساحرة مع جلسة تصوير سينمائية تحت الماء.", price: "يبدأ من 2,500 ر.س", href: "/family-booking" },

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
 import ShareButtons from "../../components/ShareButtons";
+import VideoEmbed from "../../components/VideoEmbed";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://arabdiving.com";
 
@@ -52,6 +53,11 @@ export default async function PostPage({ params }: { params: Promise<{ postId: s
         {post.image && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={post.image} alt="" style={{ width: "100%", maxWidth: "100%", borderRadius: "12px", marginBottom: "12px" }} />
+        )}
+        {post.video && (
+          <div style={{ marginBottom: "12px" }}>
+            <VideoEmbed src={post.video} />
+          </div>
         )}
         <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
           <span style={{ color: "#666" }}>❤️ {post.likes?.length || 0}</span>
