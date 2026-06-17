@@ -19,9 +19,9 @@ const BADGES: { key: BadgeKey; label: string; emoji: string }[] = [
 
 interface Passenger { name: string; type: "adult" | "child"; profile?: ChildProfileData; }
 const ADDONS = [
-  { key: "photographer", label: "مصوّر تحت الماء 📸", price: 60, perPerson: false },
-  { key: "lunch", label: "وجبة غداء على القارب 🍽️", price: 15, perPerson: true },
-  { key: "privateBoat", label: "قارب خاص للعائلة 🛥️", price: 120, perPerson: false },
+  { key: "photographer", label: "مصوّر تحت الماء 📸 (لليوم)", price: 100, perPerson: false },
+  { key: "lunch", label: "وجبة غداء على القارب 🍽️", price: 20, perPerson: true },
+  { key: "privateBoat", label: "قارب خاص للعائلة 🛥️", price: 1000, perPerson: false },
   { key: "transport", label: "نقل من وإلى الفندق 🚐", price: 25, perPerson: false },
 ];
 
