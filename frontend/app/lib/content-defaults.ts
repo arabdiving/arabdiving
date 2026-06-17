@@ -238,4 +238,33 @@ export const contentDefaults: Record<string, any> = {
     },
   },
 
+  retreats: {
+    hero: {
+      badge: "✦ تجارب فاخرة",
+      title: "اكتشف البحر الأحمر كما لم تعهده من قبل",
+      subtitle: "رفاهية، خصوصية، ومغامرة بلا حدود.",
+      image: "https://images.unsplash.com/photo-1544551763-46a013bb70d5?q=80&w=2070&auto=format&fit=crop",
+    },
+    destinations: ["الغردقة", "شرم الشيخ", "دهب", "مرسى علم"],
+    badges: [
+      { emoji: "🧕", label: "طواقم نسائية معتمدة" },
+      { emoji: "🫧", label: "معدات معقّمة طبيًا" },
+      { emoji: "👨‍👩‍👧‍👦", label: "رحلات عائلية آمنة" },
+      { emoji: "⚙️", label: "دعم للغوص التقني" },
+    ],
+    sectionTitle: "ملاذات مصمّمة خصيصًا لك",
+    sectionSubtitle: "اختر تجربتك الفاخرة القادمة بعيدًا عن صخب الحياة",
+    packages: [
+      { image: "https://images.unsplash.com/photo-1682687220742-aba13b6e50ba?q=80&w=2070&auto=format&fit=crop", title: "بوابة الأعماق: التنفّس الأول", desc: "خطوتك الأولى نحو عالم خالٍ من الجاذبية. تجربة غوص مخصّصة للمبتدئين مع استقبال VIP ومعدات شخصية معقّمة.", price: "يبدأ من 1,200 ر.س", href: "/family-booking" },
+      { image: "https://images.unsplash.com/photo-1544550581-5f7ceaf7f992?q=80&w=2070&auto=format&fit=crop", title: "فن التحليق: انعدام الوزن", desc: "للمحترفين الباحثين عن الهدوء. أتقِن فن الطفو المحايد واستكشف حطام السفن الساحرة مع جلسة تصوير سينمائية تحت الماء.", price: "يبدأ من 2,500 ر.س", href: "/family-booking" },
+      { image: "https://images.unsplash.com/photo-1540206351-d6465b3ac5c1?q=80&w=2070&auto=format&fit=crop", title: "الملاذ المغلق للسيدات", desc: "أقصى درجات الخصوصية لكِ ولصديقاتك. يخت خاص مع طاقم نسائي بالكامل، جلسات يوغا عند الشروق، وضيافة بحرية راقية.", price: "يبدأ من 4,000 ر.س", href: "/family-booking" },
+    ],
+    cta: {
+      title: "تبحث عن تجربة مخصّصة بالكامل؟",
+      text: "صمّم رحلتك الخاصة بكل تفاصيلها مع مستشار رحلات مخصّص — وجهة، تواريخ، وخدمات على مقاسك.",
+      label: "صمّم رحلتك الخاصة",
+      href: "/family-booking",
+    },
+  },
+
 };

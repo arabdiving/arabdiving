@@ -8,6 +8,7 @@ const PAGES: { href: string; label: string; locked?: boolean }[] = [
   { href: "/", label: "الرئيسية", locked: true },
   { href: "/dive-sites", label: "مواقع الغوص" },
   { href: "/family-booking", label: "احجز رحلة" },
+  { href: "/retreats", label: "الباقات الفاخرة" },
   { href: "/trips", label: "الرحلات" },
   { href: "/guide", label: "دليل الغوص" },
   { href: "/community", label: "المجتمع" },
