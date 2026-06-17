@@ -213,9 +213,15 @@ export default function CommunityPage() {
 
   return (
     <div style={{ maxWidth: "900px", margin: "0 auto", padding: "40px 20px" }}>
-      <h1 style={{ marginBottom: "30px", color: "var(--navy)" }}>🌊 منشورات المجتمع</h1>
+      <div style={{ background: "linear-gradient(135deg, #0d2c54 0%, #2e75b6 100%)", color: "white", borderRadius: "20px", padding: "26px 24px", marginBottom: "28px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", boxShadow: "0 12px 30px rgba(13,44,84,0.25)" }}>
+        <div style={{ fontSize: "46px" }}>🤿</div>
+        <div>
+          <h1 style={{ margin: 0, fontSize: "clamp(23px, 5vw, 32px)" }}>مجتمع الغوّاصين العرب</h1>
+          <p style={{ margin: "6px 0 0", opacity: 0.92, lineHeight: 1.7 }}>شارك تجاربك وصورك وفيديوهاتك، وتواصل مع غوّاصي الخليج وكوّن صداقات بحرية 🌊</p>
+        </div>
+      </div>
 
-      <form onSubmit={createPost} style={{ background: "#fff", padding: "20px", borderRadius: "16px", border: "1px solid #e5e7eb", marginBottom: "30px" }}>
+      <form onSubmit={createPost} style={{ background: "#fff", padding: "20px", borderRadius: "16px", border: "1px solid #eef2f6", marginBottom: "30px", boxShadow: "0 8px 24px rgba(0,0,0,0.05)" }}>
         <textarea
           rows={3}
           placeholder="شارك تجربتك في الغوص..."
@@ -251,8 +257,11 @@ export default function CommunityPage() {
         const canManage = currentUser?.role === "admin" || currentUser?._id === post.user?._id;
         const isEditing = editingPost === post._id;
         return (
-          <div key={post._id} style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "16px", padding: "20px", marginBottom: "20px" }}>
-            <h3 style={{ color: "var(--navy)" }}>{post.user?.name || "عضو غير معروف"}</h3>
+          <div key={post._id} style={{ background: "#fff", border: "1px solid #eef2f6", borderRadius: "16px", padding: "20px", marginBottom: "20px", boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "4px" }}>
+              <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "linear-gradient(135deg,#2e75b6,#0d2c54)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "18px", flexShrink: 0 }}>{(post.user?.name || "؟").trim().charAt(0)}</div>
+              <h3 style={{ color: "var(--navy)", margin: 0 }}>{post.user?.name || "عضو غير معروف"}</h3>
+            </div>
 
             {isEditing ? (
               <div style={{ marginTop: "10px" }}>

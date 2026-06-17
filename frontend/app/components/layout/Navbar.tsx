@@ -75,7 +75,7 @@ export default function Navbar() {
         {/* Desktop links */}
         <div className="nav-desktop" style={{ alignItems: "center", gap: "18px", flexWrap: "wrap" }}>
           {navLinks.filter((l) => !hidden.includes(l.href)).map((l) => (
-            <Link key={l.href} href={l.href} style={linkStyle}>{l.label}</Link>
+            <Link key={l.href} href={l.href} className="nav-pill" style={linkStyle}>{l.label}</Link>
           ))}
           {user && <Link href="/profile" style={linkStyle}>ملفي الشخصي</Link>}
         </div>
@@ -96,7 +96,7 @@ export default function Navbar() {
       {open && (
         <div className="nav-mobile-panel" style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "16px 4px 6px", maxWidth: "1280px", margin: "0 auto" }}>
           {navLinks.filter((l) => !hidden.includes(l.href)).map((l) => (
-            <Link key={l.href} href={l.href} style={linkStyle} onClick={() => setOpen(false)}>{l.label}</Link>
+            <Link key={l.href} href={l.href} className="nav-pill" style={linkStyle} onClick={() => setOpen(false)}>{l.label}</Link>
           ))}
           {user && <Link href="/profile" style={linkStyle} onClick={() => setOpen(false)}>ملفي الشخصي</Link>}
           <div style={{ height: "1px", background: "rgba(255,255,255,0.2)", margin: "6px 0" }} />
