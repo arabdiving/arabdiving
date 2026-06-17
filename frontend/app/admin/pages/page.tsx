@@ -11,6 +11,7 @@ const PAGES: { href: string; label: string; locked?: boolean }[] = [
   { href: "/retreats", label: "الباقات الفاخرة" },
   { href: "/trips", label: "الرحلات" },
   { href: "/guide", label: "دليل الغوص" },
+  { href: "/temperatures", label: "حرارة المياه" },
   { href: "/community", label: "المجتمع" },
   { href: "/stories", label: "القصص والمسابقة" },
   { href: "/youth", label: "الشباب" },

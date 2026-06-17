@@ -3,6 +3,7 @@ import { API_BASE } from "@/app/lib/api";
 import Gallery from "../../components/Gallery";
 import ShareButtons from "../../components/ShareButtons";
 import { difficultyAr } from "@/app/lib/labels";
+import SiteClimate from "../../components/SiteClimate";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://arabdiving.com";
 
@@ -87,6 +88,8 @@ export default async function DiveSiteDetails({
       <div style={{ margin: "6px 0 22px" }}>
         <ShareButtons title={site.name} />
       </div>
+
+      <SiteClimate city={site.city} />
 
       <p style={{ fontSize: "18px", lineHeight: "1.8" }}>{site.description}</p>
 
