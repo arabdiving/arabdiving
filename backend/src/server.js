@@ -23,6 +23,7 @@ const childProfileRoutes = require("./routes/childProfileRoutes");
 const partnerCenterRoutes = require("./routes/partnerCenterRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const messageRoutes = require("./routes/messageRoutes");
+const sizeProfileRoutes = require("./routes/sizeProfileRoutes");
 
 const app = express();
 
@@ -81,6 +82,7 @@ app.use("/api/child-profiles", childProfileRoutes);
 app.use("/api/partner-centers", partnerCenterRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/messages", messageRoutes);
+app.use("/api/size-profiles", sizeProfileRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/uploads", express.static("uploads"));
 

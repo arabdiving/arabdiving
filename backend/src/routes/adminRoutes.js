@@ -5,6 +5,7 @@ const {
   getDashboardStats,
   getUsers,
   updateUserRole,
+  adminUpdateUser,
   createUser,
   deleteUser,
   getAllPosts,
@@ -31,6 +32,7 @@ router.get("/users", getUsers);
 router.post("/users", createUser);
 router.delete("/users/:id", deleteUser);
 router.put("/users/:id/role", updateUserRole);
+router.put("/users/:id", adminUpdateUser);
 
 // Image upload (returns Cloudinary URL)
 router.post("/upload", upload.single("image"), uploadImage);

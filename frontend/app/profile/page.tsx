@@ -15,6 +15,7 @@ interface DiveEntry {
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
+  const [sizeProfile, setSizeProfile] = useState<any>(null);
   const [entries, setEntries] = useState<DiveEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -31,11 +32,13 @@ export default function ProfilePage() {
     Promise.all([
       fetch(`${API_BASE}/api/users/profile`, { headers }).then((r) => r.json()),
       fetch(`${API_BASE}/api/logbook/my`, { headers }).then((r) => r.json()),
+      fetch(`${API_BASE}/api/size-profiles/me`, { headers }).then((r) => r.json()).catch(() => ({})),
     ])
-      .then(([profile, logbook]) => {
+      .then(([profile, logbook, sp]) => {
         if (profile?.user) setUser(profile.user);
         else setError("تعذّر تحميل الملف الشخصي.");
         setEntries(logbook?.entries || []);
+        if (sp?.profile) setSizeProfile(sp.profile);
       })
       .catch(() => setError("تعذّر الاتصال بالخادم."))
       .finally(() => setLoading(false));
@@ -91,6 +94,33 @@ export default function ProfilePage() {
         {statCard("أقصى عمق", `${maxDepth} م`)}
         {statCard("إجمالي زمن القاع", `${totalBottomTime} دقيقة`)}
         {statCard("الدور", user.role === "admin" ? "مدير" : "عضو")}
+      </div>
+
+      <h2 style={{ color: "var(--navy)", marginBottom: "16px" }}>📏 مقاساتي</h2>
+      <div style={{ background: "white", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "18px", marginBottom: "40px" }}>
+        {sizeProfile ? (
+          <>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px 20px", color: "#333", marginBottom: "12px" }}>
+              <span>👤 الفئة: {sizeProfile.group === "women" ? "الشابات" : "الشباب"}</span>
+              <span>📐 الطول: {sizeProfile.sizes?.height || "—"} سم</span>
+              <span>⚖️ الوزن: {sizeProfile.sizes?.weight || "—"} كجم</span>
+              <span>👟 الحذاء: {sizeProfile.sizes?.shoe || "—"}</span>
+              <span>🤿 البدلة: {sizeProfile.sizes?.wetsuit || "—"}</span>
+              <span>🥽 النظارة: {sizeProfile.sizes?.mask || "—"}</span>
+              {sizeProfile.group === "women" && sizeProfile.womenExtras?.hoodie && <span>🧥 الهودي: {sizeProfile.womenExtras.hoodie}</span>}
+              {sizeProfile.group === "women" && sizeProfile.womenExtras?.swimCover && <span>🩱 كاش مايوه: {sizeProfile.womenExtras.swimCover}</span>}
+            </div>
+            <Link href={`/sizes/${sizeProfile.group === "women" ? "women" : "men"}`} style={{ background: "var(--mid)", color: "white", padding: "8px 18px", borderRadius: "8px", fontSize: "14px" }}>تعديل المقاسات</Link>
+          </>
+        ) : (
+          <div>
+            <p style={{ color: "#666", marginBottom: "12px" }}>لم تسجّل مقاساتك بعد — سجّلها لنجهّز معداتك مسبقًا.</p>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <Link href="/sizes/men" style={{ background: "var(--gold)", color: "white", padding: "8px 18px", borderRadius: "8px", fontSize: "14px" }}>مقاسات الشباب</Link>
+              <Link href="/sizes/women" style={{ background: "var(--gold)", color: "white", padding: "8px 18px", borderRadius: "8px", fontSize: "14px" }}>مقاسات الشابات</Link>
+            </div>
+          </div>
+        )}
       </div>
 
       <h2 style={{ color: "var(--navy)", marginBottom: "16px" }}>أحدث الغوصات</h2>

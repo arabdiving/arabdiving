@@ -135,8 +135,29 @@ const seedDiveSites = async (req, res) => {
   }
 };
 
+const adminUpdateUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: "المستخدم غير موجود" });
+    const { name, email, role, password, country, city } = req.body;
+    if (typeof name === "string" && name.trim()) user.name = name.trim();
+    if (typeof email === "string" && email.trim()) user.email = email.trim().toLowerCase();
+    if (typeof country === "string") user.country = country;
+    if (typeof city === "string") user.city = city;
+    if (role && ["member", "admin"].includes(role)) user.role = role;
+    if (password && String(password).length >= 6) {
+      user.password = await bcrypt.hash(String(password), 10);
+    }
+    await user.save();
+    res.json({ success: true, user: { _id: user._id, name: user.name, email: user.email, role: user.role } });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
   updateUserRole,
+  adminUpdateUser,
   createUser,
   deleteUser,
   getUsers,
