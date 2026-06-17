@@ -8,6 +8,15 @@ const SettingsSchema = new mongoose.Schema(
     hiddenPages: { type: [String], default: [] },
     whatsappNumber: { type: String, default: "" },
     chatEnabled: { type: Boolean, default: true },
+    addons: {
+      type: [{ key: String, label: String, price: Number, perPerson: Boolean }],
+      default: [
+        { key: "photographer", label: "مصوّر تحت الماء 📸 (لليوم)", price: 100, perPerson: false },
+        { key: "lunch", label: "وجبة غداء على القارب 🍽️", price: 20, perPerson: true },
+        { key: "privateBoat", label: "قارب خاص للعائلة 🛥️", price: 1000, perPerson: false },
+        { key: "transport", label: "نقل من وإلى الفندق 🚐", price: 25, perPerson: false },
+      ],
+    },
   },
   { timestamps: true }
 );

@@ -10,17 +10,53 @@ export default function AdminBookings() {
   const [bookings, setBookings] = useState<any[]>([]);
   const [msg, setMsg] = useState("");
   const [open, setOpen] = useState<string | null>(null);
+  const [addons, setAddons] = useState<any[]>([]);
+  const [addonsMsg, setAddonsMsg] = useState("");
+  const [savingAddons, setSavingAddons] = useState(false);
 
   useEffect(() => {
     fetch(`${API_BASE}/api/bookings/admin`, { headers: authHeaders() })
       .then((r) => r.json())
       .then((d) => setBookings(d.bookings || []))
       .catch(() => setMsg("تعذّر تحميل الحجوزات"));
+    fetch(`${API_BASE}/api/settings`).then((r) => r.json()).then((d) => setAddons(d.settings?.addons || [])).catch(() => {});
   }, []);
+
+  const updAddon = (i: number, patch: any) => setAddons((a) => a.map((x, j) => (j === i ? { ...x, ...patch } : x)));
+  const addAddon = () => setAddons((a) => [...a, { key: "item" + (a.length + 1), label: "", price: 0, perPerson: false }]);
+  const removeAddon = (i: number) => setAddons((a) => a.filter((_, j) => j !== i));
+  const saveAddons = async () => {
+    setSavingAddons(true); setAddonsMsg("");
+    try {
+      const res = await fetch(`${API_BASE}/api/settings`, { method: "PUT", headers: authHeaders(), body: JSON.stringify({ addons }) });
+      const d = await res.json();
+      setAddonsMsg(d.success ? "تم حفظ الأسعار ✅" : d.message || "تعذّر الحفظ");
+    } catch { setAddonsMsg("تعذّر الاتصال بالخادم"); } finally { setSavingAddons(false); }
+  };
 
   return (
     <div style={{ maxWidth: "900px" }}>
       <h1 style={{ color: "var(--navy)", marginBottom: "18px" }}>الحجوزات ({bookings.length})</h1>
+
+      <div style={{ background: "white", borderRadius: "14px", padding: "18px", boxShadow: "0 8px 24px rgba(0,0,0,0.06)", marginBottom: "26px" }}>
+        <h3 style={{ color: "var(--navy)", marginBottom: "6px" }}>أسعار الإضافات (قابلة للتعديل)</h3>
+        <p style={{ color: "#666", fontSize: "13px", marginBottom: "14px" }}>تظهر هذه الإضافات وأسعارها للعميل في خطوة الحجز. السعر بالدولار. «لكل فرد» تضرب السعر في عدد الأفراد.</p>
+        {addons.map((a, i) => (
+          <div key={i} style={{ display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center", marginBottom: "10px" }}>
+            <input value={a.label} onChange={(e) => updAddon(i, { label: e.target.value })} placeholder="اسم الإضافة" style={{ flex: "2 1 200px", padding: "9px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "inherit" }} />
+            <input type="number" value={a.price} onChange={(e) => updAddon(i, { price: Number(e.target.value) })} placeholder="السعر $" style={{ flex: "1 1 90px", padding: "9px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "inherit" }} />
+            <label style={{ display: "flex", alignItems: "center", gap: "5px", fontSize: "13px", color: "#555" }}>
+              <input type="checkbox" checked={!!a.perPerson} onChange={(e) => updAddon(i, { perPerson: e.target.checked })} /> لكل فرد
+            </label>
+            <button onClick={() => removeAddon(i)} style={{ background: "#b91c1c", color: "white", border: "none", padding: "8px 12px", borderRadius: "8px", cursor: "pointer", fontFamily: "inherit", fontSize: "13px" }}>حذف</button>
+          </div>
+        ))}
+        <div style={{ display: "flex", gap: "10px", alignItems: "center", marginTop: "10px", flexWrap: "wrap" }}>
+          <button onClick={addAddon} style={{ background: "#1e7e34", color: "white", border: "none", padding: "9px 16px", borderRadius: "8px", cursor: "pointer", fontFamily: "inherit", fontSize: "14px" }}>+ إضافة</button>
+          <button onClick={saveAddons} disabled={savingAddons} style={{ background: "var(--mid)", color: "white", border: "none", padding: "9px 22px", borderRadius: "8px", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 }}>{savingAddons ? "جارٍ الحفظ..." : "حفظ الأسعار"}</button>
+          {addonsMsg && <span style={{ color: addonsMsg.includes("✅") ? "#1e7e34" : "#c0392b", fontSize: "14px" }}>{addonsMsg}</span>}
+        </div>
+      </div>
       {msg && <p style={{ color: "#c0392b" }}>{msg}</p>}
       {bookings.length === 0 && !msg && <p style={{ color: "#666" }}>لا توجد حجوزات بعد.</p>}
 

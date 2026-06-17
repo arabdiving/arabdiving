@@ -18,7 +18,8 @@ const BADGES: { key: BadgeKey; label: string; emoji: string }[] = [
 ];
 
 interface Passenger { name: string; type: "adult" | "child"; profile?: ChildProfileData; }
-const ADDONS = [
+type Addon = { key: string; label: string; price: number; perPerson: boolean };
+const DEFAULT_ADDONS: Addon[] = [
   { key: "photographer", label: "مصوّر تحت الماء 📸 (لليوم)", price: 100, perPerson: false },
   { key: "lunch", label: "وجبة غداء على القارب 🍽️", price: 20, perPerson: true },
   { key: "privateBoat", label: "قارب خاص للعائلة 🛥️", price: 1000, perPerson: false },
@@ -38,6 +39,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
   const [contact, setContact] = useState({ name: "", phone: "", email: "" });
   const [passengers, setPassengers] = useState<Passenger[]>([]);
   const [addons, setAddons] = useState<Record<string, boolean>>({});
+  const [addonList, setAddonList] = useState<Addon[]>(DEFAULT_ADDONS);
   const [contactMethod, setContactMethod] = useState("whatsapp");
   const [bestCallTime, setBestCallTime] = useState("");
   const [gameFor, setGameFor] = useState<number | null>(null);
@@ -52,6 +54,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
     if (q.get("date")) setDate(q.get("date")!);
     fetch(`${API_BASE}/api/partner-centers/${id}`)
       .then((r) => r.json()).then((d) => setCenter(d.center)).catch(() => {}).finally(() => setLoading(false));
+    fetch(`${API_BASE}/api/settings`).then((r) => r.json()).then((d) => { if (d.settings?.addons?.length) setAddonList(d.settings.addons); }).catch(() => {});
   }, [id]);
 
   // keep passengers array in sync with people count
@@ -69,7 +72,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
 
   const cur = center.currency || "$";
   const base = people * (center.priceFrom || 0);
-  const addonsTotal = ADDONS.reduce((sum, a) => (addons[a.key] ? sum + a.price * (a.perPerson ? people : 1) : sum), 0);
+  const addonsTotal = addonList.reduce((sum, a) => (addons[a.key] ? sum + a.price * (a.perPerson ? people : 1) : sum), 0);
   const total = base + addonsTotal;
 
   const setPassenger = (i: number, patch: Partial<Passenger>) =>
@@ -90,7 +93,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
             sizes: { height: p.profile.sizes.height ? Number(p.profile.sizes.height) : undefined, weight: p.profile.sizes.weight ? Number(p.profile.sizes.weight) : undefined, shoe: p.profile.sizes.shoe ? Number(p.profile.sizes.shoe) : undefined, mask: p.profile.sizes.mask, wetsuit: p.profile.sizes.vest },
             pledge: p.profile.pledge, badgeTitle: p.profile.badgeTitle,
           } : undefined })),
-          addons: ADDONS.filter((a) => addons[a.key]),
+          addons: addonList.filter((a) => addons[a.key]),
           subtotal: base, total, currency: cur,
           contactMethod, bestCallTime,
         }),
@@ -226,7 +229,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
       {step === 2 && (
         <Card>
           <H>أضف لمسة مميّزة لرحلتك</H>
-          {ADDONS.map((a) => (
+          {addonList.map((a) => (
             <label key={a.key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", border: addons[a.key] ? "2px solid var(--mid)" : "1px solid #e2e8f0", borderRadius: "12px", padding: "14px 16px", marginBottom: "10px", cursor: "pointer" }}>
               <span style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                 <input type="checkbox" checked={!!addons[a.key]} onChange={(e) => setAddons({ ...addons, [a.key]: e.target.checked })} />
@@ -245,7 +248,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
           <H>تأكيد الحجز</H>
           <div style={{ background: "#f7fafc", borderRadius: "12px", padding: "16px", marginBottom: "16px" }}>
             <SummaryRow k={`الرحلة (${people} × ${center.priceFrom}${cur})`} v={`${base} ${cur}`} />
-            {ADDONS.filter((a) => addons[a.key]).map((a) => (
+            {addonList.filter((a) => addons[a.key]).map((a) => (
               <SummaryRow key={a.key} k={a.label} v={`${a.price * (a.perPerson ? people : 1)} ${cur}`} />
             ))}
             <div style={{ borderTop: "1px solid #dde5ec", marginTop: "10px", paddingTop: "10px" }}>
