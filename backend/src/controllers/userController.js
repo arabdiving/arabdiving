@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const bcrypt = require("bcryptjs");
 
 // Get logged-in user profile
 const getProfile = async (req, res) => {
@@ -145,6 +146,19 @@ const updateProfile = async (req, res) => {
       divesCount !== undefined
         ? divesCount
         : user.divesCount;
+
+    // Self-service password change (requires current password).
+    if (req.body.newPassword) {
+      const current = req.body.currentPassword || "";
+      const match = await bcrypt.compare(current, user.password);
+      if (!match) {
+        return res.status(400).json({ success: false, message: "كلمة المرور الحالية غير صحيحة" });
+      }
+      if (String(req.body.newPassword).length < 6) {
+        return res.status(400).json({ success: false, message: "كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل" });
+      }
+      user.password = await bcrypt.hash(String(req.body.newPassword), 10);
+    }
 
     await user.save();
 

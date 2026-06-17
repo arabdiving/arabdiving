@@ -9,6 +9,9 @@ export default function EditProfilePage() {
   const [certificationLevel, setCertificationLevel] = useState("");
   const [divesCount, setDivesCount] = useState(0);
   const [image, setImage] = useState<File | null>(null);
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [saving, setSaving] = useState(false);
@@ -43,6 +46,12 @@ export default function EditProfilePage() {
 
     const token = localStorage.getItem("token");
 
+    if (newPassword && newPassword !== confirmPassword) {
+      setError("كلمتا المرور غير متطابقتين");
+      setSaving(false);
+      return;
+    }
+
     try {
       const profileRes = await fetch(`${API_BASE}/api/users/profile`, {
         method: "PUT",
@@ -50,7 +59,7 @@ export default function EditProfilePage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ country, city, certificationLevel, divesCount }),
+        body: JSON.stringify({ country, city, certificationLevel, divesCount, ...(newPassword ? { currentPassword, newPassword } : {}) }),
       });
 
       const profileData = await profileRes.json();
@@ -72,6 +81,7 @@ export default function EditProfilePage() {
       }
 
       setMessage("تم تحديث الملف الشخصي بنجاح ✅");
+      setCurrentPassword(""); setNewPassword(""); setConfirmPassword("");
       setTimeout(() => {
         window.location.href = "/profile";
       }, 1200);
@@ -153,6 +163,16 @@ export default function EditProfilePage() {
             onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
             style={{ ...inputStyle, padding: "9px" }}
           />
+
+          <div style={{ borderTop: "1px solid #eef2f6", margin: "6px 0 18px", paddingTop: "18px" }}>
+            <h3 style={{ color: "var(--navy)", fontSize: "17px", marginBottom: "12px" }}>🔒 تغيير كلمة المرور (اختياري)</h3>
+            <label style={labelStyle}>كلمة المرور الحالية</label>
+            <input type="password" value={currentPassword} onChange={(e) => setCurrentPassword(e.target.value)} placeholder="اتركها فارغة إن لم ترغب بالتغيير" style={inputStyle} autoComplete="current-password" />
+            <label style={labelStyle}>كلمة المرور الجديدة</label>
+            <input type="password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder="6 أحرف على الأقل" style={inputStyle} autoComplete="new-password" />
+            <label style={labelStyle}>تأكيد كلمة المرور الجديدة</label>
+            <input type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} style={inputStyle} autoComplete="new-password" />
+          </div>
 
           <button
             type="submit"
