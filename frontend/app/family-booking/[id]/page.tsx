@@ -25,7 +25,7 @@ const ADDONS = [
   { key: "transport", label: "نقل من وإلى الفندق 🚐", price: 25, perPerson: false },
 ];
 
-const STEPS = ["التفاصيل", "الركاب", "الإضافات", "الدفع"];
+const STEPS = ["التفاصيل", "الركاب", "الإضافات", "التأكيد"];
 
 export default function BookingWizard({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
@@ -38,6 +38,8 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
   const [contact, setContact] = useState({ name: "", phone: "", email: "" });
   const [passengers, setPassengers] = useState<Passenger[]>([]);
   const [addons, setAddons] = useState<Record<string, boolean>>({});
+  const [contactMethod, setContactMethod] = useState("whatsapp");
+  const [bestCallTime, setBestCallTime] = useState("");
   const [gameFor, setGameFor] = useState<number | null>(null);
 
   const [placing, setPlacing] = useState(false);
@@ -90,6 +92,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
           } : undefined })),
           addons: ADDONS.filter((a) => addons[a.key]),
           subtotal: base, total, currency: cur,
+          contactMethod, bestCallTime,
         }),
       });
       const d = await res.json();
@@ -100,26 +103,27 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
 
   // ---------- Confirmation ----------
   if (step === 4 && ticket) {
-    const welcome = `🌊 أهلًا بك في رحلتك مع ${center.name}!\nرقم الحجز: ${ticket.ticketCode}\nالتاريخ: ${date} · الأفراد: ${people}\nنتطلّع لاستقبالكم في البحر الأحمر 🤿`;
+    const welcome = `🌊 أهلًا بك في رحلتك مع ${center.name}!\nرقم الحجز: ${ticket.ticketCode}\nالتاريخ: ${date} · الأفراد: ${people}\nسنوافيك ببيانات التأكيد قريبًا. نتطلّع لاستقبالكم في البحر الأحمر 🤿`;
     const childBadges = passengers.filter((p) => p.type === "child" && p.profile);
     return (
       <main style={{ maxWidth: "700px", margin: "0 auto", padding: "clamp(16px, 4vw, 40px)" }}>
         <div style={{ textAlign: "center", marginBottom: "20px" }}>
           <div style={{ fontSize: "56px" }}>🎉</div>
           <h1 style={{ color: "var(--navy)" }}>تم استلام حجزك!</h1>
-          <p style={{ color: "#666" }}>أرسلنا تفاصيل التذكرة. أكمل الدفع لتأكيد الحجز.</p>
+          <p style={{ color: "#666" }}>سجّلنا طلبك بنجاح — سنوافيك ببيانات تأكيد الحجز قريبًا.</p>
         </div>
 
         <div style={{ background: "white", borderRadius: "18px", padding: "26px", boxShadow: "0 12px 34px rgba(0,0,0,0.08)", border: "2px dashed var(--mid)" }}>
           <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "8px", borderBottom: "1px solid #eee", paddingBottom: "12px", marginBottom: "12px" }}>
             <strong style={{ color: "var(--navy)", fontSize: "20px" }}>🎟️ تذكرة إلكترونية</strong>
-            <span style={{ background: "#fff3cd", color: "#8a6d3b", padding: "4px 12px", borderRadius: "20px", fontSize: "13px", fontWeight: 700 }}>بانتظار الدفع</span>
+            <span style={{ background: "#fff3cd", color: "#8a6d3b", padding: "4px 12px", borderRadius: "20px", fontSize: "13px", fontWeight: 700 }}>بانتظار التأكيد</span>
           </div>
           <Row k="رقم الحجز" v={ticket.ticketCode} />
           <Row k="المركز" v={center.name} />
           <Row k="التاريخ" v={date} />
           <Row k="عدد الأفراد" v={String(people)} />
-          <Row k="الإجمالي" v={`${total} ${cur}`} />
+          <Row k="الإجمالي التقديري" v={`${total} ${cur}`} />
+          <Row k="سنتواصل عبر" v={contactMethod === "phone" ? `مكالمة${bestCallTime ? " · " + bestCallTime : ""}` : contactMethod === "email" ? "البريد الإلكتروني" : "واتساب"} />
           {childBadges.length > 0 && (
             <div style={{ marginTop: "14px", background: "#f0f9ff", borderRadius: "12px", padding: "12px" }}>
               <div style={{ fontSize: "14px", color: "#0d6cb0", marginBottom: "6px" }}>🏅 أبطال البحر الأحمر (المقاسات أُرسلت للمركز):</div>
@@ -238,26 +242,48 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
       {/* STEP 3: checkout */}
       {step === 3 && (
         <Card>
-          <H>الدفع الآمن</H>
+          <H>تأكيد الحجز</H>
           <div style={{ background: "#f7fafc", borderRadius: "12px", padding: "16px", marginBottom: "16px" }}>
             <SummaryRow k={`الرحلة (${people} × ${center.priceFrom}${cur})`} v={`${base} ${cur}`} />
             {ADDONS.filter((a) => addons[a.key]).map((a) => (
               <SummaryRow key={a.key} k={a.label} v={`${a.price * (a.perPerson ? people : 1)} ${cur}`} />
             ))}
             <div style={{ borderTop: "1px solid #dde5ec", marginTop: "10px", paddingTop: "10px" }}>
-              <SummaryRow k="الإجمالي" v={`${total} ${cur}`} bold />
+              <SummaryRow k="الإجمالي التقديري" v={`${total} ${cur}`} bold />
             </div>
           </div>
 
-          <div style={{ background: "#ecf7f0", border: "1px solid #b7e4c7", borderRadius: "12px", padding: "14px", fontSize: "14px", color: "#1e6b3a", lineHeight: 1.8, marginBottom: "16px" }}>
-            🔒 دفع آمن · ✅ استرداد كامل حتى 7 أيام قبل الرحلة · 🛟 جميع رحلاتنا مع مراكز معتمدة بأعلى معايير السلامة.
+          <div style={{ marginBottom: "8px", color: "var(--navy)", fontWeight: 700 }}>كيف تفضّل أن نتواصل معك للتأكيد؟</div>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
+            {[{ k: "whatsapp", l: "واتساب 💬" }, { k: "phone", l: "مكالمة هاتفية 📞" }, { k: "email", l: "بريد إلكتروني ✉️" }].map((o) => (
+              <button key={o.k} type="button" onClick={() => setContactMethod(o.k)}
+                style={{ flex: "1 1 120px", padding: "12px", borderRadius: "10px", cursor: "pointer", fontFamily: "inherit", fontWeight: 700,
+                  border: contactMethod === o.k ? "2px solid var(--mid)" : "1px solid #d4dae3",
+                  background: contactMethod === o.k ? "rgba(46,117,182,0.12)" : "white", color: "#06324f" }}>
+                {o.l}
+              </button>
+            ))}
           </div>
 
-          <div style={{ background: "#fff8e6", border: "1px dashed #e0b34a", borderRadius: "12px", padding: "12px", fontSize: "13px", color: "#8a6d3b", marginBottom: "16px" }}>
-            🧪 بوابة الدفع الإلكتروني (Moyasar/Tap) قيد الربط. الضغط على الزر يسجّل حجزك كـ«بانتظار الدفع» ويرسل لك التذكرة، ويؤكّده المركز معك.
+          {contactMethod === "phone" && (
+            <div style={{ marginBottom: "16px" }}>
+              <label style={{ display: "block", fontSize: "13px", color: "#555", marginBottom: "5px" }}>أفضل وقت للاتصال</label>
+              <select value={bestCallTime} onChange={(e) => setBestCallTime(e.target.value)} style={inp}>
+                <option value="">اختر...</option>
+                <option value="صباحًا (9 - 12)">صباحًا (9 - 12)</option>
+                <option value="ظهرًا (12 - 4)">ظهرًا (12 - 4)</option>
+                <option value="مساءً (4 - 8)">مساءً (4 - 8)</option>
+                <option value="ليلًا (8 - 11)">ليلًا (8 - 11)</option>
+              </select>
+            </div>
+          )}
+
+          <div style={{ background: "#ecf7f0", border: "1px solid #b7e4c7", borderRadius: "12px", padding: "14px", fontSize: "14px", color: "#1e6b3a", lineHeight: 1.9, marginBottom: "16px" }}>
+            ✅ لا حاجة للدفع الآن. سنسجّل طلبك ونوافيك ببيانات تأكيد الحجز عبر الطريقة التي اخترتها.
+            <br />🛟 جميع رحلاتنا مع مراكز معتمدة بأعلى معايير السلامة · استرداد كامل حتى 7 أيام قبل الرحلة.
           </div>
 
-          <Nav onBack={() => setStep(2)} onNext={placeBooking} nextOk={!placing} nextLabel={placing ? "جارٍ التسجيل..." : `تأكيد الحجز · ${total} ${cur}`} />
+          <Nav onBack={() => setStep(2)} onNext={placeBooking} nextOk={!placing} nextLabel={placing ? "جارٍ التسجيل..." : "أرسل طلب الحجز"} />
         </Card>
       )}
 

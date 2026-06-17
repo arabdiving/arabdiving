@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { API_BASE } from "@/app/lib/api";
+import { usePathname } from "next/navigation";
 
 interface CurrentUser {
   name?: string;
@@ -30,6 +31,9 @@ export default function Navbar() {
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState<string[]>([]);
+  const pathname = usePathname();
+  const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
+  const activeStyle = (href: string) => (isActive(href) ? { background: "#c9952a", color: "#0B2C59", fontWeight: 700 } : {});
 
   useEffect(() => {
     try {
@@ -75,7 +79,7 @@ export default function Navbar() {
         {/* Desktop links */}
         <div className="nav-desktop" style={{ alignItems: "center", gap: "18px", flexWrap: "wrap" }}>
           {navLinks.filter((l) => !hidden.includes(l.href)).map((l) => (
-            <Link key={l.href} href={l.href} className="nav-pill" style={linkStyle}>{l.label}</Link>
+            <Link key={l.href} href={l.href} className="nav-pill" style={{ ...linkStyle, ...activeStyle(l.href) }}>{l.label}</Link>
           ))}
           {user && <Link href="/profile" style={linkStyle}>ملفي الشخصي</Link>}
         </div>
@@ -96,7 +100,7 @@ export default function Navbar() {
       {open && (
         <div className="nav-mobile-panel" style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "16px 4px 6px", maxWidth: "1280px", margin: "0 auto" }}>
           {navLinks.filter((l) => !hidden.includes(l.href)).map((l) => (
-            <Link key={l.href} href={l.href} className="nav-pill" style={linkStyle} onClick={() => setOpen(false)}>{l.label}</Link>
+            <Link key={l.href} href={l.href} className="nav-pill" style={{ ...linkStyle, ...activeStyle(l.href) }} onClick={() => setOpen(false)}>{l.label}</Link>
           ))}
           {user && <Link href="/profile" style={linkStyle} onClick={() => setOpen(false)}>ملفي الشخصي</Link>}
           <div style={{ height: "1px", background: "rgba(255,255,255,0.2)", margin: "6px 0" }} />

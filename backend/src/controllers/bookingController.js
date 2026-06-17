@@ -17,6 +17,8 @@ const createBooking = async (req, res) => {
       date: b.date || "",
       peopleCount: Number(b.peopleCount) || 1,
       contact: b.contact,
+      contactMethod: ['whatsapp','phone','email'].includes(b.contactMethod) ? b.contactMethod : 'whatsapp',
+      bestCallTime: b.bestCallTime || '',
       passengers: Array.isArray(b.passengers) ? b.passengers : [],
       addons: Array.isArray(b.addons) ? b.addons : [],
       subtotal: Number(b.subtotal) || 0,

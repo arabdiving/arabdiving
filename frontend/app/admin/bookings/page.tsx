@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { API_BASE, authHeaders } from "@/app/lib/adminFetch";
 
-const STATUS_LABEL: Record<string, string> = { pending_payment: "بانتظار الدفع", confirmed: "مؤكّد", cancelled: "ملغى" };
-const STATUS_COLOR: Record<string, string> = { pending_payment: "#b7791f", confirmed: "#1e7e34", cancelled: "#b91c1c" };
+const STATUS_LABEL: Record<string, string> = { pending_confirmation: "بانتظار التأكيد", pending_payment: "بانتظار الدفع", confirmed: "مؤكّد", cancelled: "ملغى" };
+const STATUS_COLOR: Record<string, string> = { pending_confirmation: "#b7791f", pending_payment: "#b7791f", confirmed: "#1e7e34", cancelled: "#b91c1c" };
 
 export default function AdminBookings() {
   const [bookings, setBookings] = useState<any[]>([]);
@@ -50,6 +50,7 @@ export default function AdminBookings() {
                       )}
                     </div>
                   ))}
+                  <div style={{ marginTop: "6px", color: "#0d6cb0" }}>📨 يفضّل التواصل عبر: {b.contactMethod === "phone" ? `مكالمة${b.bestCallTime ? " · " + b.bestCallTime : ""}` : b.contactMethod === "email" ? "البريد" : "واتساب"}</div>
                   {(b.addons || []).length > 0 && <div style={{ marginTop: "6px", color: "#666" }}>الإضافات: {b.addons.map((a: any) => a.label).join("، ")}</div>}
                   {kids.length > 0 && <div style={{ marginTop: "6px", color: "#1e7e34" }}>🏅 {kids.length} وسام «حامي البحر الأحمر»</div>}
                 </div>
