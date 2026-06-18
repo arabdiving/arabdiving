@@ -24,6 +24,8 @@ const partnerCenterRoutes = require("./routes/partnerCenterRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
 const messageRoutes = require("./routes/messageRoutes");
 const sizeProfileRoutes = require("./routes/sizeProfileRoutes");
+const friendRoutes = require("./routes/friendRoutes");
+const dmRoutes = require("./routes/dmRoutes");
 
 const app = express();
 
@@ -83,6 +85,8 @@ app.use("/api/partner-centers", partnerCenterRoutes);
 app.use("/api/bookings", bookingRoutes);
 app.use("/api/messages", messageRoutes);
 app.use("/api/size-profiles", sizeProfileRoutes);
+app.use("/api/friends", friendRoutes);
+app.use("/api/dm", dmRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/uploads", express.static("uploads"));
 

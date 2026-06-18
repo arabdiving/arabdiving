@@ -36,6 +36,11 @@ bio: {
       default: "",
     },
 
+    dateOfBirth: {
+      type: String,
+      default: "",
+    },
+
     certificationLevel: {
       type: String,
       default: "Open Water",
@@ -59,6 +64,14 @@ following: [
   },
 ],
     
+
+    friends: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    friendReqIn: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    friendReqOut: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
+    privacy: {
+      photo: { type: String, enum: ["public", "friends", "hidden"], default: "public" },
+      info: { type: String, enum: ["public", "friends", "hidden"], default: "public" },
+    },
 
     role: {
       type: String,

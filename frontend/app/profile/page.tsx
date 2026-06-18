@@ -77,6 +77,7 @@ export default function ProfilePage() {
           <h1 style={{ color: "var(--navy)" }}>{user.name}</h1>
           <p style={{ color: "#666" }}>{user.email}</p>
           <p>📍 {user.city || "غير محدد"}، {user.country || "غير محدد"}</p>
+          {user.dateOfBirth && <p>🎂 {user.dateOfBirth}{(() => { const d = new Date(user.dateOfBirth); const a = isNaN(d.getTime()) ? null : Math.floor((Date.now() - d.getTime()) / 31557600000); return a ? ` (${a} سنة)` : ""; })()}</p>}
           <p>🎓 {user.certificationLevel || "Open Water"}</p>
           <p>🌊 إجمالي الغوصات: {user.divesCount || 0}</p>
         </div>

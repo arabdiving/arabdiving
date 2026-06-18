@@ -9,6 +9,10 @@ export default function EditProfilePage() {
   const [certificationLevel, setCertificationLevel] = useState("");
   const [divesCount, setDivesCount] = useState(0);
   const [image, setImage] = useState<File | null>(null);
+  const [bio, setBio] = useState("");
+  const [dateOfBirth, setDateOfBirth] = useState("");
+  const [photoPrivacy, setPhotoPrivacy] = useState("public");
+  const [infoPrivacy, setInfoPrivacy] = useState("public");
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -34,6 +38,10 @@ export default function EditProfilePage() {
         setCity(user.city || "");
         setCertificationLevel(user.certificationLevel || "");
         setDivesCount(user.divesCount || 0);
+        setBio(user.bio || "");
+        setDateOfBirth(user.dateOfBirth || "");
+        setPhotoPrivacy(user.privacy?.photo || "public");
+        setInfoPrivacy(user.privacy?.info || "public");
       })
       .catch(() => setError("تعذّر تحميل بيانات الملف الشخصي"));
   }, []);
@@ -59,7 +67,7 @@ export default function EditProfilePage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ country, city, certificationLevel, divesCount, ...(newPassword ? { currentPassword, newPassword } : {}) }),
+        body: JSON.stringify({ country, city, dateOfBirth, certificationLevel, divesCount, bio, privacy: { photo: photoPrivacy, info: infoPrivacy }, ...(newPassword ? { currentPassword, newPassword } : {}) }),
       });
 
       const profileData = await profileRes.json();
@@ -138,6 +146,9 @@ export default function EditProfilePage() {
             style={inputStyle}
           />
 
+          <label style={labelStyle}>تاريخ الميلاد</label>
+          <input type="date" value={dateOfBirth} onChange={(e) => setDateOfBirth(e.target.value)} style={inputStyle} />
+
           <label style={labelStyle}>مستوى الشهادة</label>
           <input
             value={certificationLevel}
@@ -163,6 +174,25 @@ export default function EditProfilePage() {
             onChange={(e) => setImage(e.target.files ? e.target.files[0] : null)}
             style={{ ...inputStyle, padding: "9px" }}
           />
+
+          <label style={labelStyle}>نبذة عنك (Bio)</label>
+          <textarea value={bio} onChange={(e) => setBio(e.target.value)} maxLength={300} placeholder="عرّف بنفسك للأعضاء الآخرين..." style={{ ...inputStyle, minHeight: "80px", resize: "vertical" }} />
+
+          <div style={{ borderTop: "1px solid #eef2f6", margin: "6px 0 18px", paddingTop: "18px" }}>
+            <h3 style={{ color: "var(--navy)", fontSize: "17px", marginBottom: "12px" }}>👁️ الخصوصية</h3>
+            <label style={labelStyle}>من يرى صورتي الشخصية؟</label>
+            <select value={photoPrivacy} onChange={(e) => setPhotoPrivacy(e.target.value)} style={inputStyle}>
+              <option value="public">الجميع</option>
+              <option value="friends">الأصدقاء فقط</option>
+              <option value="hidden">إخفاء تمامًا</option>
+            </select>
+            <label style={labelStyle}>من يرى بياناتي (الدولة، الشهادة، النبذة)؟</label>
+            <select value={infoPrivacy} onChange={(e) => setInfoPrivacy(e.target.value)} style={inputStyle}>
+              <option value="public">الجميع</option>
+              <option value="friends">الأصدقاء فقط</option>
+              <option value="hidden">إخفاء تمامًا</option>
+            </select>
+          </div>
 
           <div style={{ borderTop: "1px solid #eef2f6", margin: "6px 0 18px", paddingTop: "18px" }}>
             <h3 style={{ color: "var(--navy)", fontSize: "17px", marginBottom: "12px" }}>🔒 تغيير كلمة المرور (اختياري)</h3>

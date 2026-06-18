@@ -19,6 +19,7 @@ const PAGES: { href: string; label: string; locked?: boolean }[] = [
   { href: "/kids", label: "الأطفال / العائلات" },
   { href: "/game", label: "لعبة الأطفال" },
   { href: "/members", label: "الأعضاء" },
+  { href: "/messages", label: "الرسائل" },
   { href: "/logbook", label: "اللوج بوك" },
 ];
 

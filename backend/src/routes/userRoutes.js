@@ -8,6 +8,7 @@ const upload = require(
 const {
   protect,
 } = require("../middleware/authMiddleware");
+const { optionalAuth } = require("../middleware/optionalAuth");
 
 const {
   getProfile,
@@ -66,7 +67,7 @@ router.post(
 );
 
 // Members
-router.get("/", getAllUsers);
-router.get("/:id", getUserById);
+router.get("/", optionalAuth, getAllUsers);
+router.get("/:id", optionalAuth, getUserById);
 
 module.exports = router;

@@ -24,6 +24,7 @@ const navLinks = [
   { href: "/women", label: "النساء" },
   { href: "/kids", label: "الأطفال" },
   { href: "/members", label: "الأعضاء" },
+  { href: "/messages", label: "الرسائل" },
   { href: "/logbook", label: "اللوج بوك" },
 ];
 
@@ -31,6 +32,7 @@ export default function Navbar() {
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState<string[]>([]);
+  const [unread, setUnread] = useState(0);
   const pathname = usePathname();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const activeStyle = (href: string) => (isActive(href) ? { background: "#c9952a", color: "#0B2C59", fontWeight: 700 } : {});
@@ -46,6 +48,10 @@ export default function Navbar() {
       .then((r) => r.json())
       .then((d) => setHidden(d.settings?.hiddenPages || []))
       .catch(() => {});
+    try {
+      const t = localStorage.getItem("token");
+      if (t) fetch(`${API_BASE}/api/dm/unread`, { headers: { Authorization: `Bearer ${t}` } }).then((r) => r.json()).then((d) => setUnread(d.count || 0)).catch(() => {});
+    } catch {}
   }, []);
 
   const logout = () => {
@@ -79,7 +85,7 @@ export default function Navbar() {
         {/* Desktop links */}
         <div className="nav-desktop" style={{ alignItems: "center", gap: "18px", flexWrap: "wrap" }}>
           {navLinks.filter((l) => !hidden.includes(l.href)).map((l) => (
-            <Link key={l.href} href={l.href} className="nav-pill" style={{ ...linkStyle, ...activeStyle(l.href) }}>{l.label}</Link>
+            <Link key={l.href} href={l.href} className="nav-pill" style={{ ...linkStyle, ...activeStyle(l.href) }}>{l.label}{l.href === "/messages" && unread > 0 ? <span style={{ background: "#e11d48", color: "white", borderRadius: "20px", fontSize: "11px", padding: "1px 7px", marginInlineStart: "6px", fontWeight: 700 }}>{unread}</span> : null}</Link>
           ))}
           {user && <Link href="/profile" style={linkStyle}>ملفي الشخصي</Link>}
         </div>
@@ -100,7 +106,7 @@ export default function Navbar() {
       {open && (
         <div className="nav-mobile-panel" style={{ display: "flex", flexDirection: "column", gap: "10px", padding: "16px 4px 6px", maxWidth: "1280px", margin: "0 auto" }}>
           {navLinks.filter((l) => !hidden.includes(l.href)).map((l) => (
-            <Link key={l.href} href={l.href} className="nav-pill" style={{ ...linkStyle, ...activeStyle(l.href) }} onClick={() => setOpen(false)}>{l.label}</Link>
+            <Link key={l.href} href={l.href} className="nav-pill" style={{ ...linkStyle, ...activeStyle(l.href) }} onClick={() => setOpen(false)}>{l.label}{l.href === "/messages" && unread > 0 ? <span style={{ background: "#e11d48", color: "white", borderRadius: "20px", fontSize: "11px", padding: "1px 7px", marginInlineStart: "6px", fontWeight: 700 }}>{unread}</span> : null}</Link>
           ))}
           {user && <Link href="/profile" style={linkStyle} onClick={() => setOpen(false)}>ملفي الشخصي</Link>}
           <div style={{ height: "1px", background: "rgba(255,255,255,0.2)", margin: "6px 0" }} />
