@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>سيرفي أنماط الشخصية — اكتشف نفسك واعرف المعلم المناسب لك</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: system-ui, 'Segoe UI', Tahoma, sans-serif;
+    background: #f0f4f8; color: #1e293b;
+    padding: clamp(12px, 4vw, 40px);
+    direction: rtl;
+  }
+  .container { max-width: 750px; margin: 0 auto; }
+  h1 { text-align: center; font-size: clamp(22px,5vw,34px); margin-bottom: 8px; color: #0B2C59; }
+  .subtitle { text-align: center; color: #64748b; margin-bottom: 30px; font-size: 15px; }
+  .card {
+    background: white; border-radius: 18px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.07);
+    padding: clamp(20px,4vw,36px); margin-bottom: 20px;
+  }
+  .card h2 { font-size: 20px; color: #0B2C59; margin-bottom: 18px; }
+
+  /* Progress */
+  .progress-bar { height: 6px; background: #e2e8f0; border-radius: 3px; margin-bottom: 26px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg,#0B2C59,#2e75b6); border-radius: 3px; transition: width 0.4s; }
+
+  /* Questions */
+  .question { margin-bottom: 22px; }
+  .question label { display: block; font-weight: 600; margin-bottom: 10px; font-size: 16px; line-height: 1.6; }
+  .options { display: flex; gap: 8px; flex-wrap: wrap; }
+  .options button {
+    flex: 1; min-width: 60px; padding: 10px 12px;
+    border: 2px solid #e2e8f0; border-radius: 10px;
+    background: white; cursor: pointer; font-size: 14px;
+    transition: all 0.15s; font-family: inherit;
+  }
+  .options button:hover { border-color: #94a3b8; background: #f8fafc; }
+  .options button.selected { border-color: #0B2C59; background: #eef4fa; font-weight: 700; }
+  .options button input { display: none; }
+
+  /* Buttons */
+  .btn-group { display: flex; gap: 12px; margin-top: 24px; flex-wrap: wrap; }
+  .btn {
+    flex: 1; padding: 13px 24px; border: none; border-radius: 12px;
+    font-size: 16px; font-weight: 700; cursor: pointer; font-family: inherit;
+    transition: opacity 0.15s;
+  }
+  .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+  .btn-primary { background: #0B2C59; color: white; }
+  .btn-outline { background: transparent; color: #0B2C59; border: 2px solid #0B2C59; }
+
+  /* Result */
+  .result-header { display: flex; align-items: center; gap: 16px; margin-bottom: 18px; flex-wrap: wrap; }
+  .result-color { width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 28px; flex-shrink: 0; }
+  .result-title { font-size: 24px; font-weight: 700; }
+  .result-sub { color: #64748b; font-size: 15px; }
+  .tag { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; margin: 3px; }
+  .section { margin-top: 20px; padding: 18px; border-radius: 14px; line-height: 1.8; }
+  .section h3 { margin-bottom: 10px; font-size: 17px; }
+  .teacher-section { background: #eef4fa; }
+  .student-section { background: #f0fdf4; }
+  .both-section { background: #fffbeb; }
+  .match-section { background: #faf5ff; }
+
+  .role-select { display: flex; gap: 12px; margin-bottom: 24px; flex-wrap: wrap; }
+  .role-select button {
+    flex: 1; min-width: 140px; padding: 18px; border-radius: 14px; border: 3px solid #e2e8f0;
+    background: white; cursor: pointer; text-align: center; font-family: inherit; transition: all 0.15s;
+  }
+  .role-select button:hover { border-color: #94a3b8; }
+  .role-select button.selected { border-color: #0B2C59; background: #eef4fa; }
+  .role-select button .icon { font-size: 32px; display: block; margin-bottom: 8px; }
+  .role-select button .label { font-size: 16px; font-weight: 600; }
+  .role-select button .desc { font-size: 13px; color: #64748b; margin-top: 4px; }
+
+  .color-chart { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 20px; }
+  .color-chart > div { padding: 14px; border-radius: 12px; }
+  .color-chart h4 { margin-bottom: 6px; }
+
+  .footer { text-align: center; color: #94a3b8; font-size: 14px; margin-top: 30px; }
+
+  @media (max-width: 500px) {
+    .color-chart { grid-template-columns: 1fr; }
+    .role-select { flex-direction: column; }
+    .role-select button { min-width: auto; }
+  }
+</style>
+</head>
+<body>
+<div class="container" id="app">
+
+  <h1>🧠 سيرفي أنماط الشخصية</h1>
+  <p class="subtitle">اكتشف نمط شخصيتك بالألوان، واعرف المعلم المناسب لك — أو كيف تعلّم كل نمط</p>
+
+  <!-- Step 1: Role -->
+  <div class="card" id="step-role" v-if="step === 'role'">
+    <h2>من أنت؟</h2>
+    <p style="color:#64748b;margin-bottom:16px;">اختر دورك الأساسي عشان نحط لك التوصيات المناسبة</p>
+    <div class="role-select">
+      <button :class="{ selected: role === 'teacher' }" @click="role='teacher'">
+        <span class="icon">🧑‍🏫</span>
+        <span class="label">معلّم / مدرب</span>
+        <span class="desc">أدرّس أو أدرّب وأريد فهم طلابي</span>
+      </button>
+      <button :class="{ selected: role === 'student' }" @click="role='student'">
+        <span class="icon">👨‍🎓</span>
+        <span class="label">طالب / متدرّب</span>
+        <span class="desc">أريد أن أتعلّم وأعرف المعلم المناسب لي</span>
+      </button>
+      <button :class="{ selected: role === 'both' }" @click="role='both'">
+        <span class="icon">🔄</span>
+        <span class="label">الاثنين معاً</span>
+        <span class="desc">أنا معلّم وأيضاً أتعلّم باستمرار</span>
+      </button>
+    </div>
+    <button class="btn btn-primary" style="width:100%" :disabled="!role" @click="startQuiz">ابدأ السيرفي →</button>
+  </div>
+
+  <!-- Step 2: Questions -->
+  <div class="card" id="step-quiz" v-if="step === 'quiz'">
+    <div class="progress-bar"><div class="progress-fill" :style="{ width: progressPct + '%' }"></div></div>
+    <p style="color:#64748b;font-size:14px;margin-bottom:16px;">سؤال {{ qIndex + 1 }} من {{ questions.length }}</p>
+
+    <div class="question" v-for="(q, i) in visibleQuestions" :key="i">
+      <label>{{ q.text }}</label>
+      <div class="options">
+        <button v-for="opt in q.options" :key="opt.value"
+          :class="{ selected: answers[q.key] === opt.value }"
+          @click="answers[q.key] = opt.value">
+          {{ opt.label }}
+        </button>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <button class="btn btn-outline" @click="prevQ" :disabled="qIndex === 0">→ السابق</button>
+      <button class="btn btn-primary" @click="nextQ" :disabled="!allAnswered">
+        {{ isLastPage ? 'عرض النتيجة' : 'التالي ←' }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Step 3: Result -->
+  <div class="card" id="step-result" v-if="step === 'result'">
+    <div class="result-header">
+      <div class="result-color" :style="{ background: colorInfo.bg }">
+        {{ colorInfo.emoji }}
+      </div>
+      <div>
+        <div class="result-title">نمطك: {{ colorInfo.name }}</div>
+        <div class="result-sub">{{ colorInfo.english }} · {{ colorInfo.pct }}% من إجاباتك</div>
+      </div>
+    </div>
+
+    <!-- Personality description -->
+    <div class="section" :style="{ background: colorInfo.light }">
+      <h3>✨ شخصيتك</h3>
+      <p>{{ colorInfo.desc }}</p>
+      <div style="margin-top:10px">
+        <strong>نقاط القوة:</strong>
+        <span class="tag" v-for="s in colorInfo.strengths" :key="s" :style="{ background: colorInfo.light, color: colorInfo.main }">{{ s }}</span>
+      </div>
+      <div style="margin-top:6px">
+        <strong>نقاط التطوير:</strong>
+        <span class="tag" v-for="w in colorInfo.weaknesses" :key="w" style="background:#fef2f2;color:#b91c1c">{{ w }}</span>
+      </div>
+    </div>
+
+    <!-- Teacher advice -->
+    <div class="section teacher-section" v-if="role === 'teacher' || role === 'both'">
+      <h3>🧑‍🏫 كمعلم/مدرب — ماذا تفعل؟</h3>
+      <p>{{ colorInfo.asTeacher }}</p>
+      <div v-if="role === 'teacher'" style="margin-top:14px;border-top:1px solid #d4dae3;padding-top:14px">
+        <strong>كيف تتعامل مع كل نمط من طلابك؟</strong>
+        <div class="color-chart">
+          <div v-for="c in allColors" :key="c.key" :style="{ background: c.light }">
+            <h4 :style="{ color: c.main }">{{ c.emoji }} {{ c.name }}</h4>
+            <p style="font-size:13px;line-height:1.7">{{ c.teachAdvice }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Student advice -->
+    <div class="section student-section" v-if="role === 'student' || role === 'both'">
+      <h3>👨‍🎓 كطالب — ما هو المعلم المناسب لك؟</h3>
+      <p>{{ colorInfo.asStudent }}</p>
+      <div v-if="role === 'student'" style="margin-top:14px;border-top:1px solid #d4dae3;padding-top:14px">
+        <strong>مقارنة سريعة: أي معلم يناسبك؟</strong>
+        <div class="color-chart">
+          <div v-for="c in allColors" :key="c.key" :style="{ background: c.light }">
+            <h4 :style="{ color: c.main }">{{ c.emoji }} {{ c.name }}</h4>
+            <p style="font-size:13px;line-height:1.7">{{ c.studentMatch }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Both: special section -->
+    <div class="section both-section" v-if="role === 'both'">
+      <h3>🔄 أنت الاثنان — نصيحة ذهبية</h3>
+      <p>كونك معلّماً وطالباً في نفس الوقت يمنحك ميزة كبيرة: أنت تفهم التعلّم من الجانبين. المفتاح هو <strong>المرونة</strong> — كلما زدت وعيك بنمطك ونمط من تعلّمهم، زادت فعاليتك. استمع أكثر من أن تتكلّم، وتذكّر أن أفضل المعلّمين هم من لا يتوقفون عن التعلّم.</p>
+    </div>
+
+    <!-- Compatibility chart -->
+    <div class="section match-section">
+      <h3>🤝 جدول التوافق: معلم ← طالب</h3>
+      <p style="font-size:14px;color:#64748b;margin-bottom:12px;">أفضل توليفة بين المعلم والطالب (الألوان الأساسية)</p>
+      <div style="overflow-x:auto">
+        <table style="width:100%;border-collapse:collapse;font-size:14px;min-width:350px">
+          <thead>
+            <tr style="background:#0B2C59;color:white">
+              <th style="padding:10px;text-align:right">المعلم ↓ \ طالب →</th>
+              <th style="padding:10px;text-align:center" v-for="c in allColors" :key="c.key">{{ c.emoji }} {{ c.name }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(row, ri) in matchTable" :key="ri" style="border-top:1px solid #e2e8f0">
+              <td style="padding:10px;font-weight:700">{{ row.teacher }}</td>
+              <td style="padding:10px;text-align:center" v-for="(cell, ci) in row.matches" :key="ci"
+                :style="{ background: cell.color, color: cell.textColor, fontWeight: cell.weight }">
+                {{ cell.label }}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:13px;color:#94a3b8;margin-top:10px">⭐ = توافق ممتاز &nbsp;·&nbsp; 👍 = توافق جيد &nbsp;·&nbsp; ⚡ = يحتاج تفاهم &nbsp;·&nbsp; 🔄 = تحدّي يحتاج جهد</p>
+    </div>
+
+    <!-- Share / Restart -->
+    <div style="display:flex;gap:12px;margin-top:24px;flex-wrap:wrap">
+      <button class="btn btn-primary" style="flex:1" @click="restart">إعادة السيرفي 🔄</button>
+      <button class="btn btn-outline" style="flex:1" @click="copyResult">نسخ نتيجتي 📋</button>
+    </div>
+  </div>
+
+  <div class="footer">— سيرفي أنماط الشخصية — مبني على نموذج DISC وألوان السلوك البشري</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/vue@2.7.16/dist/vue.min.js"></script>
+<script>
+new Vue({
+  el: '#app',
+  data: {
+    step: 'role',
+    role: null,
+    qIndex: 0,
+    pageSize: 4,
+    answers: {},
+    questions: [
+      { key:'q1',  text:'عندي موقف صعب، أتصرّف بسرعة وأحسم الأمور دون تردد.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q2',  text:'أفضّل العمل ضمن فريق والتواصل مع الآخرين.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q3',  text:'أتفادى الخلافات وأفضّل الأجواء الهادئة.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q4',  text:'أدقق في التفاصيل وأحب الدقة والتنظيم.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q5',  text:'أحب المنافسة وأسعى لأن أكون الأفضل.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q6',  text:'كثيراً ما أبدأ محادثات مع الغرباء وأكّون علاقات بسهولة.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q7',  text:'لما زميل يزعل مني، أحاول أراضيه عشان الهدوء يرجع.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q8',  text:'أفضّل أن يكون عندي خطة واضحة قبل ما أبدأ أي شيء.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q9',  text:'أتخذ القرارات بسرعة وأعتمد على حدسي.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q10', text:'أحب أن أكون مركز الاهتمام وألفت الانتباه.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q11', text:'أهتم بمشاعر الآخرين وأحاول فهم وجهة نظرهم.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q12', text:'أحلل الأمور بعقلانية قبل أن أتخذ قرار.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q13', text:'أفضّل القيادة على التبعيّة.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q14', text:'عندي طاقة عالية وأحب التجديد والتغيير.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q15', text:'أفضّل الاستقرار والروتين ولا أحب المفاجآت.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+      { key:'q16', text:'أقرأ التعليمات كلها قبل ما أبدأ في شغل أي جهاز.', options:[{label:'أوافق بشدة',value:4},{label:'أوافق',value:3},{label:'محايد',value:2},{label:'لا أوافق',value:1}] },
+    ],
+    allColors: [
+      { key:'red',  name:'الأحمر', english:'Red · القائد', main:'#b91c1c', bg:'#fee2e2', light:'#fef2f2', emoji:'🔴',
+        desc:'شخصية قيادية، حاسمة، مباشرة. تحب التحدي والنتائج السريعة. تتخذ القرارات بثقة ولا تخاف من المواجهة. تركّز على المستقبل والهدف.',
+        strengths:['قيادة','حسم','شجاعة','سرعة قرار','وضوح'],
+        weaknesses:['قلة صبر','تسلط','تجاهل مشاعر الآخرين'],
+        asTeacher:'أنت معلم قوي وحازم. طلابك يحتاجون منك وضوحاً وحسمًا. قدّم لهم الأهداف والنتائج المتوقعة، وكن مباشراً في ملاحظاتك. تجنب الإطالة — هم يريدون المعلومة مختصرة ومفيدة. قدّم تحديات تناسب مستوياتهم لتشعل حماسهم.',
+        asStudent:'تتعلّم أفضل عندما يكون الهدف واضحاً. تريد أن تعرف "أين سنصل؟" قبل "كيف؟". تحتاج معلمًا مباشرًا لا يضيع وقتك في مقدمات طويلة. تحب التحدي والسرعة. المعلم المثالي لك: حازم، واضح، يعطيك مساحة للقيادة وأهدافاً واضحة.',
+        teachAdvice:'كن مباشراً وحاسماً. أعطه هدفاً واضحاً وتحدّياً. لا تختصر في التفاصيل المهمة لكن لا تطل. ركّز على النتيجة.',
+        studentMatch:'يناسبك معلم أحمر (مثلك) يفهم حماسك، أو أصفر يخلّص الجو. الأخضر والأزرق ممكن يضايقوك ببطئهم.'
+      },
+      { key:'yellow',  name:'الأصفر', english:'Yellow · المبدع', main:'#b45309', bg:'#fef3c7', light:'#fffbeb', emoji:'🟡',
+        desc:'شخصية اجتماعية، مبدعة، مفعمة بالحيوية. تحب المرح والتواصل وتكوين العلاقات. عندك طاقة إيجابية تنشرها في أي مكان. تفكر خارج الصندوق.',
+        strengths:['إبداع','حماس','تواصل','تفاؤل','عفوية'],
+        weaknesses:['تشتت','قلة انضباط','مبالغة عاطفية'],
+        asTeacher:'أنت معلم ملهم ومبدع. صفك مليء بالطاقة والمرح. تستخدم القصص والألعاب والأنشطة التفاعلية. انتبه لا تشتت طلابك بكثرة الأفكار — نظّم المعلومة وقدّمها بشكل متسلسل. طلابك يحبونك لأنك تجعل التعلّم ممتعاً.',
+        asStudent:'تتعلّم أفضل في جو مرح وتفاعلي. تحب النقاش والعمل الجماعي. تكافح مع المحاضرات الطويلة والجافة. تحتاج معلمًا يستخدم الإبداع والقصص والتطبيقات العملية. المعلم المثالي لك: حيوي، يستخدم وسائل متنوعة، ويعطيك مساحة للتعبير.',
+        teachAdvice:'استخدم القصص والأنشطة والوسائل البصرية. اخلق جواً من المرح. حافظ على حماسه وقدّم المعلومة بشكل مشوّق. تجنب المحاضرات الطويلة.',
+        studentMatch:'يناسبك معلم أصفر (مثلك) أو أحمر ينظّم طاقتك. الأخضر حنون لكن يمكن يطفشك. الأزرق تقيل شوي.'
+      },
+      { key:'green',  name:'الأخضر', english:'Green · المسالم', main:'#15803d', bg:'#dcfce7', light:'#f0fdf4', emoji:'🟢',
+        desc:'شخصية ودودة، متعاونة، صبورة. تقدّر العلاقات والانسجام. تستمع جيداً للآخرين وتتجنب الخلافات. تفضّل الاستقرار والأمان.',
+        strengths:['صبر','تعاون','استماع','ولاء','هدوء'],
+        weaknesses:['تجنب المواجهة','خوف من التغيير','صعوبة في قول لا'],
+        asTeacher:'أنت معلم صبور وحنون. تبنى علاقات قوية مع طلابك وتفهم احتياجاتهم الفردية. توفّر بيئة آمنة ومريحة للتعلّم. تحتاج أحياناً أن تكون أكثر حزماً لدفع الطلاب للتميّز. طلابك يحبونك لأنك تستمع لهم وتقدّرهم.',
+        asStudent:'تتعلّم أفضل في بيئة آمنة وداعمة. تحتاج أن تثق بمعلمك وتشعر أنه يهتم بك فعلاً. تفضّل التعلم الجماعي والتعاون. تكافح مع المعلمين القساة أو غير الصبورين. المعلم المثالي لك: صبور، ودود، يشجّعك، ويخلق جواً من الأمان والثقة.',
+        teachAdvice:'كن صبوراً وداعماً. استمع له باهتمام. شجّعه وقدّر جهوده. وفّر له بيئة آمنة. لا تضغط عليه أو تنتقده بشدة.',
+        studentMatch:'يناسبك معلم أخضر (مثلك) يفهم حساسيتك، أو أزرق ينظّم لك. الأحمر يمكن يخوّفك. الأصفر يمكن يرهقك.'
+      },
+      { key:'blue',  name:'الأزرق', english:'Blue · المحلّل', main:'#1d4ed8', bg:'#dbeafe', light:'#eef4fa', emoji:'🔵',
+        desc:'شخصية تحليلية، دقيقة، منطقية. تحب المعلومات الموثقة والبيانات. تفكر بعمق قبل اتخاذ القرار. تقدّر النظام والدقة والجودة.',
+        strengths:['تحليل','دقة','منطق','تنظيم','صبر'],
+        weaknesses:['تردد','برود عاطفي','كثرة أسئلة'],
+        asTeacher:'أنت معلم دقيق ومنظّم. دروسك مرتبة ومخططة بعناية. تقدم المعلومات بشكل منطقي مع أدلة وبراهين. طلابك يستفيدون من دقتك لكن احترس من كثرة التفاصيل التي قد تطغى على الصورة الكبيرة. أضف شيئاً من المرح لجلساتك.',
+        asStudent:'تتعلّم أفضل عندما تفهم المنطق والقواعد. تريد أن تعرف "لماذا؟" قبل "ماذا؟". تحتاج مصادر موثقة ومعلومات دقيقة. تكافح مع المعلّمين العشوائيين أو غير المنظمين. المعلم المثالي لك: دقيق، منطقي، يعطيك وقتاً للتفكير والتحليل، ويحترم حاجتك للمعرفة العميقة.',
+        teachAdvice:'قدّم له مصادر موثقة وأدلة منطقية. أعطه وقتاً للتحليل والتفكير. نظّم المعلومة بشكل متسلسل. تجنب العشوائية. احترم عقله المنطقي.',
+        studentMatch:'يناسبك معلم أزرق (مثلك) يفهم دقتك، أو أحمر يختصر عليك الطريق. الأصفر مزعج لك. الأخضر مقبول.'
+      }
+    ]
+  },
+  computed: {
+    progressPct() {
+      return ((this.qIndex + this.pageSize) / this.questions.length) * 100;
+    },
+    visibleQuestions() {
+      return this.questions.slice(this.qIndex, this.qIndex + this.pageSize);
+    },
+    isLastPage() {
+      return this.qIndex + this.pageSize >= this.questions.length;
+    },
+    allAnswered() {
+      return this.visibleQuestions.every(q => this.answers[q.key] !== undefined);
+    },
+    scores() {
+      let s = { red: 0, yellow: 0, green: 0, blue: 0 };
+      const map = {
+        q1:'red', q5:'red', q9:'red', q13:'red',
+        q2:'yellow', q6:'yellow', q10:'yellow', q14:'yellow',
+        q3:'green', q7:'green', q11:'green', q15:'green',
+        q4:'blue', q8:'blue', q12:'blue', q16:'blue'
+      };
+      for (const [key, val] of Object.entries(this.answers)) {
+        const color = map[key];
+        if (color) s[color] += Number(val);
+      }
+      return s;
+    },
+    topColor() {
+      const sorted = Object.entries(this.scores).sort((a, b) => b[1] - a[1]);
+      const maxKey = sorted[0][0];
+      const maxVal = sorted[0][1];
+      const total = Object.values(this.scores).reduce((a, b) => a + b, 0);
+      const colorInfo = this.allColors.find(c => c.key === maxKey);
+      return { ...colorInfo, pct: Math.round((maxVal / total) * 100) };
+    },
+    colorInfo() {
+      return this.topColor;
+    },
+    matchTable() {
+      const t = this.allColors;
+      // rows: teacher colors, cols: student colors
+      const m = (t1, t2) => {
+        // compatibility logic
+        const pairs = {
+          'red-red': { label:'⭐', color:'#dcfce7', textColor:'#15803d', weight:'700' },
+          'red-yellow': { label:'👍', color:'#fef3c7', textColor:'#92400e', weight:'400' },
+          'red-green': { label:'⚡', color:'#fef2f2', textColor:'#b91c1c', weight:'400' },
+          'red-blue': { label:'👍', color:'#eef4fa', textColor:'#1e40af', weight:'400' },
+          'yellow-red': { label:'👍', color:'#fef3c7', textColor:'#92400e', weight:'400' },
+          'yellow-yellow': { label:'⭐', color:'#dcfce7', textColor:'#15803d', weight:'700' },
+          'yellow-green': { label:'👍', color:'#f0fdf4', textColor:'#166534', weight:'400' },
+          'yellow-blue': { label:'🔄', color:'#fef2f2', textColor:'#991b1b', weight:'400' },
+          'green-red': { label:'⚡', color:'#fef2f2', textColor:'#b91c1c', weight:'400' },
+          'green-yellow': { label:'👍', color:'#fef3c7', textColor:'#92400e', weight:'400' },
+          'green-green': { label:'⭐', color:'#dcfce7', textColor:'#15803d', weight:'700' },
+          'green-blue': { label:'👍', color:'#eef4fa', textColor:'#1e40af', weight:'400' },
+          'blue-red': { label:'👍', color:'#eef4fa', textColor:'#1e40af', weight:'400' },
+          'blue-yellow': { label:'🔄', color:'#fef2f2', textColor:'#991b1b', weight:'400' },
+          'blue-green': { label:'👍', color:'#f0fdf4', textColor:'#166534', weight:'400' },
+          'blue-blue': { label:'⭐', color:'#dcfce7', textColor:'#15803d', weight:'700' },
+        };
+        return pairs[`${t1}-${t2}`] || { label:'👍', color:'#f8fafc', textColor:'#64748b', weight:'400' };
+      };
+      return t.map(t1 => ({
+        teacher: `${t1.emoji} ${t1.name}`,
+        matches: t.map(t2 => m(t1.key, t2.key))
+      }));
+    }
+  },
+  methods: {
+    startQuiz() {
+      this.step = 'quiz';
+      this.qIndex = 0;
+      this.answers = {};
+    },
+    nextQ() {
+      if (this.isLastPage) {
+        this.step = 'result';
+        return;
+      }
+      this.qIndex += this.pageSize;
+    },
+    prevQ() {
+      this.qIndex = Math.max(0, this.qIndex - this.pageSize);
+    },
+    restart() {
+      this.step = 'role';
+      this.role = null;
+      this.qIndex = 0;
+      this.answers = {};
+    },
+    copyResult() {
+      const c = this.colorInfo;
+      const text = `🧠 نتيجتي في سيرفي أنماط الشخصية:
+━━━━━━━━━━━━━━━━
+🎨 نمطي: ${c.emoji} ${c.name} (${c.english})
+📊 النسبة: ${c.pct}%
+
+✨ ${c.desc}
+
+💪 نقاط القوة: ${c.strengths.join('، ')}
+🎯 نقاط التطوير: ${c.weaknesses.join('، ')}
+
+━━━━━━━━━━━━━━━━
+جرب السيرفي أنت كمان!`;
+      navigator.clipboard.writeText(text).then(() => {
+        alert('✅ تم نسخ النتيجة!');
+      }).catch(() => {
+        // fallback
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        ta.remove();
+        alert('✅ تم نسخ النتيجة!');
+      });
+    }
+  }
+});
+</script>
+</body>
+</html>
