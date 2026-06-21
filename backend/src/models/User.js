@@ -80,6 +80,7 @@ following: [
       },
       takenAt: Date,
     },
+    showInColor: { type: Boolean, default: false },
 
     role: {
       type: String,

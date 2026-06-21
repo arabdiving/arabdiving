@@ -12,6 +12,9 @@ export default function MembersPage() {
   const [friends, setFriends] = useState<Set<string>>(new Set());
   const [outgoing, setOutgoing] = useState<Set<string>>(new Set());
   const [incoming, setIncoming] = useState<Set<string>>(new Set());
+  const [fCountry, setFCountry] = useState("");
+  const [fColor, setFColor] = useState("");
+  const [fRole, setFRole] = useState("");
 
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const headers: any = token ? { Authorization: `Bearer ${token}` } : {};
@@ -45,6 +48,11 @@ export default function MembersPage() {
     loadFriends();
   };
 
+  const COLOR_NAMES: any = { red: "🔴 الأحمر", yellow: "🟡 الأصفر", green: "🟢 الأخضر", blue: "🔵 الأزرق" };
+  const ROLE_NAMES: any = { teacher: "مدرّب", student: "متدرّب", both: "الاثنان" };
+  const countries = Array.from(new Set(members.map((m) => m.country).filter(Boolean)));
+  const shown = members.filter((m) => m._id !== me && (!fCountry || m.country === fCountry) && (!fColor || m.colorCommunity === fColor) && (!fRole || m.surveyRole === fRole));
+  const selStyle: React.CSSProperties = { padding: "9px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "14px" };
   const btn = (bg: string, color = "white"): React.CSSProperties => ({ background: bg, color, border: "none", padding: "8px 14px", borderRadius: "8px", cursor: "pointer", fontFamily: "inherit", fontSize: "13px", fontWeight: 700 });
 
   return (
@@ -53,11 +61,17 @@ export default function MembersPage() {
       <p style={{ color: "#666", marginBottom: "26px" }}>تعرّف على غوّاصين من الخليج والعالم العربي، وكوّن صداقات وراسلهم.</p>
       {!token && <p style={{ color: "#9a6f1f", marginBottom: "18px" }}>سجّل الدخول لإضافة الأصدقاء ومراسلتهم.</p>}
 
+      <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "20px" }}>
+        <select value={fCountry} onChange={(e) => setFCountry(e.target.value)} style={selStyle}><option value="">كل الدول</option>{countries.map((c) => <option key={c} value={c}>{c}</option>)}</select>
+        <select value={fColor} onChange={(e) => setFColor(e.target.value)} style={selStyle}><option value="">كل المجتمعات اللونية</option>{Object.keys(COLOR_NAMES).map((k) => <option key={k} value={k}>{COLOR_NAMES[k]}</option>)}</select>
+        <select value={fRole} onChange={(e) => setFRole(e.target.value)} style={selStyle}><option value="">الكل (مدرّب/متدرّب)</option><option value="teacher">مدرّب</option><option value="student">متدرّب</option></select>
+        <Link href="/communities" style={{ marginInlineStart: "auto", background: "#eef4fa", color: "#0d6cb0", padding: "9px 16px", borderRadius: "8px", fontWeight: 700, fontSize: "14px" }}>المجتمعات اللونية ←</Link>
+      </div>
       {loading ? (
         <p style={{ color: "#666" }}>جارٍ التحميل...</p>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "20px" }}>
-          {members.filter((m) => m._id !== me).map((m) => {
+          {shown.map((m) => {
             const img = siteImageSrc(m.profileImage);
             const isFriend = friends.has(m._id);
             const sent = outgoing.has(m._id);

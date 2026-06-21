@@ -13,6 +13,7 @@ export default function EditProfilePage() {
   const [dateOfBirth, setDateOfBirth] = useState("");
   const [photoPrivacy, setPhotoPrivacy] = useState("public");
   const [infoPrivacy, setInfoPrivacy] = useState("public");
+  const [showInColor, setShowInColor] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -42,6 +43,7 @@ export default function EditProfilePage() {
         setDateOfBirth(user.dateOfBirth || "");
         setPhotoPrivacy(user.privacy?.photo || "public");
         setInfoPrivacy(user.privacy?.info || "public");
+        setShowInColor(!!user.showInColor);
       })
       .catch(() => setError("تعذّر تحميل بيانات الملف الشخصي"));
   }, []);
@@ -67,7 +69,7 @@ export default function EditProfilePage() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ country, city, dateOfBirth, certificationLevel, divesCount, bio, privacy: { photo: photoPrivacy, info: infoPrivacy }, ...(newPassword ? { currentPassword, newPassword } : {}) }),
+        body: JSON.stringify({ country, city, dateOfBirth, certificationLevel, divesCount, bio, showInColor, privacy: { photo: photoPrivacy, info: infoPrivacy }, ...(newPassword ? { currentPassword, newPassword } : {}) }),
       });
 
       const profileData = await profileRes.json();
@@ -192,6 +194,9 @@ export default function EditProfilePage() {
               <option value="friends">الأصدقاء فقط</option>
               <option value="hidden">إخفاء تمامًا</option>
             </select>
+            <label style={{ display: "flex", gap: "8px", alignItems: "center", marginTop: "6px", color: "#444" }}>
+              <input type="checkbox" checked={showInColor} onChange={(e) => setShowInColor(e.target.checked)} /> أرغب في الانضمام لمجتمع نمطي اللوني (يظهر اسمي في صفحة المجتمعات)
+            </label>
           </div>
 
           <div style={{ borderTop: "1px solid #eef2f6", margin: "6px 0 18px", paddingTop: "18px" }}>

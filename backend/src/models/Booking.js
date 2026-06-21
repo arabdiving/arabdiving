@@ -48,6 +48,8 @@ const BookingSchema = new mongoose.Schema(
     subtotal: { type: Number, default: 0 },
     total: { type: Number, default: 0 },
     currency: { type: String, default: "$" },
+    displayCurrency: { type: String, default: "" },
+    displayTotal: { type: Number, default: 0 },
     status: { type: String, enum: ["pending_confirmation", "pending_payment", "confirmed", "cancelled"], default: "pending_confirmation" },
     ticketCode: { type: String, unique: true, default: makeCode },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },

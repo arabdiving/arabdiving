@@ -5,6 +5,7 @@ import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
 import { siteImageSrc } from "@/app/lib/image";
 import SeaHeroesGame, { ChildProfileData } from "@/app/components/SeaHeroesGame";
+import { CURRENCIES, fetchRates, convert, formatMoney, FALLBACK_RATES } from "@/app/lib/currency";
 
 type BadgeKey = "womenStaff" | "privateTrip" | "family" | "separateFacilities" | "sanitizedGear" | "technical" | "ecoFriendly";
 const BADGES: { key: BadgeKey; label: string; emoji: string }[] = [
@@ -43,6 +44,8 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
   const [contactMethod, setContactMethod] = useState("whatsapp");
   const [bestCallTime, setBestCallTime] = useState("");
   const [gameFor, setGameFor] = useState<number | null>(null);
+  const [displayCur, setDisplayCur] = useState("USD");
+  const [rates, setRates] = useState<Record<string, number>>(FALLBACK_RATES);
 
   const [placing, setPlacing] = useState(false);
   const [ticket, setTicket] = useState<any>(null);
@@ -55,6 +58,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
     fetch(`${API_BASE}/api/partner-centers/${id}`)
       .then((r) => r.json()).then((d) => setCenter(d.center)).catch(() => {}).finally(() => setLoading(false));
     fetch(`${API_BASE}/api/settings`).then((r) => r.json()).then((d) => { if (d.settings?.addons?.length) setAddonList(d.settings.addons); }).catch(() => {});
+    fetchRates().then(setRates).catch(() => {});
   }, [id]);
 
   // keep passengers array in sync with people count
@@ -70,10 +74,14 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
   if (loading) return <div style={{ padding: "60px", textAlign: "center", color: "#666" }}>جارٍ التحميل...</div>;
   if (!center) return <div style={{ padding: "60px", textAlign: "center", color: "#c0392b" }}>تعذّر العثور على المركز.</div>;
 
-  const cur = center.currency || "$";
-  const base = people * (center.priceFrom || 0);
-  const addonsTotal = addonList.reduce((sum, a) => (addons[a.key] ? sum + a.price * (a.perPerson ? people : 1) : sum), 0);
-  const total = base + addonsTotal;
+  // All stored prices are treated as USD base; convert center base currency if it is a real code.
+  const baseCode = (center.currency && /^[A-Z]{3}$/.test(center.currency)) ? center.currency : "USD";
+  const tripUSD = convert(people * (center.priceFrom || 0), baseCode, "USD", rates);
+  const addonsUSD = addonList.reduce((sum, a) => (addons[a.key] ? sum + a.price * (a.perPerson ? people : 1) : sum), 0);
+  const totalUSD = tripUSD + addonsUSD;
+  const priceFromUSD = convert(center.priceFrom || 0, baseCode, "USD", rates);
+  const money = (usd: number) => formatMoney(convert(usd, "USD", displayCur, rates), displayCur);
+  const totalDisplay = Math.round(convert(totalUSD, "USD", displayCur, rates));
 
   const setPassenger = (i: number, patch: Partial<Passenger>) =>
     setPassengers((p) => p.map((x, j) => (j === i ? { ...x, ...patch } : x)));
@@ -94,7 +102,8 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
             pledge: p.profile.pledge, badgeTitle: p.profile.badgeTitle,
           } : undefined })),
           addons: addonList.filter((a) => addons[a.key]),
-          subtotal: base, total, currency: cur,
+          subtotal: Math.round(tripUSD), total: Math.round(totalUSD), currency: "USD",
+          displayCurrency: displayCur, displayTotal: totalDisplay,
           contactMethod, bestCallTime,
         }),
       });
@@ -125,7 +134,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
           <Row k="المركز" v={center.name} />
           <Row k="التاريخ" v={date} />
           <Row k="عدد الأفراد" v={String(people)} />
-          <Row k="الإجمالي التقديري" v={`${total} ${cur}`} />
+          <Row k="الإجمالي التقديري" v={money(totalUSD)} />
           <Row k="سنتواصل عبر" v={contactMethod === "phone" ? `مكالمة${bestCallTime ? " · " + bestCallTime : ""}` : contactMethod === "email" ? "البريد الإلكتروني" : "واتساب"} />
           {childBadges.length > 0 && (
             <div style={{ marginTop: "14px", background: "#f0f9ff", borderRadius: "12px", padding: "12px" }}>
@@ -160,7 +169,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
         </div>
         <div>
           <h1 style={{ color: "var(--navy)", fontSize: "clamp(20px, 4vw, 28px)" }}>{center.name}</h1>
-          <div style={{ color: "#777", fontSize: "14px" }}>📍 {center.city} · ⭐ {center.rating} · من {center.priceFrom}{cur}/للفرد</div>
+          <div style={{ color: "#777", fontSize: "14px" }}>📍 {center.city} · ⭐ {center.rating} · من {money(priceFromUSD)}/للفرد</div>
         </div>
       </div>
 
@@ -186,6 +195,14 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
             <Field label="تاريخ الرحلة *"><input style={inp} type="date" value={date} onChange={(e) => setDate(e.target.value)} /></Field>
             <Field label="عدد الأفراد"><input style={inp} type="number" min={1} max={20} value={people} onChange={(e) => setPeople(Math.max(1, Number(e.target.value)))} /></Field>
           </div>
+          <div style={{ marginTop: "10px", padding: "14px", background: "#f7fafc", borderRadius: "12px" }}>
+            <div style={{ color: "var(--navy)", fontWeight: 700, marginBottom: "8px" }}>💱 العملة والدولة</div>
+            <select value={displayCur} onChange={(e) => setDisplayCur(e.target.value)} style={inp}>
+              {CURRENCIES.map((c) => <option key={c.code} value={c.code}>{c.country} — {c.name} ({c.symbol})</option>)}
+            </select>
+            <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "6px" }}>تُحوَّل كل الأسعار تلقائيًا حسب سعر الصرف الحالي من الإنترنت.</p>
+          </div>
+
           <Nav onNext={() => setStep(1)} nextOk={!!detailsValid} />
         </Card>
       )}
@@ -235,7 +252,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
                 <input type="checkbox" checked={!!addons[a.key]} onChange={(e) => setAddons({ ...addons, [a.key]: e.target.checked })} />
                 <span style={{ color: "#06324f" }}>{a.label}</span>
               </span>
-              <span style={{ color: "var(--navy)", fontWeight: 700 }}>{a.price}{cur}{a.perPerson ? " /للفرد" : ""}</span>
+              <span style={{ color: "var(--navy)", fontWeight: 700 }}>{money(a.price)}{a.perPerson ? " /للفرد" : ""}</span>
             </label>
           ))}
           <Nav onBack={() => setStep(1)} onNext={() => setStep(3)} nextOk />
@@ -247,12 +264,12 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
         <Card>
           <H>تأكيد الحجز</H>
           <div style={{ background: "#f7fafc", borderRadius: "12px", padding: "16px", marginBottom: "16px" }}>
-            <SummaryRow k={`الرحلة (${people} × ${center.priceFrom}${cur})`} v={`${base} ${cur}`} />
+            <SummaryRow k={`الرحلة (${people} فرد)`} v={money(tripUSD)} />
             {addonList.filter((a) => addons[a.key]).map((a) => (
-              <SummaryRow key={a.key} k={a.label} v={`${a.price * (a.perPerson ? people : 1)} ${cur}`} />
+              <SummaryRow key={a.key} k={a.label} v={money(a.price * (a.perPerson ? people : 1))} />
             ))}
             <div style={{ borderTop: "1px solid #dde5ec", marginTop: "10px", paddingTop: "10px" }}>
-              <SummaryRow k="الإجمالي التقديري" v={`${total} ${cur}`} bold />
+              <SummaryRow k="الإجمالي التقديري" v={money(totalUSD)} bold />
             </div>
           </div>
 

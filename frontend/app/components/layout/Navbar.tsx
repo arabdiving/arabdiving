@@ -25,6 +25,7 @@ const navLinks = [
   { href: "/women", label: "النساء" },
   { href: "/kids", label: "الأطفال" },
   { href: "/members", label: "الأعضاء" },
+  { href: "/communities", label: "المجتمعات" },
   { href: "/messages", label: "الرسائل" },
   { href: "/logbook", label: "اللوج بوك" },
 ];

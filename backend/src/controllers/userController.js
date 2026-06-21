@@ -16,6 +16,7 @@ function sanitizeUser(u, viewer) {
   r.profileImage = photoOk ? (o.profileImage || "") : "";
   r.photoHidden = !photoOk;
   r.infoHidden = !infoOk;
+  if (o.showInColor && o.personality && o.personality.dominant) { r.colorCommunity = o.personality.dominant; r.surveyRole = o.personality.role || ""; }
   if (infoOk) { r.country = o.country || ""; r.city = o.city || ""; r.bio = o.bio || ""; r.certificationLevel = o.certificationLevel || ""; r.dateOfBirth = o.dateOfBirth || ""; }
   return r;
 }
@@ -169,6 +170,7 @@ const updateProfile = async (req, res) => {
 
     if (typeof req.body.bio === "string") user.bio = req.body.bio.slice(0, 300);
     if (typeof req.body.dateOfBirth === "string") user.dateOfBirth = req.body.dateOfBirth;
+    if (typeof req.body.showInColor === "boolean") user.showInColor = req.body.showInColor;
     if (req.body.privacy) {
       user.privacy = user.privacy || {};
       const allowed = ["public", "friends", "hidden"];
@@ -243,7 +245,7 @@ const uploadProfileImage = async (
 const getAllUsers = async (req, res) => {
   try {
     const users = await User.find().select(
-      "name bio country city dateOfBirth profileImage certificationLevel divesCount privacy friends"
+      "name bio country city dateOfBirth profileImage certificationLevel divesCount privacy friends personality showInColor"
     );
     const out = users.map((u) => sanitizeUser(u, req.user));
     res.json({ success: true, users: out });

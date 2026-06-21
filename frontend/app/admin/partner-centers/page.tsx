@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { API_BASE, authHeaders } from "@/app/lib/adminFetch";
+import { CURRENCIES } from "@/app/lib/currency";
 
 type Badges = {
   womenStaff: boolean; privateTrip: boolean; family: boolean;
@@ -118,7 +119,7 @@ export default function AdminPartnerCenters() {
           <Field label="المدينة"><input style={inp} value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} placeholder="الغردقة / شرم الشيخ ..." /></Field>
           <Field label="الدولة"><input style={inp} value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value })} /></Field>
           <Field label="السعر يبدأ من"><input style={inp} type="number" value={form.priceFrom} onChange={(e) => setForm({ ...form, priceFrom: Number(e.target.value) })} /></Field>
-          <Field label="العملة"><input style={inp} value={form.currency} onChange={(e) => setForm({ ...form, currency: e.target.value })} /></Field>
+          <Field label="العملة (أساس السعر)"><select style={inp} value={/^[A-Z]{3}$/.test(form.currency) ? form.currency : "USD"} onChange={(e) => setForm({ ...form, currency: e.target.value })}>{CURRENCIES.map((c) => <option key={c.code} value={c.code}>{c.code} — {c.name}</option>)}</select></Field>
           <Field label="التقييم (0-5)"><input style={inp} type="number" step="0.1" min="0" max="5" value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })} /></Field>
           <Field label="عدد التقييمات"><input style={inp} type="number" value={form.reviewsCount} onChange={(e) => setForm({ ...form, reviewsCount: Number(e.target.value) })} /></Field>
           <Field label="واتساب (للحجز)"><input style={inp} value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} placeholder="مثال: 20100..." /></Field>
