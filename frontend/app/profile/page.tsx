@@ -80,6 +80,7 @@ export default function ProfilePage() {
           {user.dateOfBirth && <p>🎂 {user.dateOfBirth}{(() => { const d = new Date(user.dateOfBirth); const a = isNaN(d.getTime()) ? null : Math.floor((Date.now() - d.getTime()) / 31557600000); return a ? ` (${a} سنة)` : ""; })()}</p>}
           <p>🎓 {user.certificationLevel || "Open Water"}</p>
           <p>🌊 إجمالي الغوصات: {user.divesCount || 0}</p>
+          {user.personality?.dominant && <p>🧠 نمطك: {({ red: "🔴 الأحمر (قائد)", yellow: "🟡 الأصفر (مبدع)", green: "🟢 الأخضر (مسالم)", blue: "🔵 الأزرق (محلّل)" } as any)[user.personality.dominant]} · <Link href="/quiz" style={{ color: "var(--mid)" }}>إعادة الاختبار</Link></p>}
         </div>
 
         <Link

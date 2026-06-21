@@ -19,6 +19,7 @@ const navLinks = [
   { href: "/guide", label: "الدليل" },
   { href: "/temperatures", label: "حرارة المياه" },
   { href: "/community", label: "المجتمع" },
+  { href: "/quiz", label: "اكتشف نمطك" },
   { href: "/stories", label: "القصص" },
   { href: "/youth", label: "الشباب" },
   { href: "/women", label: "النساء" },

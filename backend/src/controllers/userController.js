@@ -275,7 +275,27 @@ const getUserById = async (req, res) => {
   }
 };
 
+const savePersonality = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ success: false, message: "غير موجود" });
+    const { role, dominant, scores } = req.body || {};
+    user.personality = {
+      role: String(role || ""),
+      dominant: ["red", "yellow", "green", "blue"].includes(dominant) ? dominant : "",
+      scores: {
+        red: Number(scores?.red) || 0, yellow: Number(scores?.yellow) || 0,
+        green: Number(scores?.green) || 0, blue: Number(scores?.blue) || 0,
+      },
+      takenAt: new Date(),
+    };
+    await user.save();
+    res.json({ success: true, personality: user.personality });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
 module.exports = {
+  savePersonality,
   getProfile,
   updateProfile,
   getAllUsers,

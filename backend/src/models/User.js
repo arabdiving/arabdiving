@@ -72,6 +72,14 @@ following: [
       photo: { type: String, enum: ["public", "friends", "hidden"], default: "public" },
       info: { type: String, enum: ["public", "friends", "hidden"], default: "public" },
     },
+    personality: {
+      role: { type: String, default: "" },
+      dominant: { type: String, default: "" },
+      scores: {
+        red: Number, yellow: Number, green: Number, blue: Number,
+      },
+      takenAt: Date,
+    },
 
     role: {
       type: String,

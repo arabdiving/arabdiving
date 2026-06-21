@@ -13,6 +13,7 @@ const PAGES: { href: string; label: string; locked?: boolean }[] = [
   { href: "/guide", label: "دليل الغوص" },
   { href: "/temperatures", label: "حرارة المياه" },
   { href: "/community", label: "المجتمع" },
+  { href: "/quiz", label: "اكتشف نمطك (DISC)" },
   { href: "/stories", label: "القصص والمسابقة" },
   { href: "/youth", label: "الشباب" },
   { href: "/women", label: "النساء" },
