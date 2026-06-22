@@ -1,6 +1,6 @@
-forceupdate
-5252029
-frontend\app\community\[postId]\page.tsx
+import Link from "next/link";
+import { API_BASE } from "@/app/lib/api";
+import ShareButtons from "../../components/ShareButtons";
 import Linkify from "../../components/Linkify";
 import VideoEmbed from "../../components/VideoEmbed";
 
@@ -29,4 +29,44 @@ export async function generateMetadata({ params }: { params: Promise<{ postId: s
     openGraph: { title: `${post.user?.name || "عضو"} في ArabDiving`, description: text, images: [img] },
     twitter: { card: "summary_large_image", title: `${post.user?.name || "عضو"} في ArabDiving`, description: text, images: [img] },
   };
+}
+
+export default async function PostPage({ params }: { params: Promise<{ postId: string }> }) {
+  const { postId } = await params;
+  const post = await getPost(postId);
+
+  if (!post) {
+    return (
+      <div style={{ maxWidth: "700px", margin: "80px auto", padding: "0 20px", textAlign: "center" }}>
+        <h1 style={{ color: "var(--navy)", marginBottom: "12px" }}>المنشور غير موجود</h1>
+        <Link href="/community" style={{ color: "var(--mid)" }}>← العودة إلى المجتمع</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ maxWidth: "700px", margin: "0 auto", padding: "clamp(20px, 5vw, 40px) 16px" }}>
+      <Link href="/community" style={{ color: "var(--mid)", fontSize: "14px" }}>← كل المنشورات</Link>
+
+      <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "16px", padding: "22px", marginTop: "16px" }}>
+        <h3 style={{ color: "var(--navy)" }}>{post.user?.name || "عضو"}</h3>
+        <p style={{ margin: "12px 0", lineHeight: 1.9, fontSize: "17px", whiteSpace: "pre-wrap" }}><Linkify text={post.content} /></p>
+        {post.image && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={post.image} alt="" style={{ width: "100%", maxWidth: "100%", borderRadius: "12px", marginBottom: "12px" }} />
+        )}
+        {post.video && (
+          <div style={{ marginBottom: "12px" }}>
+            <VideoEmbed src={post.video} />
+          </div>
+        )}
+        <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap" }}>
+          <span style={{ color: "#666" }}>❤️ {post.likes?.length || 0}</span>
+          <div style={{ marginInlineStart: "auto" }}>
+            <ShareButtons title={(post.content || "").slice(0, 60)} />
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 }
