@@ -211,6 +211,22 @@ export default function CommunityPage() {
     borderRadius: "8px", cursor: "pointer", fontFamily: "inherit",
   });
 
+  const renderTextWithLinks = (text: string) => {
+    if (!text) return null;
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+    const parts = text.split(urlRegex);
+    return parts.map((part, i) => {
+      if (part.match(urlRegex)) {
+        return (
+          <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: "#2e75b6", textDecoration: "underline", fontWeight: "bold", wordBreak: "break-all" }}>
+            {part}
+          </a>
+        );
+      }
+      return part;
+    });
+  };
+
   return (
     <div style={{ maxWidth: "900px", margin: "0 auto", padding: "40px 20px" }}>
       <div style={{ background: "linear-gradient(135deg, #0d2c54 0%, #2e75b6 100%)", color: "white", borderRadius: "20px", padding: "26px 24px", marginBottom: "28px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", boxShadow: "0 12px 30px rgba(13,44,84,0.25)" }}>
@@ -296,7 +312,7 @@ export default function CommunityPage() {
               </div>
             ) : (
               <>
-                <p style={{ marginTop: "10px", marginBottom: "12px" }}>{post.content}</p>
+                <p style={{ marginTop: "10px", marginBottom: "12px", whiteSpace: "pre-wrap" }}>{renderTextWithLinks(post.content)}</p>
                 {post.image && (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={post.image} alt="" style={{ width: "100%", maxHeight: "420px", objectFit: "cover", borderRadius: "12px", marginBottom: "12px" }} />
@@ -357,7 +373,7 @@ export default function CommunityPage() {
                           </div>
                         ) : (
                           <>
-                            <p>{c.content}</p>
+                            <p style={{ whiteSpace: "pre-wrap" }}>{renderTextWithLinks(c.content)}</p>
                             {canEdit && (
                               <button onClick={() => { setEditingComment(c._id); setEditingCommentText(c.content); }} style={{ background: "transparent", color: "var(--mid)", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "13px", padding: 0 }}>✏️ تعديل</button>
                             )}
