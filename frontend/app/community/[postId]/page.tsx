@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
 import ShareButtons from "../../components/ShareButtons";
+import Linkify from "../../components/Linkify";
 import VideoEmbed from "../../components/VideoEmbed";
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://arabdiving.com";
@@ -49,7 +50,7 @@ export default async function PostPage({ params }: { params: Promise<{ postId: s
 
       <div style={{ background: "#fff", border: "1px solid #e5e7eb", borderRadius: "16px", padding: "22px", marginTop: "16px" }}>
         <h3 style={{ color: "var(--navy)" }}>{post.user?.name || "عضو"}</h3>
-        <p style={{ margin: "12px 0", lineHeight: 1.9, fontSize: "17px" }}>{post.content}</p>
+        <p style={{ margin: "12px 0", lineHeight: 1.9, fontSize: "17px", whiteSpace: "pre-wrap" }}><Linkify text={post.content} /></p>
         {post.image && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={post.image} alt="" style={{ width: "100%", maxWidth: "100%", borderRadius: "12px", marginBottom: "12px" }} />
