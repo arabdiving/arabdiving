@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
 import { siteImageSrc } from "@/app/lib/image";
+import { DISC } from "@/app/lib/disc";
 
 const TRIBES = [
   { key: "red", name: "مجتمع الأحمر — القادة", emoji: "🔴", color: "#b91c1c", light: "#fef2f2", desc: "حاسمون، مباشرون، يحبون التحدي والنتائج السريعة. يقودون الرحلات بثقة." },
@@ -36,6 +37,13 @@ export default function CommunitiesPage() {
             <section key={t.key} style={{ background: t.light, borderRadius: "18px", padding: "22px", borderInlineStart: `6px solid ${t.color}` }}>
               <h2 style={{ color: t.color, fontSize: "22px", marginBottom: "4px" }}>{t.emoji} {t.name}</h2>
               <p style={{ color: "#555", marginBottom: "16px" }}>{t.desc}</p>
+              {DISC[t.key as keyof typeof DISC] && (
+                <div style={{ background: "white", borderRadius: "10px", padding: "12px", marginBottom: "16px", fontSize: "14px", lineHeight: 1.8 }}>
+                  <div style={{ color: t.color, fontWeight: 700, marginBottom: "4px" }}>توصيات التعامل:</div>
+                  🧑‍🏫 كمدرّب: {DISC[t.key as keyof typeof DISC].asTeacher}<br />
+                  🤿 المدرّب المناسب: {DISC[t.key as keyof typeof DISC].studentMatch}
+                </div>
+              )}
               {loading ? <p style={{ color: "#888" }}>...</p> : list.length === 0 ? (
                 <p style={{ color: "#94a3b8", fontSize: "14px" }}>لا يوجد أعضاء منضمّون بعد — كن أول المنضمّين من ملفك الشخصي.</p>
               ) : (

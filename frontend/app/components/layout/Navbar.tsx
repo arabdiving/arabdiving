@@ -17,6 +17,8 @@ const navLinks = [
   { href: "/retreats", label: "باقات خاصة" },
   { href: "/trips", label: "الرحلات" },
   { href: "/guide", label: "الدليل" },
+  { href: "/weight-calculator", label: "حاسبة الأوزان" },
+  { href: "/trends", label: "الصيحات والأمان" },
   { href: "/temperatures", label: "حرارة المياه" },
   { href: "/community", label: "المجتمع" },
   { href: "/quiz", label: "اكتشف نمطك" },

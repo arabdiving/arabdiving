@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
 import { siteImageSrc } from "@/app/lib/image";
+import { DISC, DISC_ORDER } from "@/app/lib/disc";
 
 interface DiveEntry {
   _id: string;
@@ -97,6 +98,35 @@ export default function ProfilePage() {
         {statCard("إجمالي زمن القاع", `${totalBottomTime} دقيقة`)}
         {statCard("الدور", user.role === "admin" ? "مدير" : "عضو")}
       </div>
+
+      {user.personality?.dominant && DISC[user.personality.dominant as keyof typeof DISC] && (() => {
+        const d = DISC[user.personality.dominant as keyof typeof DISC];
+        const roleAr = user.personality.role === "teacher" ? "مدرّب" : user.personality.role === "student" ? "متدرّب" : user.personality.role === "both" ? "مدرّب ومتدرّب" : "";
+        return (
+          <>
+            <h2 style={{ color: "var(--navy)", marginBottom: "16px" }}>🧠 نتيجتك في اختبار النمط</h2>
+            <div style={{ background: "white", border: "1px solid #e2e8f0", borderInlineStart: `5px solid ${d.main}`, borderRadius: "12px", padding: "18px", marginBottom: "40px" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px", flexWrap: "wrap", marginBottom: "10px" }}>
+                <span style={{ fontSize: "34px" }}>{d.emoji}</span>
+                <strong style={{ color: d.main, fontSize: "20px" }}>{d.name}</strong>
+                {roleAr && <span style={{ background: d.light, color: d.main, padding: "3px 12px", borderRadius: "20px", fontSize: "13px" }}>{roleAr}</span>}
+              </div>
+              <p style={{ color: "#444", lineHeight: 1.9, marginBottom: "10px" }}>{d.desc}</p>
+              <div style={{ marginBottom: "6px" }}><strong>القوة: </strong>{d.strengths.map((x) => <span key={x} style={{ display: "inline-block", background: d.light, color: d.main, borderRadius: "20px", padding: "3px 11px", fontSize: "13px", margin: "2px" }}>{x}</span>)}</div>
+              <div style={{ marginBottom: "14px" }}><strong>التطوير: </strong>{d.weaknesses.map((x) => <span key={x} style={{ display: "inline-block", background: "#fef2f2", color: "#b91c1c", borderRadius: "20px", padding: "3px 11px", fontSize: "13px", margin: "2px" }}>{x}</span>)}</div>
+
+              <div style={{ background: "#f7fafc", borderRadius: "10px", padding: "14px" }}>
+                <strong style={{ color: "var(--navy)" }}>🧑‍🏫 توصيات تعاملك كمدرّب مع كل نمط:</strong>
+                <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: "10px", marginTop: "10px" }}>
+                  {DISC_ORDER.map((k) => <div key={k} style={{ background: DISC[k].light, borderRadius: "10px", padding: "10px" }}><div style={{ color: DISC[k].main, fontWeight: 700, marginBottom: "3px" }}>{DISC[k].emoji} {DISC[k].name}</div><p style={{ fontSize: "13px", lineHeight: 1.7, color: "#444" }}>{DISC[k].teachAdvice}</p></div>)}
+                </div>
+              </div>
+              <div style={{ marginTop: "10px", fontSize: "14px", color: "#15803d" }}>🤿 كمتدرّب: {d.asStudent}</div>
+              <div style={{ marginTop: "10px" }}><Link href="/quiz" style={{ color: "var(--mid)" }}>إعادة الاختبار</Link> · <Link href="/communities" style={{ color: "var(--mid)" }}>مجتمعك اللوني</Link></div>
+            </div>
+          </>
+        );
+      })()}
 
       <h2 style={{ color: "var(--navy)", marginBottom: "16px" }}>📏 مقاساتي</h2>
       <div style={{ background: "white", border: "1px solid #e2e8f0", borderRadius: "12px", padding: "18px", marginBottom: "40px" }}>

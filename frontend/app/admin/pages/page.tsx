@@ -11,6 +11,8 @@ const PAGES: { href: string; label: string; locked?: boolean }[] = [
   { href: "/retreats", label: "الباقات الفاخرة" },
   { href: "/trips", label: "الرحلات" },
   { href: "/guide", label: "دليل الغوص" },
+  { href: "/weight-calculator", label: "حاسبة الأوزان" },
+  { href: "/trends", label: "الصيحات والأمان" },
   { href: "/temperatures", label: "حرارة المياه" },
   { href: "/community", label: "المجتمع" },
   { href: "/quiz", label: "اكتشف نمطك (DISC)" },
