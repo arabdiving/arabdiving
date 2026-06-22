@@ -13,22 +13,53 @@ export default function WeightCalculatorPage() {
   const [result, setResult] = useState<number | null>(null);
   const [err, setErr] = useState("");
 
+  // 🔴 هنا تم التعديل بالكامل لتطبيق المنطق العلمي الصحيح
   const calculate = () => {
     const w = parseFloat(weight);
     const hCm = parseFloat(height);
-    const suitMod = parseFloat(suit);
-    const tankMod = parseFloat(tank);
+    const suitVal = parseFloat(suit);
+    const tankVal = parseFloat(tank);
     const isSalt = water === "salt";
-    if (!w || !hCm) { setErr("يرجى إدخال الوزن والطول بشكل صحيح"); setResult(null); return; }
+
+    if (!w || !hCm) { 
+        setErr("يرجى إدخال الوزن والطول بشكل صحيح"); 
+        setResult(null); 
+        return; 
+    }
     setErr("");
+
+    // 1. حساب الوزن الأساسي بناءً على سُمك البدلة
+    let baseWeight = 0;
+    if (suitVal === 0) {
+        baseWeight = 1.5; // بدون بدلة
+    } else if (suitVal === 1.5) {
+        baseWeight = w * 0.05; // بدلة 3 ملم
+    } else if (suitVal === 3) {
+        baseWeight = w * 0.10; // بدلة 5 ملم
+    } else if (suitVal === 5) {
+        baseWeight = (w * 0.10) + 2; // بدلة 7 ملم
+    }
+
+    // 2. تعديل نوع المياه
+    if (!isSalt) {
+        baseWeight -= 1.5; // المياه العذبة
+    }
+
+    // 3. تعديل نوع الأسطوانة
+    if (tankVal === 0) {
+        baseWeight -= 2; // أسطوانة الحديد
+    }
+
+    // 4. تعديل بنية الجسم (حساب مؤشر كتلة الجسم)
     const hM = hCm / 100;
     const bmi = w / (hM * hM);
     let bmiMod = 0;
-    if (bmi > 25) bmiMod = 1.5; // تعويض طفوية الدهون
-    if (bmi < 20) bmiMod = -1;  // أجسام نحيفة/عضلية
-    const baseWeight = isSalt ? w * 0.10 : w * 0.08;
-    let total = baseWeight + suitMod + tankMod + bmiMod;
-    total = Math.max(0, Math.round(total * 2) / 2); // أقرب نصف كيلو
+    if (bmi > 25) bmiMod = 1;  // نسبة دهون أعلى
+    if (bmi < 20) bmiMod = -1; // كتلة عضلية أكبر
+
+    // إجمالي الوزن
+    let total = baseWeight + bmiMod;
+    total = Math.max(0, Math.round(total * 2) / 2); // عدم السماح بقيمة سالبة، والتقريب لنصف كيلو
     setResult(total);
   };
 
@@ -57,9 +88,10 @@ export default function WeightCalculatorPage() {
 
         {err && <p style={{ color: "#c0392b", textAlign: "center", marginTop: "12px" }}>{err}</p>}
         {result !== null && (
-          <div style={{ marginTop: "16px", padding: "16px", background: "#e0fbfc", borderRadius: "10px", textAlign: "center", color: "#023e8a" }}>
+          /* 🔴 هنا تم تعديل اللون ليكون مميزاً (أخضر مع إطار) بناءً على طلبك */
+          <div style={{ marginTop: "16px", padding: "16px", background: "#d4edda", border: "2px solid #28a745", borderRadius: "10px", textAlign: "center", color: "#155724" }}>
             <div style={{ fontSize: "22px", fontWeight: 800 }}>الوزن التقريبي المطلوب: {result} كجم</div>
-            <div style={{ fontSize: "13px", color: "#555", marginTop: "4px" }}>(احتُسبت متغيرات كثافة الجسم والمعدات ونوع المياه)</div>
+            <div style={{ fontSize: "13px", color: "#155724", marginTop: "4px" }}>(تم الحساب بناءً على المعايير العلمية المعتمدة للطفوية)</div>
           </div>
         )}
 
