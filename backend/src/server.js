@@ -26,6 +26,7 @@ const messageRoutes = require("./routes/messageRoutes");
 const sizeProfileRoutes = require("./routes/sizeProfileRoutes");
 const friendRoutes = require("./routes/friendRoutes");
 const dmRoutes = require("./routes/dmRoutes");
+const ogPreviewRoutes = require("./routes/ogPreviewRoutes");
 
 const app = express();
 
@@ -88,6 +89,7 @@ app.use("/api/size-profiles", sizeProfileRoutes);
 app.use("/api/friends", friendRoutes);
 app.use("/api/dm", dmRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/og-preview", ogPreviewRoutes);
 app.use("/uploads", express.static("uploads"));
 
 const PORT = process.env.PORT || 5000;

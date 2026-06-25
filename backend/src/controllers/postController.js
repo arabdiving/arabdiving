@@ -20,11 +20,19 @@ const likePost = async (req, res) => {
 
 const createPost = async (req, res) => {
   try {
+    const lp = req.body.linkPreview;
     const post = await Post.create({
       user: req.user._id,
       content: req.body.content,
       image: req.body.image || "",
       video: req.body.video || "",
+      linkPreview: lp && lp.url ? {
+        url:         String(lp.url || ""),
+        title:       String(lp.title || ""),
+        description: String(lp.description || ""),
+        image:       String(lp.image || ""),
+        siteName:    String(lp.siteName || ""),
+      } : undefined,
     });
     res.status(201).json({ success: true, post });
   } catch (error) {
@@ -43,6 +51,18 @@ const updatePost = async (req, res) => {
     if (typeof req.body.content === "string") post.content = req.body.content;
     if (typeof req.body.image === "string") post.image = req.body.image;
     if (typeof req.body.video === "string") post.video = req.body.video;
+    if (req.body.linkPreview && req.body.linkPreview.url) {
+      const lp = req.body.linkPreview;
+      post.linkPreview = {
+        url:         String(lp.url || ""),
+        title:       String(lp.title || ""),
+        description: String(lp.description || ""),
+        image:       String(lp.image || ""),
+        siteName:    String(lp.siteName || ""),
+      };
+    } else if (req.body.linkPreview === null) {
+      post.linkPreview = { url: "", title: "", description: "", image: "", siteName: "" };
+    }
     await post.save();
     res.json({ success: true, post });
   } catch (error) {

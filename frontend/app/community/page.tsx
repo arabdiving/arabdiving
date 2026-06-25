@@ -1,31 +1,24 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { API_BASE } from "@/app/lib/api";
 import { uploadImage } from "@/app/lib/uploadImage";
 import ShareButtons from "../components/ShareButtons";
 import VideoEmbed from "../components/VideoEmbed";
+import LinkPreviewCard, { LinkPreview } from "../components/LinkPreviewCard";
 
 const API = API_BASE;
 
-interface User {
-  _id: string;
-  name: string;
-  role?: string;
-}
-interface Comment {
-  _id: string;
-  content: string;
-  user?: User;
-}
+interface User { _id: string; name: string; role?: string; }
+interface Comment { _id: string; content: string; user?: User; }
 interface Post {
-  _id: string;
-  content: string;
-  image?: string;
-  video?: string;
-  user?: User;
-  likes: string[];
-  createdAt: string;
+  _id: string; content: string; image?: string; video?: string;
+  linkPreview?: LinkPreview; user?: User; likes: string[]; createdAt: string;
+}
+
+function extractUrl(text: string): string {
+  const m = text.match(/https?:\/\/[^\s]+/);
+  return m ? m[0] : "";
 }
 
 export default function CommunityPage() {
@@ -45,15 +38,15 @@ export default function CommunityPage() {
   const [editPostImage, setEditPostImage] = useState("");
   const [postVideo, setPostVideo] = useState("");
   const [editPostVideo, setEditPostVideo] = useState("");
+  const [linkPreview, setLinkPreview] = useState<LinkPreview | null>(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+  const [previewDismissed, setPreviewDismissed] = useState(false);
+  const lastFetchedUrl = useRef("");
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   const getCurrentUser = (): User | null => {
-    try {
-      const u = localStorage.getItem("user");
-      return u ? JSON.parse(u) : null;
-    } catch {
-      return null;
-    }
+    try { const u = localStorage.getItem("user"); return u ? JSON.parse(u) : null; } catch { return null; }
   };
   const getToken = () => localStorage.getItem("token");
   const currentUser = typeof window !== "undefined" ? getCurrentUser() : null;
@@ -63,9 +56,7 @@ export default function CommunityPage() {
       const res = await fetch(`${API}/api/comments/post/${postId}`);
       const data = await res.json();
       setComments((prev) => ({ ...prev, [postId]: data.comments || [] }));
-    } catch (e) {
-      console.error(e);
-    }
+    } catch (e) { console.error(e); }
   };
 
   const loadPosts = async () => {
@@ -77,60 +68,71 @@ export default function CommunityPage() {
       const list: Post[] = data.posts || [];
       setPosts(list);
       await Promise.all(list.map((p) => loadComments(p._id)));
-    } catch {
-      setError("تعذّر تحميل منشورات المجتمع.");
-    } finally {
-      setLoading(false);
-    }
+    } catch { setError("تعذّر تحميل منشورات المجتمع."); }
+    finally { setLoading(false); }
   };
 
   useEffect(() => {
     loadPosts();
-    fetch(`${API}/api/settings`)
-      .then((r) => r.json())
-      .then((d) => setCommentsEnabled(d.settings?.commentsEnabled ?? true))
-      .catch(() => {});
+    fetch(`${API}/api/settings`).then((r) => r.json())
+      .then((d) => setCommentsEnabled(d.settings?.commentsEnabled ?? true)).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const fetchPreview = useCallback(async (url: string) => {
+    if (!url || url === lastFetchedUrl.current) return;
+    lastFetchedUrl.current = url;
+    setPreviewLoading(true);
+    setPreviewDismissed(false);
+    try {
+      const res = await fetch(`${API}/api/og-preview?url=${encodeURIComponent(url)}`);
+      const data = await res.json();
+      if (data.success && data.preview?.title) setLinkPreview(data.preview);
+      else setLinkPreview(null);
+    } catch { setLinkPreview(null); }
+    finally { setPreviewLoading(false); }
+  }, []);
+
+  const handleContentChange = (val: string) => {
+    setContent(val);
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const url = extractUrl(val);
+    if (!url) { setLinkPreview(null); lastFetchedUrl.current = ""; return; }
+    if (!previewDismissed) {
+      debounceRef.current = setTimeout(() => fetchPreview(url), 800);
+    }
+  };
 
   const pickImage = async (file: File | undefined, setter: (url: string) => void) => {
     if (!file) return;
     setUploading(true);
-    try {
-      const url = await uploadImage(file);
-      setter(url);
-    } catch (e: any) {
-      alert(e.message || "تعذّر رفع الصورة");
-    } finally {
-      setUploading(false);
-    }
+    try { const url = await uploadImage(file); setter(url); }
+    catch (e: any) { alert(e.message || "تعذّر رفع الصورة"); }
+    finally { setUploading(false); }
   };
 
   const createPost = async (e: React.FormEvent) => {
     e.preventDefault();
     const token = getToken();
-    if (!token) {
-      setError("يرجى تسجيل الدخول لنشر مشاركة.");
-      return;
-    }
+    if (!token) { setError("يرجى تسجيل الدخول لنشر مشاركة."); return; }
     if (!content.trim() && !postImage && !postVideo) return;
     try {
       const res = await fetch(`${API}/api/posts`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ content, image: postImage, video: postVideo }),
+        body: JSON.stringify({
+          content, image: postImage, video: postVideo,
+          linkPreview: (!previewDismissed && linkPreview) ? linkPreview : null,
+        }),
       });
       const data = await res.json();
       if (data.success) {
-        setContent("");
-        setPostImage("");
-        setPostVideo("");
+        setContent(""); setPostImage(""); setPostVideo(""); setLinkPreview(null);
+        lastFetchedUrl.current = ""; setPreviewDismissed(false);
         if (fileRef.current) fileRef.current.value = "";
         loadPosts();
       }
-    } catch {
-      setError("تعذّر النشر.");
-    }
+    } catch { setError("تعذّر النشر."); }
   };
 
   const savePostEdit = async (id: string) => {
@@ -142,10 +144,8 @@ export default function CommunityPage() {
       body: JSON.stringify({ content: editPostText, image: editPostImage, video: editPostVideo }),
     });
     const data = await res.json();
-    if (data.success) {
-      setEditingPost(null);
-      loadPosts();
-    } else alert(data.message || "تعذّر تعديل المنشور.");
+    if (data.success) { setEditingPost(null); loadPosts(); }
+    else alert(data.message || "تعذّر تعديل المنشور.");
   };
 
   const likePost = async (id: string) => {
@@ -165,10 +165,7 @@ export default function CommunityPage() {
 
   const createComment = async (postId: string) => {
     const token = getToken();
-    if (!token) {
-      alert("يرجى تسجيل الدخول أولًا.");
-      return;
-    }
+    if (!token) { alert("يرجى تسجيل الدخول أولًا."); return; }
     const text = commentInputs[postId];
     if (!text || !text.trim()) return;
     const res = await fetch(`${API}/api/comments`, {
@@ -177,10 +174,8 @@ export default function CommunityPage() {
       body: JSON.stringify({ postId, content: text }),
     });
     const data = await res.json();
-    if (data.success) {
-      setCommentInputs((prev) => ({ ...prev, [postId]: "" }));
-      loadComments(postId);
-    } else alert(data.message || "تعذّر إضافة التعليق.");
+    if (data.success) { setCommentInputs((prev) => ({ ...prev, [postId]: "" })); loadComments(postId); }
+    else alert(data.message || "تعذّر إضافة التعليق.");
   };
 
   const saveCommentEdit = async (postId: string, commentId: string) => {
@@ -192,19 +187,12 @@ export default function CommunityPage() {
       body: JSON.stringify({ content: editingCommentText }),
     });
     const data = await res.json();
-    if (data.success) {
-      setEditingComment(null);
-      setEditingCommentText("");
-      loadComments(postId);
-    } else alert(data.message || "تعذّر تعديل التعليق.");
+    if (data.success) { setEditingComment(null); setEditingCommentText(""); loadComments(postId); }
+    else alert(data.message || "تعذّر تعديل التعليق.");
   };
 
-  if (loading) {
-    return <div style={{ padding: "40px", textAlign: "center", color: "#666" }}>جارٍ التحميل...</div>;
-  }
-  if (error) {
-    return <div style={{ padding: "40px", textAlign: "center", color: "#c0392b" }}>{error}</div>;
-  }
+  if (loading) return <div style={{ padding: "40px", textAlign: "center", color: "#666" }}>جارٍ التحميل...</div>;
+  if (error) return <div style={{ padding: "40px", textAlign: "center", color: "#c0392b" }}>{error}</div>;
 
   const btn = (bg: string): React.CSSProperties => ({
     background: bg, color: "#fff", border: "none", padding: "8px 15px",
@@ -214,17 +202,11 @@ export default function CommunityPage() {
   const renderTextWithLinks = (text: string) => {
     if (!text) return null;
     const urlRegex = /(https?:\/\/[^\s]+)/g;
-    const parts = text.split(urlRegex);
-    return parts.map((part, i) => {
-      if (part.match(urlRegex)) {
-        return (
-          <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: "#2e75b6", textDecoration: "underline", fontWeight: "bold", wordBreak: "break-all" }}>
-            {part}
-          </a>
-        );
-      }
-      return part;
-    });
+    return text.split(urlRegex).map((part, i) =>
+      part.match(urlRegex)
+        ? <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: "#2e75b6", textDecoration: "underline", fontWeight: "bold", wordBreak: "break-all" }}>{part}</a>
+        : part
+    );
   };
 
   return (
@@ -233,35 +215,33 @@ export default function CommunityPage() {
         <div style={{ fontSize: "46px" }}>🤿</div>
         <div>
           <h1 style={{ margin: 0, fontSize: "clamp(23px, 5vw, 32px)" }}>مجتمع الغوّاصين العرب</h1>
-          <p style={{ margin: "6px 0 0", opacity: 0.92, lineHeight: 1.7 }}>شارك تجاربك وصورك وفيديوهاتك، وتواصل مع غوّاصي الخليج وكوّن صداقات بحرية 🌊</p>
+          <p style={{ margin: "6px 0 0", opacity: 0.92, lineHeight: 1.7 }}>شارك تجاربك وصورك وفيديوهاتك، وتواصل مع غوّاصي الخليج وكوّن صداقات بحرية</p>
         </div>
       </div>
 
       <form onSubmit={createPost} style={{ background: "#fff", padding: "20px", borderRadius: "16px", border: "1px solid #eef2f6", marginBottom: "30px", boxShadow: "0 8px 24px rgba(0,0,0,0.05)" }}>
-        <textarea
-          rows={3}
-          placeholder="شارك تجربتك في الغوص..."
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid #ddd", fontFamily: "inherit" }}
-        />
-        {postImage && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={postImage} alt="" style={{ maxHeight: "180px", borderRadius: "10px", marginTop: "10px" }} />
+        <textarea rows={3} placeholder="شارك تجربتك في الغوص... أو الصق رابطًا" value={content}
+          onChange={(e) => handleContentChange(e.target.value)}
+          style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid #ddd", fontFamily: "inherit" }} />
+
+        {previewLoading && <p style={{ color: "#888", fontSize: "13px", marginTop: "8px" }}>جارٍ جلب معاينة الرابط...</p>}
+        {linkPreview && !previewDismissed && !previewLoading && (
+          <LinkPreviewCard preview={linkPreview} onRemove={() => { setPreviewDismissed(true); setLinkPreview(null); }} />
         )}
+
+        {postImage && <img src={postImage} alt="" style={{ maxHeight: "180px", borderRadius: "10px", marginTop: "10px" }} />}
         <div style={{ marginTop: "10px", display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
-          <input value={postVideo} onChange={(e) => setPostVideo(e.target.value)} placeholder="🔗 رابط فيديو (YouTube/Vimeo) أو ارفع ملفًا" style={{ flex: "1 1 220px", padding: "10px", borderRadius: "10px", border: "1px solid #ddd", fontFamily: "inherit" }} />
+          <input value={postVideo} onChange={(e) => setPostVideo(e.target.value)} placeholder="رابط فيديو (YouTube/Vimeo) أو ارفع ملفًا"
+            style={{ flex: "1 1 220px", padding: "10px", borderRadius: "10px", border: "1px solid #ddd", fontFamily: "inherit" }} />
           <label style={{ ...btn("#64748b"), display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px" }}>
-            🎬 رفع فيديو
-            <input type="file" accept="video/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setPostVideo)} />
+            رفع فيديو <input type="file" accept="video/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setPostVideo)} />
           </label>
           {postVideo && <button type="button" onClick={() => setPostVideo("")} style={{ ...btn("#b91c1c"), padding: "6px 12px", fontSize: "13px" }}>إزالة الفيديو</button>}
         </div>
         {postVideo && <div style={{ marginTop: "10px" }}><VideoEmbed src={postVideo} /></div>}
         <div style={{ display: "flex", gap: "10px", alignItems: "center", marginTop: "12px", flexWrap: "wrap" }}>
           <label style={{ ...btn("#64748b"), display: "inline-flex", alignItems: "center", gap: "6px" }}>
-            🖼️ إضافة صورة
-            <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setPostImage)} />
+            اضافة صورة <input ref={fileRef} type="file" accept="image/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setPostImage)} />
           </label>
           {postImage && <button type="button" onClick={() => setPostImage("")} style={{ ...btn("#b91c1c"), padding: "6px 12px", fontSize: "13px" }}>إزالة الصورة</button>}
           {uploading && <span style={{ color: "#666", fontSize: "13px" }}>جارٍ الرفع...</span>}
@@ -275,37 +255,31 @@ export default function CommunityPage() {
         return (
           <div key={post._id} style={{ background: "#fff", border: "1px solid #eef2f6", borderRadius: "16px", padding: "20px", marginBottom: "20px", boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "4px" }}>
-              <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "linear-gradient(135deg,#2e75b6,#0d2c54)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "18px", flexShrink: 0 }}>{(post.user?.name || "؟").trim().charAt(0)}</div>
+              <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "linear-gradient(135deg,#2e75b6,#0d2c54)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "18px", flexShrink: 0 }}>
+                {(post.user?.name || "؟").trim().charAt(0)}
+              </div>
               <h3 style={{ color: "var(--navy)", margin: 0 }}>{post.user?.name || "عضو غير معروف"}</h3>
             </div>
 
             {isEditing ? (
               <div style={{ marginTop: "10px" }}>
-                <textarea
-                  rows={3}
-                  value={editPostText}
-                  onChange={(e) => setEditPostText(e.target.value)}
-                  style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "1px solid #ddd", fontFamily: "inherit" }}
-                />
-                {editPostImage && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={editPostImage} alt="" style={{ maxHeight: "160px", borderRadius: "10px", marginTop: "8px" }} />
-                )}
+                <textarea rows={3} value={editPostText} onChange={(e) => setEditPostText(e.target.value)}
+                  style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "1px solid #ddd", fontFamily: "inherit" }} />
+                {editPostImage && <img src={editPostImage} alt="" style={{ maxHeight: "160px", borderRadius: "10px", marginTop: "8px" }} />}
                 <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap", alignItems: "center" }}>
-                  <input value={editPostVideo} onChange={(e) => setEditPostVideo(e.target.value)} placeholder="🔗 رابط فيديو أو ارفع ملفًا" style={{ flex: "1 1 200px", padding: "8px", borderRadius: "8px", border: "1px solid #ddd", fontFamily: "inherit" }} />
+                  <input value={editPostVideo} onChange={(e) => setEditPostVideo(e.target.value)} placeholder="رابط فيديو"
+                    style={{ flex: "1 1 200px", padding: "8px", borderRadius: "8px", border: "1px solid #ddd", fontFamily: "inherit" }} />
                   <label style={{ ...btn("#64748b"), padding: "6px 12px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                    🎬 رفع فيديو
-                    <input type="file" accept="video/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setEditPostVideo)} />
+                    رفع فيديو <input type="file" accept="video/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setEditPostVideo)} />
                   </label>
-                  {editPostVideo && <button onClick={() => setEditPostVideo("")} style={{ ...btn("#b91c1c"), padding: "6px 12px", fontSize: "13px" }}>إزالة الفيديو</button>}
+                  {editPostVideo && <button onClick={() => setEditPostVideo("")} style={{ ...btn("#b91c1c"), padding: "6px 12px", fontSize: "13px" }}>إزالة</button>}
                 </div>
                 {editPostVideo && <div style={{ marginTop: "8px" }}><VideoEmbed src={editPostVideo} /></div>}
                 <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap" }}>
                   <label style={{ ...btn("#64748b"), padding: "6px 12px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
-                    🖼️ تغيير الصورة
-                    <input type="file" accept="image/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setEditPostImage)} />
+                    تغيير الصورة <input type="file" accept="image/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setEditPostImage)} />
                   </label>
-                  {editPostImage && <button onClick={() => setEditPostImage("")} style={{ ...btn("#b91c1c"), padding: "6px 12px", fontSize: "13px" }}>إزالة الصورة</button>}
+                  {editPostImage && <button onClick={() => setEditPostImage("")} style={{ ...btn("#b91c1c"), padding: "6px 12px", fontSize: "13px" }}>إزالة</button>}
                   <button onClick={() => savePostEdit(post._id)} style={{ ...btn("#1e7e34"), padding: "6px 14px", fontSize: "13px" }}>حفظ</button>
                   <button onClick={() => setEditingPost(null)} style={{ ...btn("#64748b"), padding: "6px 14px", fontSize: "13px" }}>إلغاء</button>
                 </div>
@@ -313,24 +287,18 @@ export default function CommunityPage() {
             ) : (
               <>
                 <p style={{ marginTop: "10px", marginBottom: "12px", whiteSpace: "pre-wrap" }}>{renderTextWithLinks(post.content)}</p>
-                {post.image && (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={post.image} alt="" style={{ width: "100%", maxHeight: "420px", objectFit: "cover", borderRadius: "12px", marginBottom: "12px" }} />
-                )}
-                {post.video && (
-                  <div style={{ marginBottom: "12px" }}>
-                    <VideoEmbed src={post.video} />
-                  </div>
-                )}
+                {post.image && <img src={post.image} alt="" style={{ width: "100%", maxHeight: "420px", objectFit: "cover", borderRadius: "12px", marginBottom: "12px" }} />}
+                {post.video && <div style={{ marginBottom: "12px" }}><VideoEmbed src={post.video} /></div>}
+                {post.linkPreview?.url && <LinkPreviewCard preview={post.linkPreview} />}
               </>
             )}
 
-            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center", marginTop: "12px" }}>
               <button onClick={() => likePost(post._id)} style={btn("#0f3d75")}>❤️ {post.likes?.length || 0}</button>
               {canManage && !isEditing && (
                 <>
                   <button onClick={() => { setEditingPost(post._id); setEditPostText(post.content); setEditPostImage(post.image || ""); setEditPostVideo(post.video || ""); }} style={btn("#2e75b6")}>✏️ تعديل</button>
-                  <button onClick={() => deletePost(post._id)} style={btn("#b91c1c")}>🗑 حذف</button>
+                  <button onClick={() => deletePost(post._id)} style={btn("#b91c1c")}>حذف</button>
                 </>
               )}
               <div style={{ marginInlineStart: "auto" }}>
@@ -339,55 +307,42 @@ export default function CommunityPage() {
             </div>
 
             <div style={{ marginTop: "20px" }}>
-              <h4>💬 التعليقات</h4>
+              <h4>التعليقات</h4>
               {commentsEnabled ? (
                 <>
-                  <input
-                    type="text"
-                    placeholder="اكتب تعليقًا..."
-                    value={commentInputs[post._id] || ""}
+                  <input type="text" placeholder="اكتب تعليقًا..." value={commentInputs[post._id] || ""}
                     onChange={(e) => setCommentInputs((prev) => ({ ...prev, [post._id]: e.target.value }))}
-                    style={{ width: "100%", padding: "10px", marginTop: "10px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #ddd", fontFamily: "inherit" }}
-                  />
-                  <button onClick={() => createComment(post._id)} style={btn("#0f3d75")}>أضف تعليقًا</button>
+                    style={{ width: "100%", padding: "10px", marginTop: "10px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #ddd", fontFamily: "inherit" }} />
+                  <button onClick={() => createComment(post._id)} style={btn("#0f3d75")}>اضف تعليقًا</button>
                 </>
-              ) : (
-                <p style={{ color: "#9a6f1f", marginTop: "10px" }}>التعليقات معطّلة حاليًا.</p>
-              )}
-
+              ) : <p style={{ color: "#9a6f1f", marginTop: "10px" }}>التعليقات معطّلة حاليًا.</p>}
               <div style={{ marginTop: "15px" }}>
-                {comments[post._id]?.length ? (
-                  comments[post._id].map((c) => {
-                    const canEdit = currentUser?.role === "admin" || currentUser?._id === c.user?._id;
-                    const editing = editingComment === c._id;
-                    return (
-                      <div key={c._id} style={{ borderTop: "1px solid #eee", padding: "10px 0" }}>
-                        <strong>{c.user?.name || "عضو"}</strong>
-                        {editing ? (
-                          <div style={{ marginTop: "6px" }}>
-                            <input value={editingCommentText} onChange={(e) => setEditingCommentText(e.target.value)} style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #ddd", fontFamily: "inherit", marginBottom: "8px" }} />
-                            <div style={{ display: "flex", gap: "8px" }}>
-                              <button onClick={() => saveCommentEdit(post._id, c._id)} style={{ ...btn("#1e7e34"), padding: "6px 14px", fontSize: "13px" }}>حفظ</button>
-                              <button onClick={() => { setEditingComment(null); setEditingCommentText(""); }} style={{ ...btn("#64748b"), padding: "6px 14px", fontSize: "13px" }}>إلغاء</button>
-                            </div>
+                {comments[post._id]?.length ? comments[post._id].map((c) => {
+                  const canEdit = currentUser?.role === "admin" || currentUser?._id === c.user?._id;
+                  const editing = editingComment === c._id;
+                  return (
+                    <div key={c._id} style={{ borderTop: "1px solid #eee", padding: "10px 0" }}>
+                      <strong>{c.user?.name || "عضو"}</strong>
+                      {editing ? (
+                        <div style={{ marginTop: "6px" }}>
+                          <input value={editingCommentText} onChange={(e) => setEditingCommentText(e.target.value)}
+                            style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #ddd", fontFamily: "inherit", marginBottom: "8px" }} />
+                          <div style={{ display: "flex", gap: "8px" }}>
+                            <button onClick={() => saveCommentEdit(post._id, c._id)} style={{ ...btn("#1e7e34"), padding: "6px 14px", fontSize: "13px" }}>حفظ</button>
+                            <button onClick={() => { setEditingComment(null); setEditingCommentText(""); }} style={{ ...btn("#64748b"), padding: "6px 14px", fontSize: "13px" }}>الغاء</button>
                           </div>
-                        ) : (
-                          <>
-                            <p style={{ whiteSpace: "pre-wrap" }}>{renderTextWithLinks(c.content)}</p>
-                            {canEdit && (
-                              <button onClick={() => { setEditingComment(c._id); setEditingCommentText(c.content); }} style={{ background: "transparent", color: "var(--mid)", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "13px", padding: 0 }}>✏️ تعديل</button>
-                            )}
-                          </>
-                        )}
-                      </div>
-                    );
-                  })
-                ) : (
-                  <p style={{ color: "#666" }}>كن أول غوّاص يعلّق.</p>
-                )}
+                        </div>
+                      ) : (
+                        <>
+                          <p style={{ whiteSpace: "pre-wrap" }}>{renderTextWithLinks(c.content)}</p>
+                          {canEdit && <button onClick={() => { setEditingComment(c._id); setEditingCommentText(c.content); }} style={{ background: "transparent", color: "var(--mid)", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "13px", padding: 0 }}>تعديل</button>}
+                        </>
+                      )}
+                    </div>
+                  );
+                }) : <p style={{ color: "#666" }}>كن اول غوّاص يعلّق.</p>}
               </div>
             </div>
-
             <br />
             <small style={{ color: "#888" }}>{new Date(post.createdAt).toLocaleString("ar-EG")}</small>
           </div>
@@ -396,4 +351,3 @@ export default function CommunityPage() {
     </div>
   );
 }
-// force update

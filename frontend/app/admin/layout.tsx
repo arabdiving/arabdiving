@@ -14,6 +14,7 @@ const links = [
   { href: "/admin/size-profiles", label: "مقاسات الأعضاء", icon: "📏" },
   { href: "/admin/comments", label: "التعليقات والمنشورات", icon: "💬" },
   { href: "/admin/users", label: "المستخدمون", icon: "👥" },
+  { href: "/admin/homepage", label: "بلوكات الهوم", icon: "🏠" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
