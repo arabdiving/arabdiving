@@ -1,29 +1,38 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { API_BASE } from "./lib/api";
 import Hero from "./components/home/Hero";
 import GulfFocus from "./components/home/GulfFocus";
 import Stats from "./components/home/Stats";
 import FeaturedDiveSites from "./components/home/FeaturedDiveSites";
 import Community from "./components/home/Community";
 import HomeCommunityFeed from "./components/home/HomeCommunityFeed";
+import { API_BASE } from "./lib/api";
 
 interface HomeBlock {
   key: string;
-  label: string;
   visible: boolean;
   order: number;
 }
 
 const DEFAULT_BLOCKS: HomeBlock[] = [
-  { key: "hero",           label: "hero",           visible: true, order: 0 },
-  { key: "community_feed", label: "community_feed", visible: true, order: 1 },
-  { key: "gulf_focus",     label: "gulf_focus",     visible: true, order: 2 },
-  { key: "stats",          label: "stats",          visible: true, order: 3 },
-  { key: "segments",       label: "segments",       visible: true, order: 4 },
-  { key: "featured_sites", label: "featured_sites", visible: true, order: 5 },
+  { key: "hero",           visible: true, order: 0 },
+  { key: "community_feed", visible: true, order: 1 },
+  { key: "gulf_focus",     visible: true, order: 2 },
+  { key: "stats",          visible: true, order: 3 },
+  { key: "segments",       visible: true, order: 4 },
+  { key: "featured_sites", visible: true, order: 5 },
 ];
+
+async function getHomeBlocks(): Promise<HomeBlock[]> {
+  try {
+    const res = await fetch(`${API_BASE}/api/settings`, {
+      next: { revalidate: 60 }, // cache for 60s, re-fetch in background
+    });
+    if (!res.ok) return DEFAULT_BLOCKS;
+    const data = await res.json();
+    const hb: HomeBlock[] = data.settings?.homeBlocks;
+    if (hb && hb.length > 0) return [...hb].sort((a, b) => a.order - b.order);
+  } catch {}
+  return DEFAULT_BLOCKS;
+}
 
 function renderBlock(key: string) {
   switch (key) {
@@ -37,26 +46,13 @@ function renderBlock(key: string) {
   }
 }
 
-export default function Home() {
-  const [blocks, setBlocks] = useState<HomeBlock[]>(DEFAULT_BLOCKS);
-
-  useEffect(() => {
-    fetch(`${API_BASE}/api/settings`)
-      .then((r) => r.json())
-      .then((d) => {
-        const hb: HomeBlock[] = d.settings?.homeBlocks;
-        if (hb && hb.length > 0) {
-          setBlocks([...hb].sort((a, b) => a.order - b.order));
-        }
-      })
-      .catch(() => {});
-  }, []);
+export default async function Home() {
+  const blocks = await getHomeBlocks();
 
   return (
     <>
       {blocks
         .filter((b) => b.visible)
-        .sort((a, b) => a.order - b.order)
         .map((b) => renderBlock(b.key))}
     </>
   );
