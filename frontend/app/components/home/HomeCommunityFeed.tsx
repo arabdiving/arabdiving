@@ -17,6 +17,25 @@ interface Post {
   createdAt: string;
 }
 
+/** نفس دالة صفحة المجتمع — تحوّل الروابط في النص إلى <a> قابلة للضغط */
+function renderTextWithLinks(text: string) {
+  if (!text) return null;
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return text.split(urlRegex).map((part, i) =>
+    part.match(urlRegex)
+      ? (
+        <a
+          key={i} href={part} target="_blank" rel="noopener noreferrer"
+          style={{ color: "#2e75b6", textDecoration: "underline", fontWeight: "bold", wordBreak: "break-all" }}
+          onClick={(e) => e.stopPropagation()}  // يمنع فتح البوست بدل الرابط
+        >
+          {part}
+        </a>
+      )
+      : part
+  );
+}
+
 export default function HomeCommunityFeed() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,6 +94,7 @@ export default function HomeCommunityFeed() {
           <>
             <div style={{
               display: "flex",
+              alignItems: "flex-start",   /* ← كل كارت يأخذ ارتفاعه الطبيعي فقط */
               gap: "18px",
               overflowX: "auto",
               paddingBottom: "16px",
@@ -97,7 +117,6 @@ export default function HomeCommunityFeed() {
                     display: "flex",
                     flexDirection: "column",
                     gap: "10px",
-                    minHeight: "200px",
                   }}
                 >
                   {/* Author */}
@@ -120,14 +139,15 @@ export default function HomeCommunityFeed() {
                     </div>
                   </div>
 
-                  {/* Content */}
+                  {/* Content — truncated to 4 lines with links clickable */}
                   {post.content && (
                     <p style={{
                       margin: 0, color: "#444", lineHeight: 1.7, fontSize: "14px",
-                      display: "-webkit-box", WebkitLineClamp: 3,
+                      display: "-webkit-box", WebkitLineClamp: 4,
                       WebkitBoxOrient: "vertical", overflow: "hidden",
+                      whiteSpace: "pre-wrap",
                     }}>
-                      {post.content}
+                      {renderTextWithLinks(post.content)}
                     </p>
                   )}
 
