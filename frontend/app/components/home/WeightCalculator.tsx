@@ -13,27 +13,40 @@ interface Calc {
   waterType: WaterType;
 }
 
-const SUIT_WEIGHT: Record<SuitType, number> = {
-  swimsuit: -1,
-  wetsuit3: 1,
-  wetsuit5: 2.5,
-  wetsuit7: 5,
-  drysuit: 7,
+/**
+ * قاعدة الحساب:
+ * - نقطة الصفر (المرجع) = بدلة 5mm + أسطوانة AL80 + مياه مالحة
+ * - قاعدة PADI: 10% من وزن الجسم صحيحة لهذا المرجع تحديداً
+ * - كل العوامل الأخرى هي تعديلات موجبة أو سالبة حول هذا المرجع
+ *
+ * المصدر: PADI Open Water Diver Manual + SSI Buoyancy tables
+ */
+
+// التعديل مقارنةً ببدلة 5mm (المرجع = 0)
+const SUIT_ADJUSTMENT: Record<SuitType, number> = {
+  swimsuit: -3.5,  // بدون بدلة — طفو أقل بكثير من 5mm
+  wetsuit3: -1.5,  // بدلة 3mm — أقل من 5mm
+  wetsuit5:  0,    // ◀ المرجع
+  wetsuit7: +2.5,  // بدلة 7mm — أثقل وأكثر طفواً
+  drysuit:  +5.0,  // بدلة جافة — تحبس هواءً بشكل كبير
 };
 
-const TANK_BUOYANCY: Record<TankType, number> = {
-  al80:    2.3,  // Aluminum 80 cu ft — positively buoyant when empty
-  steel12: -1.8, // Steel 12L — slightly neg when empty
-  steel15: -2.5,
+// التعديل مقارنةً بأسطوانة AL80 (المرجع = 0)
+const TANK_ADJUSTMENT: Record<TankType, number> = {
+  al80:     0,    // ◀ المرجع — AL80 ألومنيوم 11L
+  steel12: -1.5, // فولاذ 12L — غوص أكثر (يحتاج رصاص أقل)
+  steel15: -2.0, // فولاذ 15L — غوص أكثر
 };
 
 function calcLead(c: Calc): number {
-  const base = c.bodyWeight * 0.1;
-  const suit  = SUIT_WEIGHT[c.suitType];
-  const tank  = TANK_BUOYANCY[c.tankType];
-  const fresh = c.waterType === "fresh" ? -2 : 0;
-  const total = base + suit + tank + fresh;
-  return Math.max(0, Math.round(total * 2) / 2);
+  // 10% من وزن الجسم = الوزن المبدئي لـ (5mm + AL80 + ماء مالح) — هذا صحيح وفق PADI
+  const base  = c.bodyWeight * 0.10;
+  const suit  = SUIT_ADJUSTMENT[c.suitType];
+  const tank  = TANK_ADJUSTMENT[c.tankType];
+  // الماء العذب أقل كثافة من المالح → يحتاج رصاصاً أقل بنحو 2 كغ
+  const water = c.waterType === "fresh" ? -2 : 0;
+  const total = base + suit + tank + water;
+  return Math.max(0, Math.round(total * 2) / 2); // تقريب لأقرب 0.5 كغ
 }
 
 const INP: React.CSSProperties = {
