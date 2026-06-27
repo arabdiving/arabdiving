@@ -55,6 +55,9 @@ const INP: React.CSSProperties = {
   color: "#fff", fontFamily: "inherit", fontSize: "15px",
 };
 
+// خيارات الـ select تحتاج خلفية داكنة وليس أبيض حتى يُقرأ النص
+const OPT: React.CSSProperties = { background: "#0d2c54", color: "#fff" };
+
 export default function WeightCalculator() {
   const [form, setForm] = useState<Calc>({
     bodyWeight: 70, suitType: "wetsuit5", tankType: "al80", waterType: "salt",
@@ -101,11 +104,11 @@ export default function WeightCalculator() {
                 نوع البدلة
               </label>
               <select style={INP} value={form.suitType} onChange={(e) => setForm({ ...form, suitType: e.target.value as SuitType })}>
-                <option value="swimsuit">بدلة سباحة (1 مم)</option>
-                <option value="wetsuit3">بدلة مطاط 3 مم</option>
-                <option value="wetsuit5">بدلة مطاط 5 مم</option>
-                <option value="wetsuit7">بدلة مطاط 7 مم</option>
-                <option value="drysuit">بدلة جافة (Dry Suit)</option>
+                <option style={OPT} value="swimsuit">بدلة سباحة (1 مم)</option>
+                <option style={OPT} value="wetsuit3">بدلة مطاط 3 مم</option>
+                <option style={OPT} value="wetsuit5">بدلة مطاط 5 مم</option>
+                <option style={OPT} value="wetsuit7">بدلة مطاط 7 مم</option>
+                <option style={OPT} value="drysuit">بدلة جافة (Dry Suit)</option>
               </select>
             </div>
 
@@ -115,9 +118,9 @@ export default function WeightCalculator() {
                 نوع الأسطوانة
               </label>
               <select style={INP} value={form.tankType} onChange={(e) => setForm({ ...form, tankType: e.target.value as TankType })}>
-                <option value="al80">ألومنيوم 80 قدم³</option>
-                <option value="steel12">فولاذ 12 لتر</option>
-                <option value="steel15">فولاذ 15 لتر</option>
+                <option style={OPT} value="al80">ألومنيوم 80 قدم³</option>
+                <option style={OPT} value="steel12">فولاذ 12 لتر</option>
+                <option style={OPT} value="steel15">فولاذ 15 لتر</option>
               </select>
             </div>
 
@@ -127,8 +130,8 @@ export default function WeightCalculator() {
                 نوع الماء
               </label>
               <select style={INP} value={form.waterType} onChange={(e) => setForm({ ...form, waterType: e.target.value as WaterType })}>
-                <option value="salt">مياه مالحة (البحر)</option>
-                <option value="fresh">مياه عذبة (بحيرة / حوض)</option>
+                <option style={OPT} value="salt">مياه مالحة (البحر)</option>
+                <option style={OPT} value="fresh">مياه عذبة (بحيرة / حوض)</option>
               </select>
             </div>
           </div>
