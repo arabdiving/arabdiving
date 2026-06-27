@@ -14,10 +14,10 @@ interface Site {
   description: string;
   image: string;
   images: string[];
+  featuredOnHome?: boolean;
 }
 
 const empty: Site = { name: "", country: "مصر", city: "", depth: 0, difficulty: "Beginner", description: "", image: "", images: [] };
-
 const resolve = (u: string) => (u ? (/^https?:\/\//.test(u) ? u : `/images/${u}`) : "");
 
 export default function AdminDiveSites() {
@@ -46,12 +46,8 @@ export default function AdminDiveSites() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  const reset = () => {
-    setEditingId(null);
-    setForm(empty);
-  };
+  const reset = () => { setEditingId(null); setForm(empty); };
 
-  // Upload one or more files and append to the images array.
   const uploadFiles = async (files: FileList | null) => {
     if (!files || !files.length) return;
     setBusy(true);
@@ -64,21 +60,16 @@ export default function AdminDiveSites() {
         if (d.success) setForm((f) => ({ ...f, images: [...f.images, d.url] }));
         else setMsg(d.message || "تعذّر رفع الصورة");
       }
-    } finally {
-      setBusy(false);
-    }
+    } finally { setBusy(false); }
   };
 
-  const removeImage = (i: number) =>
-    setForm((f) => ({ ...f, images: f.images.filter((_, j) => j !== i) }));
-
-  const moveFirst = (i: number) =>
-    setForm((f) => {
-      const arr = [...f.images];
-      const [x] = arr.splice(i, 1);
-      arr.unshift(x);
-      return { ...f, images: arr };
-    });
+  const removeImage = (i: number) => setForm((f) => ({ ...f, images: f.images.filter((_, j) => j !== i) }));
+  const moveFirst = (i: number) => setForm((f) => {
+    const arr = [...f.images];
+    const [x] = arr.splice(i, 1);
+    arr.unshift(x);
+    return { ...f, images: arr };
+  });
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -88,35 +79,41 @@ export default function AdminDiveSites() {
     const payload = { ...form, depth: Number(form.depth), image: form.images[0] || form.image || "" };
     const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
     const d = await res.json();
-    if (d.success) {
-      setMsg(editingId ? "تم تحديث الموقع ✅" : "تمت إضافة الموقع ✅");
-      reset();
-      load();
-    } else setMsg(d.message || "تعذّر الحفظ");
+    if (d.success) { setMsg(editingId ? "تم تحديث الموقع ✅" : "تمت إضافة الموقع ✅"); reset(); load(); }
+    else setMsg(d.message || "تعذّر الحفظ");
   };
 
   const remove = async (id?: string) => {
     if (!id || !confirm("حذف هذا الموقع؟")) return;
-    await fetch(`${API_BASE}/api/admin/dive-sites/${id}`, { method: "DELETE", headers: authHeaders() });
+    await fetch(`${API_BASE}/api/dive-sites/${id}`, { method: "DELETE", headers: authHeaders() });
     load();
   };
 
+  const toggleFeatured = async (id: string, current: boolean) => {
+    const res = await fetch(`${API_BASE}/api/dive-sites/${id}/toggle-featured`, {
+      method: "PATCH", headers: authHeaders(),
+    });
+    const d = await res.json();
+    if (d.success) {
+      setSites((prev) => prev.map((s: any) => s._id === id ? { ...s, featuredOnHome: d.featuredOnHome } : s));
+    }
+  };
+
   const importDefaults = async () => {
-    if (!confirm("استيراد قائمة مواقع الغوص الافتراضية (41 موقعًا)؟ لن تتكرّر المواقع الموجودة.")) return;
+    if (!confirm("استيراد قائمة مواقع الغوص الافتراضية (41 موقعًا)؟")) return;
     setMsg("");
     const res = await fetch(`${API_BASE}/api/admin/dive-sites/seed-defaults`, { method: "POST", headers: authHeaders() });
     const d = await res.json();
-    if (d.success) {
-      setMsg(`تم الاستيراد ✅ (${d.created} جديد، ${d.updated} محدّث)`);
-      load();
-    } else setMsg(d.message || "تعذّر الاستيراد");
+    if (d.success) { setMsg(`تم الاستيراد ✅ (${d.created} جديد، ${d.updated} محدّث)`); load(); }
+    else setMsg(d.message || "تعذّر الاستيراد");
   };
 
   return (
-    <div style={{ maxWidth: "900px" }}>
+    <div style={{ maxWidth: "960px" }}>
       <h1 style={{ color: "var(--navy)", marginBottom: "18px" }}>مواقع الغوص</h1>
       {msg && <p style={{ color: msg.includes("✅") ? "#1e7e34" : "#c0392b", marginBottom: "12px" }}>{msg}</p>}
 
+      {/* Form */}
       <form onSubmit={save} style={{ background: "white", borderRadius: "14px", padding: "22px", marginBottom: "28px", boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}>
         <h3 style={{ color: "var(--navy)", marginBottom: "16px" }}>{editingId ? "تعديل موقع" : "إضافة موقع جديد"}</h3>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "14px" }}>
@@ -132,10 +129,8 @@ export default function AdminDiveSites() {
             </select>
           </Field>
         </div>
-
         <Field label="الوصف"><textarea style={{ ...inp, resize: "vertical" }} rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></Field>
-
-        <Field label="الصور (يمكن إضافة أكثر من صورة — الأولى هي الرئيسية)">
+        <Field label="الصور (الأولى هي الرئيسية)">
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "10px" }}>
             {form.images.map((u, i) => (
               <div key={i} style={{ position: "relative", width: "110px" }}>
@@ -151,7 +146,6 @@ export default function AdminDiveSites() {
             {busy && <span style={{ color: "#666", fontSize: "13px" }}>جارٍ الرفع...</span>}
           </div>
         </Field>
-
         <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
           <button type="submit" style={{ background: "var(--mid)", color: "white", border: "none", padding: "11px 26px", borderRadius: "10px", cursor: "pointer", fontFamily: "inherit" }}>
             {editingId ? "حفظ التعديل" : "إضافة الموقع"}
@@ -160,21 +154,48 @@ export default function AdminDiveSites() {
         </div>
       </form>
 
+      {/* List */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", marginBottom: "14px" }}>
-        <h2 style={{ color: "var(--navy)", fontSize: "20px" }}>كل المواقع ({sites.length})</h2>
+        <div>
+          <h2 style={{ color: "var(--navy)", fontSize: "20px", margin: 0 }}>كل المواقع ({sites.length})</h2>
+          <p style={{ color: "#888", fontSize: "13px", margin: "4px 0 0" }}>
+            🏠 الظاهرة في الهوم: {sites.filter((s: any) => s.featuredOnHome).length}
+          </p>
+        </div>
         {sites.length === 0 && (
           <button onClick={importDefaults} style={{ background: "#1e7e34", color: "white", border: "none", padding: "10px 18px", borderRadius: "9px", cursor: "pointer", fontFamily: "inherit", fontSize: "14px" }}>
             استيراد المواقع الافتراضية (41)
           </button>
         )}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
+
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
         {sites.map((s: any) => (
-          <div key={s._id} style={{ background: "white", borderRadius: "12px", padding: "16px", boxShadow: "0 6px 18px rgba(0,0,0,0.05)" }}>
-            <strong style={{ color: "var(--navy)" }}>{s.name}</strong>
-            <p style={{ color: "#666", fontSize: "13px", margin: "4px 0" }}>📍 {s.city || "—"} · 🌊 {s.depth}م · 🎚 {difficultyAr(s.difficulty)} · 🖼️ {(s.images?.length || (s.image ? 1 : 0))}</p>
-            <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
+          <div key={s._id} style={{
+            background: "white", borderRadius: "12px", padding: "16px",
+            boxShadow: "0 6px 18px rgba(0,0,0,0.05)",
+            border: s.featuredOnHome ? "2px solid #c9a84c" : "2px solid transparent",
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
+              <strong style={{ color: "var(--navy)", fontSize: "15px" }}>{s.name}</strong>
+              {s.featuredOnHome && (
+                <span style={{ background: "#fffbeb", color: "#c9a84c", fontSize: "11px", fontWeight: 700, padding: "3px 8px", borderRadius: "20px", whiteSpace: "nowrap" }}>
+                  🏠 هوم
+                </span>
+              )}
+            </div>
+            <p style={{ color: "#666", fontSize: "13px", margin: "6px 0 10px" }}>
+              📍 {s.city || "—"} · 🌊 {s.depth}م · 🎚 {difficultyAr(s.difficulty)}
+            </p>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               <button onClick={() => startEdit(s)} style={mini("#2e75b6")}>تعديل</button>
+              <button
+                onClick={() => toggleFeatured(s._id, s.featuredOnHome)}
+                style={mini(s.featuredOnHome ? "#c9a84c" : "#64748b")}
+                title={s.featuredOnHome ? "إزالة من الهوم" : "عرض في الهوم"}
+              >
+                {s.featuredOnHome ? "🏠 في الهوم" : "⊕ عرض في الهوم"}
+              </button>
               <button onClick={() => remove(s._id)} style={mini("#b91c1c")}>حذف</button>
             </div>
           </div>

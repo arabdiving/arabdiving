@@ -9,6 +9,7 @@ const getPartnerCenters = async (req, res) => {
     const query = { active: true };
     if (req.query.city) query.city = req.query.city;
     if (req.query.q) query.name = { $regex: String(req.query.q).trim(), $options: "i" };
+    if (req.query.featured === "true") query.featuredOnHome = true;
     for (const key of BADGE_KEYS) {
       if (req.query[key] === "true") query[`badges.${key}`] = true;
     }
@@ -29,4 +30,42 @@ const getPartnerCenterById = async (req, res) => {
   }
 };
 
-module.exports = { getPartnerCenters, getPartnerCenterById };
+const updatePartnerCenter = async (req, res) => {
+  try {
+    const center = await PartnerCenter.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    if (!center) return res.status(404).json({ success: false, message: "المركز غير موجود" });
+    res.json({ success: true, data: center });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const deletePartnerCenter = async (req, res) => {
+  try {
+    const center = await PartnerCenter.findByIdAndDelete(req.params.id);
+    if (!center) return res.status(404).json({ success: false, message: "المركز غير موجود" });
+    res.json({ success: true });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+const toggleFeaturedPartnerCenter = async (req, res) => {
+  try {
+    const center = await PartnerCenter.findById(req.params.id);
+    if (!center) return res.status(404).json({ success: false, message: "المركز غير موجود" });
+    center.featuredOnHome = !center.featuredOnHome;
+    await center.save();
+    res.json({ success: true, featuredOnHome: center.featuredOnHome });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+module.exports = {
+  getPartnerCenters,
+  getPartnerCenterById,
+  updatePartnerCenter,
+  deletePartnerCenter,
+  toggleFeaturedPartnerCenter,
+};

@@ -3,21 +3,10 @@ import { API_BASE } from "@/app/lib/api";
 import { siteImageSrc, imagePlaceholder } from "@/app/lib/image";
 import { difficultyAr } from "@/app/lib/labels";
 
-async function getHomeContent() {
+async function getFeaturedSites() {
   try {
-    const res = await fetch(`${API_BASE}/api/content/home`, { cache: "no-store" });
-    if (!res.ok) return null;
-    const d = await res.json();
-    return d.data;
-  } catch {
-    return null;
-  }
-}
-
-async function getDiveSites() {
-  try {
-    const res = await fetch(`${API_BASE}/api/dive-sites`, {
-      cache: "no-store",
+    const res = await fetch(`${API_BASE}/api/dive-sites?featured=true`, {
+      next: { revalidate: 60 },
     });
     if (!res.ok) return [];
     const data = await res.json();
@@ -39,80 +28,92 @@ interface Site {
 }
 
 export default async function FeaturedDiveSites() {
-  const sites: Site[] = await getDiveSites();
-  const home = await getHomeContent();
-  const featuredTitle = home?.featuredTitle || "أشهر مواقع الغوص";
+  const sites: Site[] = await getFeaturedSites();
+
+  if (sites.length === 0) return null;
 
   return (
-    <section style={{ padding: "80px 40px", background: "#f8fafc" }}>
-      <h2 style={{ textAlign: "center", fontSize: "38px", marginBottom: "50px", color: "var(--navy)" }}>
-        {featuredTitle}
-      </h2>
+    <section style={{ padding: "60px 0", background: "#f8fafc" }}>
+      <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "0 24px" }}>
 
-      {sites.length === 0 ? (
-        <p style={{ textAlign: "center", color: "#666" }}>
-          لا تتوفر مواقع غوص حاليًا. تأكد من تشغيل الخادم أو حاول لاحقًا.
-        </p>
-      ) : (
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit,minmax(350px,1fr))",
-            gap: "30px",
-            maxWidth: "1400px",
-            margin: "0 auto",
-          }}
-        >
+        {/* Header */}
+        <div style={{
+          display: "flex", alignItems: "center",
+          justifyContent: "space-between", marginBottom: "28px",
+          flexWrap: "wrap", gap: "12px",
+        }}>
+          <div>
+            <span style={{
+              display: "inline-block", background: "rgba(46,117,182,0.12)",
+              color: "var(--mid)", padding: "5px 16px", borderRadius: "30px",
+              fontSize: "13px", marginBottom: "8px",
+            }}>مواقع الغوص</span>
+            <h2 style={{ fontSize: "clamp(22px,3.5vw,32px)", color: "var(--navy)", margin: 0 }}>
+              أشهر مواقع الغوص
+            </h2>
+          </div>
+          <Link href="/dive-sites" style={{
+            background: "var(--navy)", color: "#fff", padding: "10px 22px",
+            borderRadius: "10px", textDecoration: "none", fontWeight: 600,
+            fontSize: "14px", whiteSpace: "nowrap",
+            boxShadow: "0 4px 14px rgba(13,44,84,0.25)",
+          }}>
+            كل المواقع ←
+          </Link>
+        </div>
+
+        {/* Horizontal scroll row */}
+        <div style={{
+          display: "flex",
+          gap: "18px",
+          overflowX: "auto",
+          paddingBottom: "16px",
+          scrollSnapType: "x mandatory",
+          WebkitOverflowScrolling: "touch",
+          scrollbarWidth: "thin",
+        }}>
           {sites.map((site) => {
             const src = siteImageSrc(site.image);
             return (
-              <div
-                key={site._id}
-                style={{
-                  background: "white",
-                  borderRadius: "20px",
-                  overflow: "hidden",
-                  boxShadow: "0 10px 30px rgba(0,0,0,.08)",
-                }}
-              >
+              <div key={site._id} style={{
+                flex: "0 0 280px",
+                scrollSnapAlign: "start",
+                background: "white",
+                borderRadius: "16px",
+                overflow: "hidden",
+                boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
+                display: "flex",
+                flexDirection: "column",
+              }}>
                 {src ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img
-                    src={src}
-                    alt={site.name}
-                    style={{ width: "100%", height: "250px", objectFit: "cover" }}
-                  />
+                  <img src={src} alt={site.name}
+                    style={{ width: "100%", height: "170px", objectFit: "cover" }} />
                 ) : (
-                  <div style={{ width: "100%", height: "250px", background: imagePlaceholder }} />
+                  <div style={{ width: "100%", height: "170px", background: imagePlaceholder }} />
                 )}
-
-                <div style={{ padding: "25px" }}>
-                  <h3 style={{ marginBottom: "10px", color: "var(--navy)" }}>{site.name}</h3>
-                  <p>⭐ {site.averageRating?.toFixed(1) || "0.0"}</p>
-                  <p>📝 {site.reviewsCount || 0} تقييم</p>
-                  <p>📍 {site.city}</p>
-                  <p>🌊 العمق: {site.depth} متر</p>
-                  <p>🎚 {difficultyAr(site.difficulty)}</p>
-
-                  <Link
-                    href={`/dive-sites/${site._id}`}
-                    style={{
-                      display: "inline-block",
-                      marginTop: "15px",
-                      background: "#0f3d75",
-                      color: "white",
-                      padding: "10px 20px",
-                      borderRadius: "10px",
-                    }}
-                  >
-                    عرض التفاصيل
+                <div style={{ padding: "16px", display: "flex", flexDirection: "column", gap: "6px", flex: 1 }}>
+                  <h3 style={{ margin: 0, color: "var(--navy)", fontSize: "15px", fontWeight: 700 }}>
+                    {site.name}
+                  </h3>
+                  <p style={{ margin: 0, fontSize: "12px", color: "#888" }}>
+                    📍 {site.city} &nbsp;·&nbsp; 🌊 {site.depth}م
+                  </p>
+                  <p style={{ margin: 0, fontSize: "12px", color: "#888" }}>
+                    ⭐ {site.averageRating?.toFixed(1) || "0.0"} &nbsp;·&nbsp; {difficultyAr(site.difficulty)}
+                  </p>
+                  <Link href={`/dive-sites/${site._id}`} style={{
+                    display: "inline-block", marginTop: "auto", paddingTop: "10px",
+                    color: "var(--mid)", fontSize: "13px", fontWeight: 600, textDecoration: "none",
+                  }}>
+                    عرض التفاصيل ←
                   </Link>
                 </div>
               </div>
             );
           })}
         </div>
-      )}
+      </div>
     </section>
   );
 }

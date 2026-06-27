@@ -99,6 +99,16 @@ export default function AdminPartnerCenters() {
     load();
   };
 
+  const toggleFeatured = async (id: string) => {
+    const res = await fetch(`${API_BASE}/api/partner-centers/${id}/toggle-featured`, {
+      method: "PATCH", headers: authHeaders(),
+    });
+    const d = await res.json();
+    if (d.success) {
+      setCenters((prev) => prev.map((c: any) => c._id === id ? { ...c, featuredOnHome: d.featuredOnHome } : c));
+    }
+  };
+
   const seed = async () => {
     if (!confirm("استيراد مراكز تجريبية للبدء؟ (لن تتكرّر الموجودة)")) return;
     const res = await fetch(`${API_BASE}/api/admin/partner-centers/seed-defaults`, { method: "POST", headers: authHeaders() });
@@ -176,19 +186,46 @@ export default function AdminPartnerCenters() {
       </form>
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: "10px", marginBottom: "14px" }}>
-        <h2 style={{ color: "var(--navy)", fontSize: "20px" }}>كل المراكز ({centers.length})</h2>
+        <div>
+          <h2 style={{ color: "var(--navy)", fontSize: "20px", margin: 0 }}>كل المراكز ({centers.length})</h2>
+          <p style={{ color: "#888", fontSize: "13px", margin: "4px 0 0" }}>
+            🏠 الظاهرة في الهوم: {centers.filter((c: any) => c.featuredOnHome).length}
+          </p>
+        </div>
         {centers.length === 0 && (
           <button onClick={seed} style={{ background: "#1e7e34", color: "white", border: "none", padding: "10px 18px", borderRadius: "9px", cursor: "pointer", fontFamily: "inherit", fontSize: "14px" }}>استيراد مراكز تجريبية</button>
         )}
       </div>
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))", gap: "16px" }}>
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: "16px" }}>
         {centers.map((c: any) => (
-          <div key={c._id} style={{ background: "white", borderRadius: "12px", padding: "16px", boxShadow: "0 6px 18px rgba(0,0,0,0.05)" }}>
-            <strong style={{ color: "var(--navy)" }}>{c.name}</strong>
-            <p style={{ color: "#666", fontSize: "13px", margin: "4px 0" }}>📍 {c.city || "—"} · ⭐ {c.rating} · من {c.priceFrom}{c.currency}</p>
-            <p style={{ fontSize: "16px", margin: "4px 0" }}>{BADGE_LABELS.filter((b) => c.badges?.[b.key]).map((b) => b.emoji).join(" ")}</p>
-            <div style={{ display: "flex", gap: "8px", marginTop: "10px" }}>
+          <div key={c._id} style={{
+            background: "white", borderRadius: "12px", padding: "16px",
+            boxShadow: "0 6px 18px rgba(0,0,0,0.05)",
+            border: c.featuredOnHome ? "2px solid #c9a84c" : "2px solid transparent",
+          }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: "8px" }}>
+              <strong style={{ color: "var(--navy)", fontSize: "15px" }}>{c.name}</strong>
+              {c.featuredOnHome && (
+                <span style={{ background: "#fffbeb", color: "#c9a84c", fontSize: "11px", fontWeight: 700, padding: "3px 8px", borderRadius: "20px", whiteSpace: "nowrap" }}>
+                  🏠 هوم
+                </span>
+              )}
+            </div>
+            <p style={{ color: "#666", fontSize: "13px", margin: "6px 0 4px" }}>
+              📍 {c.city || "—"} · ⭐ {c.rating} · من {c.priceFrom} {c.currency}
+            </p>
+            <p style={{ fontSize: "16px", margin: "4px 0 10px" }}>
+              {BADGE_LABELS.filter((b) => c.badges?.[b.key]).map((b) => b.emoji).join(" ")}
+            </p>
+            <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
               <button onClick={() => startEdit(c)} style={mini("#2e75b6")}>تعديل</button>
+              <button
+                onClick={() => toggleFeatured(c._id)}
+                style={mini(c.featuredOnHome ? "#c9a84c" : "#64748b")}
+                title={c.featuredOnHome ? "إزالة من الهوم" : "عرض في الهوم"}
+              >
+                {c.featuredOnHome ? "🏠 في الهوم" : "⊕ عرض في الهوم"}
+              </button>
               <button onClick={() => remove(c._id)} style={mini("#b91c1c")}>حذف</button>
             </div>
           </div>

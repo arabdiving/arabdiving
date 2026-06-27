@@ -52,6 +52,11 @@ const DiveSiteSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+
+    featuredOnHome: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

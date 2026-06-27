@@ -31,6 +31,7 @@ const PartnerCenterSchema = new mongoose.Schema(
     whatsapp: { type: String, default: "" }, // for booking welcome message
     tier: { type: String, enum: ["silver", "gold", "platinum"], default: "silver" },
     active: { type: Boolean, default: true },
+    featuredOnHome: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
