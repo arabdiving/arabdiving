@@ -99,6 +99,8 @@ export default function HomepageBlocksAdmin() {
       });
       const data = await res.json();
       if (data.success) {
+        // Immediately bust the Next.js ISR cache so homepage updates now
+        await fetch("/api/revalidate", { method: "POST" }).catch(() => {});
         setSaved(true);
         setTimeout(() => setSaved(false), 3000);
       } else setError(data.message || "خطأ في الحفظ");

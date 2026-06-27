@@ -106,6 +106,8 @@ export default function AdminPartnerCenters() {
     const d = await res.json();
     if (d.success) {
       setCenters((prev) => prev.map((c: any) => c._id === id ? { ...c, featuredOnHome: d.featuredOnHome } : c));
+      // Bust ISR cache so homepage shows updated centers immediately
+      await fetch("/api/revalidate", { method: "POST" }).catch(() => {});
     }
   };
 

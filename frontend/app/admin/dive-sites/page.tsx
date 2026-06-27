@@ -96,6 +96,8 @@ export default function AdminDiveSites() {
     const d = await res.json();
     if (d.success) {
       setSites((prev) => prev.map((s: any) => s._id === id ? { ...s, featuredOnHome: d.featuredOnHome } : s));
+      // Bust ISR cache so homepage shows the updated featured sites immediately
+      await fetch("/api/revalidate", { method: "POST" }).catch(() => {});
     }
   };
 
