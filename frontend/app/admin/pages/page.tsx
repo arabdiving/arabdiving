@@ -7,6 +7,7 @@ import { API_BASE, authHeaders } from "@/app/lib/adminFetch";
 const PAGES: { href: string; label: string; locked?: boolean }[] = [
   { href: "/", label: "الرئيسية", locked: true },
   { href: "/dive-sites", label: "مواقع الغوص" },
+  { href: "/marketplace", label: "المتجر" },
   { href: "/family-booking", label: "احجز رحلة" },
   { href: "/retreats", label: "الباقات الفاخرة" },
   { href: "/trips", label: "الرحلات" },
@@ -29,6 +30,7 @@ const PAGES: { href: string; label: string; locked?: boolean }[] = [
 
 export default function AdminPagesVisibility() {
   const [hidden, setHidden] = useState<string[]>([]);
+  const [navStyle, setNavStyle] = useState("buttons");
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
@@ -36,7 +38,7 @@ export default function AdminPagesVisibility() {
   useEffect(() => {
     fetch(`${API_BASE}/api/settings`)
       .then((r) => r.json())
-      .then((d) => setHidden(d.settings?.hiddenPages || []))
+      .then((d) => { setHidden(d.settings?.hiddenPages || []); setNavStyle(d.settings?.navStyle || "buttons"); })
       .catch(() => {})
       .finally(() => setLoaded(true));
   }, []);
@@ -49,7 +51,7 @@ export default function AdminPagesVisibility() {
     setSaving(true); setMsg("");
     try {
       const res = await fetch(`${API_BASE}/api/settings`, {
-        method: "PUT", headers: authHeaders(), body: JSON.stringify({ hiddenPages: hidden }),
+        method: "PUT", headers: authHeaders(), body: JSON.stringify({ hiddenPages: hidden, navStyle }),
       });
       const d = await res.json();
       setMsg(d.success ? "تم الحفظ ✅" : d.message || "تعذّر الحفظ");
@@ -60,6 +62,13 @@ export default function AdminPagesVisibility() {
     <div style={{ maxWidth: "620px" }}>
       <h1 style={{ color: "var(--navy)", marginBottom: "8px" }}>ظهور الصفحات</h1>
       <p style={{ color: "#666", marginBottom: "20px", fontSize: "15px" }}>تحكّم في إظهار أو إخفاء الصفحات من قائمة الموقع. الصفحات المخفيّة لا تظهر للزوّار في القائمة.</p>
+      <div style={{ background: "white", borderRadius: "12px", padding: "16px", boxShadow: "0 6px 18px rgba(0,0,0,0.05)", marginBottom: "20px" }}>
+        <label style={{ display: "block", fontWeight: 700, color: "var(--navy)", marginBottom: "8px" }}>شكل قائمة التنقّل</label>
+        <select value={navStyle} onChange={(e) => setNavStyle(e.target.value)} style={{ padding: "10px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "15px" }}>
+          <option value="buttons">أزرار أفقية (الافتراضي)</option>
+          <option value="dropdown">قائمة منسدلة (زر ☰ على كل الأحجام)</option>
+        </select>
+      </div>
       {msg && <p style={{ color: msg.includes("✅") ? "#1e7e34" : "#c0392b", marginBottom: "12px" }}>{msg}</p>}
 
       {!loaded ? (

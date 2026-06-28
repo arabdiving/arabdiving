@@ -7,6 +7,7 @@ const SettingsSchema = new mongoose.Schema(
     hiddenPages: { type: [String], default: [] },
     whatsappNumber: { type: String, default: "" },
     chatEnabled: { type: Boolean, default: true },
+    navStyle: { type: String, enum: ["buttons", "dropdown"], default: "buttons" },
     addons: {
       type: [{ key: String, label: String, price: Number, perPerson: Boolean }],
       default: [

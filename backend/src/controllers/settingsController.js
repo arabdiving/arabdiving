@@ -10,7 +10,7 @@ const getSettings = async () => {
 const readSettings = async (req, res) => {
   try {
     const s = await getSettings();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [] } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons" } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -32,6 +32,9 @@ const updateSettings = async (req, res) => {
     if (typeof req.body.chatEnabled === "boolean") {
       s.chatEnabled = req.body.chatEnabled;
     }
+    if (["buttons", "dropdown"].includes(req.body.navStyle)) {
+      s.navStyle = req.body.navStyle;
+    }
     if (Array.isArray(req.body.addons)) {
       s.addons = req.body.addons
         .filter((a) => a && a.label)
@@ -51,7 +54,7 @@ const updateSettings = async (req, res) => {
       }));
     }
     await s.save();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [] } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons" } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

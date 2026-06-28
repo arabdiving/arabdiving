@@ -9,6 +9,7 @@ const links = [
   { href: "/admin/pages", label: "ظهور الصفحات", icon: "👁️" },
   { href: "/admin/dive-sites", label: "مواقع الغوص", icon: "🤿" },
   { href: "/admin/partner-centers", label: "المراكز الشريكة", icon: "🏝️" },
+  { href: "/admin/products", label: "متجر المنتجات", icon: "🛒" },
   { href: "/admin/bookings", label: "الحجوزات", icon: "🎟️" },
   { href: "/admin/messages", label: "الرسائل والتواصل", icon: "📨" },
   { href: "/admin/size-profiles", label: "مقاسات الأعضاء", icon: "📏" },

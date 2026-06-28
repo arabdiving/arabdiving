@@ -13,6 +13,7 @@ interface CurrentUser {
 const navLinks = [
   { href: "/", label: "الرئيسية" },
   { href: "/dive-sites", label: "مواقع الغوص" },
+  { href: "/marketplace", label: "المتجر" },
   { href: "/family-booking", label: "احجز رحلة" },
   { href: "/retreats", label: "باقات خاصة" },
   { href: "/trips", label: "الرحلات" },
@@ -37,6 +38,7 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const [hidden, setHidden] = useState<string[]>([]);
   const [unread, setUnread] = useState(0);
+  const [navStyle, setNavStyle] = useState("buttons");
   const pathname = usePathname();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const activeStyle = (href: string) => (isActive(href) ? { background: "#c9952a", color: "#0B2C59", fontWeight: 700 } : {});
@@ -50,7 +52,7 @@ export default function Navbar() {
     }
     fetch(`${API_BASE}/api/settings`)
       .then((r) => r.json())
-      .then((d) => setHidden(d.settings?.hiddenPages || []))
+      .then((d) => { setHidden(d.settings?.hiddenPages || []); setNavStyle(d.settings?.navStyle || "buttons"); })
       .catch(() => {});
     try {
       const t = localStorage.getItem("token");
@@ -82,7 +84,7 @@ export default function Navbar() {
   );
 
   return (
-    <nav style={{ background: "#0B2C59", color: "white", padding: "14px 20px" }}>
+    <nav className={navStyle === "dropdown" ? "nav-dropdown-mode" : undefined} style={{ background: "#0B2C59", color: "white", padding: "14px 20px" }}>
       <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
         <Link href="/" style={{ fontSize: "22px", fontWeight: "bold", color: "white" }}>ArabDiving</Link>
 

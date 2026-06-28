@@ -169,3 +169,8 @@ html, body {
   transform: translateY(0);
   box-shadow: inset 0 3px 8px rgba(0, 0, 0, 0.35);
 }
+
+/* Dropdown navbar mode: force burger + panel at all widths */
+.nav-dropdown-mode .nav-desktop { display: none !important; }
+.nav-dropdown-mode .nav-burger { display: inline-block !important; }
+.nav-dropdown-mode .nav-mobile-panel { display: flex !important; }
