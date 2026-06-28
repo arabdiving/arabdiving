@@ -7,6 +7,7 @@ import Community from "./components/home/Community";
 import HomeCommunityFeed from "./components/home/HomeCommunityFeed";
 import WeightCalculator from "./components/home/WeightCalculator";
 import CommunitySurvey from "./components/home/CommunitySurvey";
+import HomePageCards from "./components/home/HomePageCards";
 import { API_BASE } from "./lib/api";
 
 interface HomeBlock {
@@ -25,6 +26,7 @@ const DEFAULT_BLOCKS: HomeBlock[] = [
   { key: "featured_sites",    visible: true,  order: 6 },
   { key: "weight_calculator", visible: false, order: 7 },
   { key: "community_survey",  visible: false, order: 8 },
+  { key: "page_cards",        visible: true,  order: 9 },
 ];
 
 async function getHomeBlocks(): Promise<HomeBlock[]> {
@@ -61,6 +63,7 @@ function renderBlock(key: string) {
     case "featured_sites":   return <FeaturedDiveSites key="featured_sites" />;
     case "weight_calculator":return <WeightCalculator key="weight_calculator" />;
     case "community_survey": return <CommunitySurvey key="community_survey" />;
+    case "page_cards":       return <HomePageCards key="page_cards" />;
     default:                 return null;
   }
 }

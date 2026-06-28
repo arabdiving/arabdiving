@@ -10,7 +10,7 @@ const getSettings = async () => {
 const readSettings = async (req, res) => {
   try {
     const s = await getSettings();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons" } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -35,6 +35,16 @@ const updateSettings = async (req, res) => {
     if (["buttons", "dropdown"].includes(req.body.navStyle)) {
       s.navStyle = req.body.navStyle;
     }
+    if (Array.isArray(req.body.homeCards)) {
+      s.homeCards = req.body.homeCards
+        .filter((c) => c && c.href && c.label)
+        .map((c) => ({
+          href: String(c.href).slice(0, 120),
+          label: String(c.label).slice(0, 80),
+          desc: String(c.desc || "").slice(0, 160),
+          icon: String(c.icon || "").slice(0, 8),
+        }));
+    }
     if (Array.isArray(req.body.addons)) {
       s.addons = req.body.addons
         .filter((a) => a && a.label)
@@ -54,7 +64,7 @@ const updateSettings = async (req, res) => {
       }));
     }
     await s.save();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons" } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

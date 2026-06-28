@@ -8,6 +8,14 @@ const SettingsSchema = new mongoose.Schema(
     whatsappNumber: { type: String, default: "" },
     chatEnabled: { type: Boolean, default: true },
     navStyle: { type: String, enum: ["buttons", "dropdown"], default: "buttons" },
+    homeCards: {
+      type: [{ href: String, label: String, desc: String, icon: String }],
+      default: [
+        { href: "/marketplace", label: "المتجر", desc: "أحدث معدات الغوص", icon: "🛒" },
+        { href: "/retreats", label: "الباقات الفاخرة", desc: "تجارب راقية في البحر الأحمر", icon: "✦" },
+        { href: "/weight-calculator", label: "حاسبة الأوزان", desc: "احسب وزن الرصاص المناسب", icon: "⚖️" },
+      ],
+    },
     addons: {
       type: [{ key: String, label: String, price: Number, perPerson: Boolean }],
       default: [

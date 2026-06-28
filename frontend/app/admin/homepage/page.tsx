@@ -21,6 +21,7 @@ const BLOCK_REGISTRY: Record<string, { label: string; icon: string; desc: string
   featured_sites:    { label: "مواقع الغوص المميزة",     icon: "📍", desc: "صف أفقي بمواقع الغوص المختارة" },
   weight_calculator: { label: "حاسبة وزن الحزام",        icon: "⚖️", desc: "أداة تفاعلية لحساب وزن الرصاص" },
   community_survey:  { label: "استطلاع المجتمع",         icon: "📋", desc: "تصويت للغوّاصين على سؤال أسبوعي" },
+  page_cards:        { label: "بطاقات الصفحات",          icon: "🃏", desc: "بطاقات لأي صفحة تختارها (حرّرها من «بطاقات الرئيسية»)" },
 };
 
 export default function HomepageBlocksAdmin() {
