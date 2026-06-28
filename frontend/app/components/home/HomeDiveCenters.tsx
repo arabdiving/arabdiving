@@ -54,7 +54,7 @@ export default async function HomeDiveCenters() {
   if (centers.length === 0) return null;
 
   return (
-    <section style={{ padding: "60px 0", background: "white" }}>
+    <section style={{ padding: "60px 0", background: "var(--surface)" }}>
       <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "0 24px" }}>
 
         {/* Header */}
@@ -105,7 +105,7 @@ export default async function HomeDiveCenters() {
               <div key={center._id} style={{
                 flex: "0 0 280px",
                 scrollSnapAlign: "start",
-                background: "white",
+                background: "var(--surface)",
                 borderRadius: "16px",
                 overflow: "hidden",
                 boxShadow: "0 6px 20px rgba(0,0,0,0.08)",

@@ -8,12 +8,12 @@ export default function Community() {
   const segments = cm.segments || [];
 
   return (
-    <section style={{ padding: "90px 20px", background: "white" }}>
+    <section style={{ padding: "90px 20px", background: "var(--surface)" }}>
       <div style={{ maxWidth: "1200px", margin: "auto" }}>
         <div style={{ textAlign: "center", marginBottom: "55px" }}>
           <span style={{ display: "inline-block", background: "rgba(46,117,182,0.12)", color: "var(--mid)", padding: "8px 20px", borderRadius: "30px", marginBottom: "18px", fontSize: "15px" }}>{cm.badge}</span>
           <h2 style={{ fontSize: "38px", color: "var(--navy)", marginBottom: "16px" }}>{cm.title}</h2>
-          <p style={{ fontSize: "19px", color: "#666", maxWidth: "640px", margin: "auto", lineHeight: 1.9 }}>{cm.subtitle}</p>
+          <p style={{ fontSize: "19px", color: "var(--muted)", maxWidth: "640px", margin: "auto", lineHeight: 1.9 }}>{cm.subtitle}</p>
         </div>
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))", gap: "28px" }}>

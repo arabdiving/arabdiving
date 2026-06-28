@@ -32,7 +32,7 @@ export default function Stats() {
   ];
 
   return (
-    <section style={{ padding: "80px 20px", background: "white" }}>
+    <section style={{ padding: "80px 20px", background: "var(--surface)" }}>
       <div
         style={{
           maxWidth: "1200px",

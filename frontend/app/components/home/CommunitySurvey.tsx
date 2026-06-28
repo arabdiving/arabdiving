@@ -115,7 +115,7 @@ export default function CommunitySurvey() {
 
         {/* Survey card */}
         <div style={{
-          background: "white", borderRadius: "20px", padding: "32px",
+          background: "var(--surface)", borderRadius: "20px", padding: "32px",
           boxShadow: "0 8px 30px rgba(13,44,84,0.1)",
           border: "1px solid #dde8f4",
         }}>

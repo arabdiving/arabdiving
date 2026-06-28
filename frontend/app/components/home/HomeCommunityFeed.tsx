@@ -109,7 +109,7 @@ export default function HomeCommunityFeed() {
                   style={{
                     flex: "0 0 300px",
                     scrollSnapAlign: "start",
-                    background: "#fff",
+                    background: "var(--surface)",
                     borderRadius: "16px",
                     padding: "18px",
                     border: "1px solid #dde8f4",
@@ -183,7 +183,7 @@ export default function HomeCommunityFeed() {
 
             <div style={{ textAlign: "center", marginTop: "24px" }}>
               <Link href="/community" style={{
-                display: "inline-block", background: "white", color: "var(--navy)",
+                display: "inline-block", background: "var(--surface)", color: "var(--navy)",
                 border: "2px solid var(--navy)", padding: "10px 28px",
                 borderRadius: "10px", fontWeight: 600, textDecoration: "none", fontSize: "14px",
               }}>

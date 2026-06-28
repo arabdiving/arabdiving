@@ -42,9 +42,9 @@ img {
   min-height: 80vh;
   background: linear-gradient(
     135deg,
-    #08233e 0%,
-    #0d2c54 50%,
-    #2e75b6 100%
+    var(--hero) 0%,
+    var(--navy) 55%,
+    var(--mid) 100%
   );
 
   display: flex;
@@ -88,7 +88,7 @@ img {
 }
 
 .primary-btn {
-  background: #2e75b6;
+  background: var(--gold);
   color: white;
   border: none;
   padding: 14px 28px;

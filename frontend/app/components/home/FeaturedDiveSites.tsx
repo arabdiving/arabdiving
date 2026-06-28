@@ -78,7 +78,7 @@ export default async function FeaturedDiveSites() {
               <div key={site._id} style={{
                 flex: "0 0 280px",
                 scrollSnapAlign: "start",
-                background: "white",
+                background: "var(--surface)",
                 borderRadius: "16px",
                 overflow: "hidden",
                 boxShadow: "0 6px 20px rgba(0,0,0,0.08)",
