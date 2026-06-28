@@ -67,7 +67,7 @@ export default function WeightCalculator() {
   const calc = () => setResult(calcLead(form));
 
   return (
-    <section style={{ padding: "70px 20px", background: "linear-gradient(135deg,#0d2c54 0%,#0b3d2e 100%)" }}>
+    <section style={{ padding: "70px 20px", background: "linear-gradient(135deg,#08233e 0%,#0d2c54 55%,#2e75b6 100%)" }}>
       <div style={{ maxWidth: "780px", margin: "0 auto" }}>
 
         {/* Header */}

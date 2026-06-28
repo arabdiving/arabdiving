@@ -49,7 +49,7 @@ export default function HomeCommunityFeed() {
   }, []);
 
   return (
-    <section style={{ padding: "60px 0", background: "#f0f5fb" }}>
+    <section style={{ padding: "60px 0", background: "var(--background)" }}>
       <div style={{ maxWidth: "1300px", margin: "0 auto", padding: "0 24px" }}>
 
         {/* Header */}

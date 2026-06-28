@@ -14,7 +14,7 @@ export const metadata: Metadata = {
 
 export default function WeightCalculatorPage() {
   return (
-    <main style={{ minHeight: "100vh", background: "linear-gradient(135deg,#0d2c54 0%,#0b3d2e 100%)" }}>
+    <main style={{ minHeight: "100vh", background: "linear-gradient(135deg,#08233e 0%,#0d2c54 55%,#2e75b6 100%)" }}>
       <WeightCalculator />
     </main>
   );

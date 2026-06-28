@@ -100,7 +100,7 @@ export default function CommunitySurvey() {
   };
 
   return (
-    <section style={{ padding: "70px 20px", background: "#f0f5fb" }}>
+    <section style={{ padding: "70px 20px", background: "var(--background)" }}>
       <div style={{ maxWidth: "680px", margin: "0 auto" }}>
 
         {/* Header */}
