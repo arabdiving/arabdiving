@@ -14,6 +14,7 @@ const ProductSchema = new mongoose.Schema(
     sizes: { type: [String], default: [] },          // ["M","L"] أو ["32","34"]
     inStock: { type: Boolean, default: true },
     active: { type: Boolean, default: true },
+    center: { type: mongoose.Schema.Types.ObjectId, ref: "PartnerCenter", default: null },
   },
   { timestamps: true }
 );

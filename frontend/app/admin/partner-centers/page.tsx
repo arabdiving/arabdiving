@@ -14,7 +14,7 @@ interface Center {
   image: string; images: string[];
   rating: number; reviewsCount: number;
   priceFrom: number; currency: string;
-  whatsapp: string; tier: string; active: boolean;
+  whatsapp: string; tier: string; active: boolean; slug: string; ownerEmail: string;
   badges: Badges;
 }
 
@@ -29,7 +29,7 @@ const BADGE_LABELS: { key: keyof Badges; label: string; emoji: string }[] = [
 ];
 
 const emptyBadges: Badges = { womenStaff: false, privateTrip: false, family: false, separateFacilities: false, sanitizedGear: false, technical: false, ecoFriendly: false };
-const empty: Center = { name: "", country: "مصر", city: "", description: "", image: "", images: [], rating: 0, reviewsCount: 0, priceFrom: 0, currency: "$", whatsapp: "", tier: "silver", active: true, badges: { ...emptyBadges } };
+const empty: Center = { name: "", country: "مصر", city: "", description: "", image: "", images: [], rating: 0, reviewsCount: 0, priceFrom: 0, currency: "$", whatsapp: "", tier: "silver", active: true, slug: "", ownerEmail: "", badges: { ...emptyBadges } };
 
 const resolve = (u: string) => (u ? (/^https?:\/\//.test(u) ? u : `/images/${u}`) : "");
 
@@ -54,7 +54,7 @@ export default function AdminPartnerCenters() {
     setForm({
       name: c.name, country: c.country || "مصر", city: c.city || "", description: c.description || "",
       image: imgs[0] || "", images: imgs, rating: c.rating || 0, reviewsCount: c.reviewsCount || 0,
-      priceFrom: c.priceFrom || 0, currency: c.currency || "$", whatsapp: c.whatsapp || "",
+      priceFrom: c.priceFrom || 0, currency: c.currency || "$", whatsapp: c.whatsapp || "", slug: c.slug || "", ownerEmail: "",
       tier: c.tier || "silver", active: c.active !== false, badges: { ...emptyBadges, ...(c.badges || {}) },
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -86,7 +86,8 @@ export default function AdminPartnerCenters() {
     setMsg("");
     const url = editingId ? `${API_BASE}/api/admin/partner-centers/${editingId}` : `${API_BASE}/api/admin/partner-centers`;
     const method = editingId ? "PUT" : "POST";
-    const payload = { ...form, priceFrom: Number(form.priceFrom), rating: Number(form.rating), reviewsCount: Number(form.reviewsCount), image: form.images[0] || form.image || "" };
+    const payload: any = { ...form, priceFrom: Number(form.priceFrom), rating: Number(form.rating), reviewsCount: Number(form.reviewsCount), image: form.images[0] || form.image || "" };
+    if (!payload.ownerEmail) delete payload.ownerEmail;
     const res = await fetch(url, { method, headers: authHeaders(), body: JSON.stringify(payload) });
     const d = await res.json();
     if (d.success) { setMsg(editingId ? "تم تحديث المركز ✅" : "تمت إضافة المركز ✅"); reset(); load(); }
@@ -135,6 +136,8 @@ export default function AdminPartnerCenters() {
           <Field label="التقييم (0-5)"><input style={inp} type="number" step="0.1" min="0" max="5" value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) })} /></Field>
           <Field label="عدد التقييمات"><input style={inp} type="number" value={form.reviewsCount} onChange={(e) => setForm({ ...form, reviewsCount: Number(e.target.value) })} /></Field>
           <Field label="واتساب (للحجز)"><input style={inp} value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} placeholder="مثال: 20100..." /></Field>
+          <Field label="رابط المتجر (slug) — يظهر كـ /store/الاسم"><input style={inp} value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value.replace(/\s+/g, "-").toLowerCase() })} placeholder="مثال: arabdive-store" /></Field>
+          <Field label="بريد مالك المتجر (يربط حسابه)"><input style={inp} type="email" value={form.ownerEmail} onChange={(e) => setForm({ ...form, ownerEmail: e.target.value })} placeholder="اتركه فارغًا لعدم التغيير" /></Field>
           <Field label="المستوى">
             <select style={inp} value={form.tier} onChange={(e) => setForm({ ...form, tier: e.target.value })}>
               <option value="silver">فضي</option>

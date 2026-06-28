@@ -25,6 +25,7 @@ const PAGES: { href: string; label: string; locked?: boolean }[] = [
   { href: "/members", label: "الأعضاء" },
   { href: "/communities", label: "المجتمعات اللونية" },
   { href: "/messages", label: "الرسائل" },
+  { href: "/my-store", label: "متجري (الشركاء)" },
   { href: "/logbook", label: "اللوج بوك" },
 ];
 

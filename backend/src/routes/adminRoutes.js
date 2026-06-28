@@ -20,6 +20,7 @@ const { adminOnly } = require("../middleware/adminMiddleware");
 const upload = require("../middleware/uploadMiddleware");
 const DiveSite = require("../models/DiveSite");
 const PartnerCenter = require("../models/PartnerCenter");
+const User = require("../models/User");
 
 // Everything here requires an authenticated admin.
 router.use(protect, adminOnly);
@@ -85,6 +86,17 @@ const SEED_CENTERS = [
   { name: "مركز الغوص الملكي", city: "الغردقة", description: "رحلات قوارب يومية ومعدات حديثة، مع باقات خاصة للعائلات الخليجية.", priceFrom: 160, currency: "$", rating: 4.5, reviewsCount: 142, tier: "silver", badges: { womenStaff: false, privateTrip: true, family: true, separateFacilities: true, sanitizedGear: true, technical: false, ecoFriendly: false } },
 ];
 
+
+async function resolveOwner(body) {
+  if (typeof body.ownerEmail === "string") {
+    const email = body.ownerEmail.trim().toLowerCase();
+    delete body.ownerEmail;
+    if (email) { const u = await User.findOne({ email }); body.owner = u ? u._id : null; }
+    else body.owner = null;
+  }
+  return body;
+}
+
 router.post("/partner-centers/seed-defaults", async (req, res) => {
   try {
     let created = 0, skipped = 0;
@@ -102,6 +114,7 @@ router.post("/partner-centers/seed-defaults", async (req, res) => {
 
 router.post("/partner-centers", async (req, res) => {
   try {
+    await resolveOwner(req.body);
     const center = await PartnerCenter.create(req.body);
     res.status(201).json({ success: true, center });
   } catch (error) {
@@ -111,6 +124,7 @@ router.post("/partner-centers", async (req, res) => {
 
 router.put("/partner-centers/:id", async (req, res) => {
   try {
+    await resolveOwner(req.body);
     const center = await PartnerCenter.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
     if (!center) return res.status(404).json({ success: false, message: "المركز غير موجود" });
     res.json({ success: true, center });

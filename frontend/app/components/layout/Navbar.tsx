@@ -30,6 +30,7 @@ const navLinks = [
   { href: "/members", label: "الأعضاء" },
   { href: "/communities", label: "المجتمعات" },
   { href: "/messages", label: "الرسائل" },
+  { href: "/my-store", label: "متجري" },
   { href: "/logbook", label: "اللوج بوك" },
 ];
 
