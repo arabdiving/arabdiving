@@ -10,7 +10,7 @@ const getSettings = async () => {
 const readSettings = async (req, res) => {
   try {
     const s = await getSettings();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, navGroups: s.navGroups || [] } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -45,11 +45,23 @@ const updateSettings = async (req, res) => {
             .map((it) => ({ href: String(it.href).slice(0, 120), label: String(it.label || "").slice(0, 60) })),
         }));
     }
+    const THEME_KEYS = ["navy", "mid", "gold", "background", "surface", "text", "muted", "border", "hero"];
+    const okColor = (v) => typeof v === "string" && /^#?[0-9a-zA-Z(),.%\s]{3,40}$/.test(v);
     if (req.body.theme && typeof req.body.theme === "object") {
-      const ok = (v) => typeof v === "string" && /^#?[0-9a-zA-Z(),.%\s]{3,40}$/.test(v);
       s.theme = s.theme || {};
-      ["navy", "mid", "gold", "background"].forEach((k) => { if (ok(req.body.theme[k])) s.theme[k] = req.body.theme[k]; });
+      THEME_KEYS.forEach((k) => { if (okColor(req.body.theme[k])) s.theme[k] = req.body.theme[k]; });
       s.markModified("theme");
+    }
+    if (req.body.dayNight && typeof req.body.dayNight === "object") {
+      s.dayNight = s.dayNight || {};
+      if (typeof req.body.dayNight.enabled === "boolean") s.dayNight.enabled = req.body.dayNight.enabled;
+      const clean = (obj) => {
+        if (!obj || typeof obj !== "object") return undefined;
+        const o = {}; THEME_KEYS.forEach((k) => { if (okColor(obj[k])) o[k] = obj[k]; }); return o;
+      };
+      if (req.body.dayNight.day) s.dayNight.day = clean(req.body.dayNight.day);
+      if (req.body.dayNight.night) s.dayNight.night = clean(req.body.dayNight.night);
+      s.markModified("dayNight");
     }
     if (Array.isArray(req.body.homeCards)) {
       s.homeCards = req.body.homeCards
@@ -80,7 +92,7 @@ const updateSettings = async (req, res) => {
       }));
     }
     await s.save();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, navGroups: s.navGroups || [] } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

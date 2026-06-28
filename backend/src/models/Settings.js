@@ -17,6 +17,16 @@ const SettingsSchema = new mongoose.Schema(
       mid:        { type: String, default: "#2e75b6" },
       gold:       { type: String, default: "#c9952a" },
       background: { type: String, default: "#f5f7fa" },
+      surface:    { type: String, default: "#ffffff" },
+      text:       { type: String, default: "#1e293b" },
+      muted:      { type: String, default: "#64748b" },
+      border:     { type: String, default: "#e2e8f0" },
+      hero:       { type: String, default: "#08233e" },
+    },
+    dayNight: {
+      enabled: { type: Boolean, default: false },
+      day: { type: mongoose.Schema.Types.Mixed, default: {} },
+      night: { type: mongoose.Schema.Types.Mixed, default: {} },
     },
     homeCards: {
       type: [{ href: String, label: String, desc: String, icon: String }],

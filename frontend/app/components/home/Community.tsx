@@ -18,10 +18,10 @@ export default function Community() {
 
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))", gap: "28px" }}>
           {segments.map((s: any, i: number) => (
-            <Link key={i} href={s.href || "#"} style={{ background: "var(--background)", borderRadius: "20px", padding: "40px 30px", textAlign: "center", display: "block", borderBottom: `4px solid ${s.color || "#2e75b6"}` }}>
+            <Link key={i} href={s.href || "#"} style={{ background: "var(--surface)", borderRadius: "20px", padding: "40px 30px", textAlign: "center", display: "block", borderBottom: `4px solid ${s.color || "#2e75b6"}` }}>
               <div style={{ fontSize: "52px", marginBottom: "18px" }}>{s.icon}</div>
-              <h3 style={{ color: "var(--navy)", fontSize: "24px", marginBottom: "12px" }}>{s.title}</h3>
-              <p style={{ color: "#555", lineHeight: 1.8, marginBottom: "18px" }}>{s.desc}</p>
+              <h3 style={{ color: "var(--text)", fontSize: "24px", marginBottom: "12px" }}>{s.title}</h3>
+              <p style={{ color: "var(--muted)", lineHeight: 1.8, marginBottom: "18px" }}>{s.desc}</p>
               <span style={{ color: s.color || "#2e75b6", fontWeight: 600 }}>اكتشف المزيد ←</span>
             </Link>
           ))}

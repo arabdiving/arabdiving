@@ -46,16 +46,16 @@ export default function Stats() {
           <div
             key={c.label}
             style={{
-              background: "var(--background)",
+              background: "var(--surface)",
               borderRadius: "15px",
               padding: "30px",
               textAlign: "center",
             }}
           >
-            <h2 style={{ color: "var(--navy)", fontSize: "40px", marginBottom: "10px" }}>
+            <h2 style={{ color: "var(--text)", fontSize: "40px", marginBottom: "10px" }}>
               {c.value}
             </h2>
-            <p style={{ color: "#666", fontSize: "18px" }}>{c.label}</p>
+            <p style={{ color: "var(--muted)", fontSize: "18px" }}>{c.label}</p>
           </div>
         ))}
       </div>
