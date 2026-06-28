@@ -8,6 +8,12 @@ const SettingsSchema = new mongoose.Schema(
     whatsappNumber: { type: String, default: "" },
     chatEnabled: { type: Boolean, default: true },
     navStyle: { type: String, enum: ["buttons", "dropdown"], default: "buttons" },
+    theme: {
+      navy:       { type: String, default: "#0d2c54" },
+      mid:        { type: String, default: "#2e75b6" },
+      gold:       { type: String, default: "#c9952a" },
+      background: { type: String, default: "#f5f7fa" },
+    },
     homeCards: {
       type: [{ href: String, label: String, desc: String, icon: String }],
       default: [

@@ -10,7 +10,7 @@ const getSettings = async () => {
 const readSettings = async (req, res) => {
   try {
     const s = await getSettings();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [] } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {} } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -34,6 +34,12 @@ const updateSettings = async (req, res) => {
     }
     if (["buttons", "dropdown"].includes(req.body.navStyle)) {
       s.navStyle = req.body.navStyle;
+    }
+    if (req.body.theme && typeof req.body.theme === "object") {
+      const ok = (v) => typeof v === "string" && /^#?[0-9a-zA-Z(),.%\s]{3,40}$/.test(v);
+      s.theme = s.theme || {};
+      ["navy", "mid", "gold", "background"].forEach((k) => { if (ok(req.body.theme[k])) s.theme[k] = req.body.theme[k]; });
+      s.markModified("theme");
     }
     if (Array.isArray(req.body.homeCards)) {
       s.homeCards = req.body.homeCards
@@ -64,7 +70,7 @@ const updateSettings = async (req, res) => {
       }));
     }
     await s.save();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [] } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {} } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

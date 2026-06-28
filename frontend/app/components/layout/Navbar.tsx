@@ -42,7 +42,7 @@ export default function Navbar() {
   const [navStyle, setNavStyle] = useState("buttons");
   const pathname = usePathname();
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
-  const activeStyle = (href: string) => (isActive(href) ? { background: "#c9952a", color: "#0B2C59", fontWeight: 700 } : {});
+  const activeStyle = (href: string) => (isActive(href) ? { background: "var(--gold)", color: "#fff", fontWeight: 700 } : {});
 
   useEffect(() => {
     try {
@@ -72,7 +72,7 @@ export default function Navbar() {
   const authArea = !user ? (
     <>
       <Link href="/login" style={linkStyle} onClick={() => setOpen(false)}>تسجيل الدخول</Link>
-      <Link href="/register" onClick={() => setOpen(false)} style={{ background: "#c9952a", color: "white", padding: "9px 18px", borderRadius: "8px", fontSize: "15px", textAlign: "center" }}>انضم الآن</Link>
+      <Link href="/register" onClick={() => setOpen(false)} style={{ background: "var(--gold)", color: "white", padding: "9px 18px", borderRadius: "8px", fontSize: "15px", textAlign: "center" }}>انضم الآن</Link>
     </>
   ) : (
     <>
@@ -85,7 +85,7 @@ export default function Navbar() {
   );
 
   return (
-    <nav className={navStyle === "dropdown" ? "nav-dropdown-mode" : undefined} style={{ background: "#0B2C59", color: "white", padding: "14px 20px" }}>
+    <nav className={navStyle === "dropdown" ? "nav-dropdown-mode" : undefined} style={{ background: "var(--navy)", color: "white", padding: "14px 20px" }}>
       <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center", gap: "16px" }}>
         <Link href="/" style={{ fontSize: "22px", fontWeight: "bold", color: "white" }}>ArabDiving</Link>
 

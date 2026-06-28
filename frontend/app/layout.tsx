@@ -8,6 +8,7 @@ import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import ChatWidget from "./components/ChatWidget";
 import PwaRegister from "./components/PwaRegister";
+import ThemeStyle from "./components/ThemeStyle";
 
 const cairo = Cairo({
   subsets: ["arabic"],
@@ -68,6 +69,7 @@ gtag('config', '${GA_ID}');`}
           </>
         )}
 
+        <ThemeStyle />
         <Navbar />
 
         {children}
