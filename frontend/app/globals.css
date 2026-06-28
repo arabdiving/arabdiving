@@ -174,3 +174,7 @@ html, body {
 .nav-dropdown-mode .nav-desktop { display: none !important; }
 .nav-dropdown-mode .nav-burger { display: inline-block !important; }
 .nav-dropdown-mode .nav-mobile-panel { display: flex !important; }
+
+/* Sidebar nav mode: burger at all widths, content shown in side drawer */
+.nav-sidebar-mode .nav-desktop { display: none !important; }
+.nav-sidebar-mode .nav-burger { display: inline-block !important; }

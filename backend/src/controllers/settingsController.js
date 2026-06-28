@@ -10,7 +10,7 @@ const getSettings = async () => {
 const readSettings = async (req, res) => {
   try {
     const s = await getSettings();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {} } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, navGroups: s.navGroups || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -32,8 +32,18 @@ const updateSettings = async (req, res) => {
     if (typeof req.body.chatEnabled === "boolean") {
       s.chatEnabled = req.body.chatEnabled;
     }
-    if (["buttons", "dropdown"].includes(req.body.navStyle)) {
+    if (["buttons", "dropdown", "sidebar"].includes(req.body.navStyle)) {
       s.navStyle = req.body.navStyle;
+    }
+    if (Array.isArray(req.body.navGroups)) {
+      s.navGroups = req.body.navGroups
+        .filter((g) => g && g.label)
+        .map((g) => ({
+          label: String(g.label).slice(0, 60),
+          items: (Array.isArray(g.items) ? g.items : [])
+            .filter((it) => it && it.href)
+            .map((it) => ({ href: String(it.href).slice(0, 120), label: String(it.label || "").slice(0, 60) })),
+        }));
     }
     if (req.body.theme && typeof req.body.theme === "object") {
       const ok = (v) => typeof v === "string" && /^#?[0-9a-zA-Z(),.%\s]{3,40}$/.test(v);
@@ -70,7 +80,7 @@ const updateSettings = async (req, res) => {
       }));
     }
     await s.save();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {} } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, navGroups: s.navGroups || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -67,7 +67,8 @@ export default function AdminPagesVisibility() {
         <label style={{ display: "block", fontWeight: 700, color: "var(--navy)", marginBottom: "8px" }}>شكل قائمة التنقّل</label>
         <select value={navStyle} onChange={(e) => setNavStyle(e.target.value)} style={{ padding: "10px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "15px" }}>
           <option value="buttons">أزرار أفقية (الافتراضي)</option>
-          <option value="dropdown">قائمة منسدلة (زر ☰ على كل الأحجام)</option>
+          <option value="dropdown">قائمة منسدلة علوية (زر ☰)</option>
+          <option value="sidebar">درج جانبي (يفتح من الجنب)</option>
         </select>
       </div>
       {msg && <p style={{ color: msg.includes("✅") ? "#1e7e34" : "#c0392b", marginBottom: "12px" }}>{msg}</p>}
