@@ -17,6 +17,8 @@ const DEFAULT_LINKS: MItem[] = [
   { href: "/retreats", label: "باقات خاصة" },
   { href: "/trips", label: "الرحلات" },
   { href: "/guide", label: "الدليل" },
+  { href: "/courses", label: "الدورات" },
+  { href: "/try-diving", label: "جرّب الغوص" },
   { href: "/weight-calculator", label: "حاسبة الأوزان" },
   { href: "/trends", label: "الصيحات والأمان" },
   { href: "/temperatures", label: "حرارة المياه" },

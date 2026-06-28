@@ -15,6 +15,7 @@ const PAGES = [
   { key: "stories", label: "القصص والمسابقة" },
   { key: "retreats", label: "الباقات الفاخرة" },
   { key: "trends", label: "الصيحات والأمان" },
+  { key: "tryDiving", label: "جرّب الغوص" },
 ];
 
 const LABELS: Record<string, string> = {
