@@ -23,6 +23,9 @@ const KNOWN: { href: string; label: string }[] = [
   { href: "/kids", label: "الأطفال" },
   { href: "/communities", label: "المجتمعات" },
   { href: "/members", label: "الأعضاء" },
+  { href: "/messages", label: "الرسائل" },
+  { href: "/game", label: "لعبة الأطفال" },
+  { href: "/logbook", label: "اللوج بوك" },
 ];
 
 export default function AdminHomeCards() {
