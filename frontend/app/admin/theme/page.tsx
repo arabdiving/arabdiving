@@ -12,6 +12,11 @@ const PRESETS: { name: string; t: Theme }[] = [
   { name: "وردي راقٍ", t: { ...DEFAULT, navy: "#5d1a49", mid: "#c2185b", gold: "#d6418a", background: "#fff5f9", hero: "#5d1a49" } },
   { name: "زمردي فاخر", t: { ...DEFAULT, navy: "#0b3d2e", mid: "#1e8a5a", gold: "#c9a84c", background: "#f3faf6", hero: "#0b3d2e" } },
   { name: "ليلي عميق (داكن)", t: { navy: "#0f1424", mid: "#4361ee", gold: "#f4a261", background: "#0b0f1a", surface: "#161c2e", text: "#e8ecf4", muted: "#9aa3b8", border: "#2a3350", hero: "#0f1424" } },
+  { name: "غروب مرجاني", t: { ...DEFAULT, navy: "#5a1f1a", mid: "#e07a5f", gold: "#f2a541", background: "#fff6f0", hero: "#5a1f1a" } },
+  { name: "رمادي أنيق", t: { ...DEFAULT, navy: "#1f2937", mid: "#475569", gold: "#0ea5e9", background: "#f8fafc", hero: "#1f2937" } },
+  { name: "ذهبي ملكي", t: { ...DEFAULT, navy: "#0a1a3a", mid: "#b8860b", gold: "#d4af37", background: "#fbf7ee", hero: "#0a1a3a" } },
+  { name: "أرجواني عميق", t: { ...DEFAULT, navy: "#2e1065", mid: "#7c3aed", gold: "#f59e0b", background: "#f7f5ff", hero: "#2e1065" } },
+  { name: "نيون داكن", t: { navy: "#0d1117", mid: "#00d4ff", gold: "#ff4d6d", background: "#0a0e14", surface: "#161b26", text: "#e6edf3", muted: "#8b97a8", border: "#232b39", hero: "#0d1117" } },
 ];
 
 const FIELDS: { key: keyof Theme; label: string }[] = [
