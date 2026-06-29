@@ -68,26 +68,28 @@ export default function Hero() {
           {c.subtitle || "أكبر مجتمع عربي للغوص — رحلات للعائلات والسيدات والشباب\nمع مراكز معتمدة وطاقم نسائي ومعدات معقّمة"}
         </p>
 
-        {/* Airbnb-style search bar */}
-        <div style={{ background: "white", borderRadius: "18px", padding: "6px", display: "flex", alignItems: "center", maxWidth: "780px", margin: "0 auto 32px", boxShadow: "0 24px 64px rgba(0,0,0,0.32)", animation: "fadeInUp 0.8s 0.55s ease both" }}>
-          <div style={{ flex: 1, padding: "12px 20px", textAlign: "start", cursor: "pointer", borderRadius: "12px" }}>
-            <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--muted)", marginBottom: "3px", letterSpacing: "0.6px" }}>الوجهة</div>
-            <div style={{ fontSize: "15px", fontWeight: 600, color: "var(--text)" }}>شرم الشيخ، دهب...</div>
+        {/* Airbnb-style search bar — كل الحقول تفتح صفحة الحجز */}
+        <Link href="/family-booking" style={{ textDecoration: "none", display: "block", maxWidth: "780px", margin: "0 auto 32px", animation: "fadeInUp 0.8s 0.55s ease both" }}>
+          <div style={{ background: "white", borderRadius: "18px", padding: "6px", display: "flex", alignItems: "center", boxShadow: "0 24px 64px rgba(0,0,0,0.32)", cursor: "pointer" }}>
+            <div style={{ flex: 1, padding: "12px 20px", textAlign: "start", borderRadius: "12px" }}>
+              <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--muted)", marginBottom: "3px", letterSpacing: "0.6px" }}>الوجهة</div>
+              <div style={{ fontSize: "15px", fontWeight: 600, color: "var(--text)" }}>شرم الشيخ، دهب...</div>
+            </div>
+            <div style={{ width: "1px", height: "38px", background: "var(--border)", flexShrink: 0 }} />
+            <div style={{ flex: 1, padding: "12px 20px", textAlign: "start", borderRadius: "12px" }}>
+              <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--muted)", marginBottom: "3px", letterSpacing: "0.6px" }}>التاريخ</div>
+              <div style={{ fontSize: "15px", fontWeight: 600, color: "var(--faint)" }}>اختر التاريخ</div>
+            </div>
+            <div style={{ width: "1px", height: "38px", background: "var(--border)", flexShrink: 0 }} />
+            <div style={{ flex: 1, padding: "12px 20px", textAlign: "start", borderRadius: "12px" }}>
+              <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--muted)", marginBottom: "3px", letterSpacing: "0.6px" }}>الأشخاص</div>
+              <div style={{ fontSize: "15px", fontWeight: 600, color: "var(--faint)" }}>أضف أشخاصاً</div>
+            </div>
+            <div style={{ background: "linear-gradient(135deg,var(--gold),var(--gold-light))", color: "white", padding: "15px 26px", borderRadius: "13px", fontSize: "16px", fontWeight: 700, whiteSpace: "nowrap", boxShadow: "0 4px 14px rgba(201,149,42,0.4)", margin: "2px", flexShrink: 0 }}>
+              🔍 ابحث
+            </div>
           </div>
-          <div style={{ width: "1px", height: "38px", background: "var(--border)", flexShrink: 0 }} />
-          <div style={{ flex: 1, padding: "12px 20px", textAlign: "start", cursor: "pointer", borderRadius: "12px" }}>
-            <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--muted)", marginBottom: "3px", letterSpacing: "0.6px" }}>التاريخ</div>
-            <div style={{ fontSize: "15px", fontWeight: 600, color: "var(--faint)" }}>اختر التاريخ</div>
-          </div>
-          <div style={{ width: "1px", height: "38px", background: "var(--border)", flexShrink: 0 }} />
-          <div style={{ flex: 1, padding: "12px 20px", textAlign: "start", cursor: "pointer", borderRadius: "12px" }}>
-            <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--muted)", marginBottom: "3px", letterSpacing: "0.6px" }}>الأشخاص</div>
-            <div style={{ fontSize: "15px", fontWeight: 600, color: "var(--faint)" }}>أضف أشخاصاً</div>
-          </div>
-          <Link href="/family-booking" style={{ background: "linear-gradient(135deg,var(--gold),var(--gold-light))", color: "white", border: "none", padding: "15px 26px", borderRadius: "13px", fontSize: "16px", fontWeight: 700, cursor: "pointer", whiteSpace: "nowrap", boxShadow: "0 4px 14px rgba(201,149,42,0.4)", margin: "2px", flexShrink: 0, transition: "all .2s", textDecoration: "none" }}>
-            🔍 ابحث
-          </Link>
-        </div>
+        </Link>
 
         {/* Quick action buttons */}
         <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap", animation: "fadeInUp 0.8s 0.7s ease both" }}>

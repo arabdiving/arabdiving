@@ -175,7 +175,7 @@ export default function Navbar() {
         </Link>
 
         {/* Desktop nav — 7 links + المزيد, no wrap */}
-        <div className="nav-desktop" style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: "2px", overflow: "hidden" }}>
+        <div className="nav-desktop" style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: "2px" }}>
           {deskMenu.map((e, i) =>
             e.href ? (
               <Link key={i} href={e.href} className="nav-pill" style={{ ...lnkBase, ...activeStyle(e.href) }}>
