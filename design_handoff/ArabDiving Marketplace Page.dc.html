@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { direction: rtl; font-family: 'Cairo', sans-serif; background: #f1f5fb; color: #0f172a; overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+    ::-webkit-scrollbar { width:5px; height:4px; }
+    ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:8px; }
+  </style>
+</helmet>
+
+<!-- NAVBAR -->
+<nav style="position:sticky;top:0;z-index:100;background:rgba(6,14,36,0.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 24px">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:66px;gap:16px">
+    <a href="/" style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <div style="width:38px;height:38px;background:linear-gradient(135deg,#0891b2,#c9952a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🤿</div>
+      <span style="color:white;font-size:19px;font-weight:900">ArabDiving</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:4px;flex:1;justify-content:center">
+      <a href="/"               style="color:rgba(255,255,255,0.7);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,0.08)">الرئيسية</a>
+      <a href="/family-booking" style="color:rgba(255,255,255,0.7);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,0.08)">احجز رحلة</a>
+      <a href="/dive-sites"     style="color:rgba(255,255,255,0.7);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,0.08)">مواقع الغوص</a>
+      <a href="/community"      style="color:rgba(255,255,255,0.7);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,0.08)">المجتمع</a>
+      <a href="/marketplace"    style="color:white;font-size:13px;padding:7px 11px;border-radius:8px;background:rgba(201,149,42,0.2);font-weight:700">المتجر</a>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-shrink:0">
+      <a href="/login"    style="color:rgba(255,255,255,0.65);font-size:13px;padding:7px 14px">تسجيل الدخول</a>
+      <a href="/register" style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;padding:8px 18px;border-radius:9px;font-weight:700;font-size:13px">انضم الآن</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO BANNER -->
+<section style="background:linear-gradient(160deg,#060e24 0%,#0d2c54 38%,#1e3a5f 70%,#c9952a 100%);padding:56px 24px 100px;position:relative;overflow:hidden">
+  <div style="position:absolute;top:0;right:0;width:500px;height:100%;background:radial-gradient(ellipse at 100% 50%,rgba(201,149,42,0.15) 0%,transparent 65%);pointer-events:none"></div>
+  <div style="max-width:1280px;margin:0 auto;position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:40px;flex-wrap:wrap">
+    <div>
+      <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);padding:7px 18px;border-radius:30px;margin-bottom:16px">
+        <span style="width:6px;height:6px;border-radius:50%;background:#c9952a"></span>
+        <span style="color:rgba(255,255,255,0.9);font-size:13px">متجر معدات الغوص العربي</span>
+      </div>
+      <h1 style="font-size:clamp(26px,4.5vw,52px);font-weight:900;color:white;line-height:1.2;margin-bottom:12px">
+        معدات الغوص الأصيلة<br>
+        <span style="background:linear-gradient(90deg,#c9952a,#f5c218);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">أسعار منافسة</span>
+      </h1>
+      <p style="font-size:clamp(14px,1.8vw,17px);color:rgba(255,255,255,0.72);line-height:1.8;max-width:480px;margin-bottom:28px">
+        تواصل مباشر مع البائع عبر واتساب — بدون عمولة، بدون وسيط، بدون تأخير
+      </p>
+      <!-- search bar -->
+      <div style="display:flex;background:white;border-radius:14px;overflow:hidden;max-width:520px;box-shadow:0 8px 28px rgba(0,0,0,0.2)">
+        <input type="text" placeholder="ابحث عن معدات الغوص..." style="flex:1;border:none;padding:14px 18px;font-family:inherit;font-size:14px;color:#0f172a;outline:none;background:transparent;direction:rtl">
+        <button style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;border:none;padding:14px 22px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;white-space:nowrap">🔍 بحث</button>
+      </div>
+    </div>
+    <!-- Hero product showcase -->
+    <div style="display:flex;gap:16px;flex-shrink:0">
+      <div style="width:140px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:18px;padding:16px;text-align:center;backdrop-filter:blur(8px)">
+        <div style="font-size:42px;margin-bottom:8px">🥽</div>
+        <div style="color:white;font-size:12px;font-weight:700;margin-bottom:4px">أقنعة</div>
+        <div style="color:#c9952a;font-size:13px;font-weight:800">من 85 ريال</div>
+      </div>
+      <div style="width:140px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:18px;padding:16px;text-align:center;backdrop-filter:blur(8px);margin-top:24px">
+        <div style="font-size:42px;margin-bottom:8px">🤿</div>
+        <div style="color:white;font-size:12px;font-weight:700;margin-bottom:4px">بدلات</div>
+        <div style="color:#c9952a;font-size:13px;font-weight:800">من 350 ريال</div>
+      </div>
+      <div style="width:140px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);border-radius:18px;padding:16px;text-align:center;backdrop-filter:blur(8px)">
+        <div style="font-size:42px;margin-bottom:8px">📷</div>
+        <div style="color:white;font-size:12px;font-weight:700;margin-bottom:4px">كاميرات</div>
+        <div style="color:#c9952a;font-size:13px;font-weight:800">من 690 ريال</div>
+      </div>
+    </div>
+  </div>
+  <!-- Wave -->
+  <div style="position:absolute;bottom:-1px;left:0;right:0;height:65px;overflow:hidden">
+    <svg viewBox="0 0 1440 65" preserveAspectRatio="none" style="width:100%;height:100%;display:block">
+      <path d="M0,38 C280,10 560,60 840,32 C1060,10 1260,55 1440,30 L1440,65 L0,65 Z" fill="#f1f5fb"></path>
+    </svg>
+  </div>
+</section>
+
+<!-- CATEGORY PILLS -->
+<section style="background:#f1f5fb;padding:28px 24px 10px">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="display:flex;gap:10px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none">
+      <button style="{{ catAll }}"      onclick="{{ setCatAll }}">🌊 الكل</button>
+      <button style="{{ catMasks }}"    onclick="{{ setCatMasks }}">🥽 أقنعة وأنابيب</button>
+      <button style="{{ catSuits }}"    onclick="{{ setCatSuits }}">🤿 بدلات</button>
+      <button style="{{ catFins }}"     onclick="{{ setCatFins }}">🦵 زعانف</button>
+      <button style="{{ catBCD }}"      onclick="{{ setCatBCD }}">🎽 سترات التعويم BCD</button>
+      <button style="{{ catRegulators }}" onclick="{{ setCatRegulators }}">⚙️ منظمات</button>
+      <button style="{{ catCameras }}"  onclick="{{ setCatCameras }}">📷 كاميرات وإضاءة</button>
+      <button style="{{ catKids }}"     onclick="{{ setCatKids }}">🐠 أطفال</button>
+      <button style="{{ catWomen }}"    onclick="{{ setCatWomen }}">🧕 سيدات</button>
+      <button style="{{ catUsed }}"     onclick="{{ setCatUsed }}">♻️ مستعمل</button>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN CONTENT -->
+<div style="background:#f1f5fb;padding:16px 24px 70px">
+  <div style="max-width:1280px;margin:0 auto;display:grid;grid-template-columns:260px 1fr;gap:24px;align-items:start">
+
+    <!-- SIDEBAR FILTERS -->
+    <div style="display:flex;flex-direction:column;gap:16px;position:sticky;top:82px">
+
+      <!-- Price Range -->
+      <div style="background:white;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05)">
+        <h4 style="font-size:13px;font-weight:800;color:#0d2c54;margin-bottom:14px">💰 نطاق السعر</h4>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="radio" name="price" style="accent-color:#0d2c54" checked> <span style="font-size:13px;color:#374151">أقل من 200 ريال</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="radio" name="price" style="accent-color:#0d2c54"> <span style="font-size:13px;color:#374151">200 — 500 ريال</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="radio" name="price" style="accent-color:#0d2c54"> <span style="font-size:13px;color:#374151">500 — 1000 ريال</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="radio" name="price" style="accent-color:#0d2c54"> <span style="font-size:13px;color:#374151">أكثر من 1000 ريال</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Condition -->
+      <div style="background:white;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05)">
+        <h4 style="font-size:13px;font-weight:800;color:#0d2c54;margin-bottom:14px">✨ الحالة</h4>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="checkbox" style="accent-color:#0d2c54" checked> <span style="font-size:13px;color:#374151">جديد</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="checkbox" style="accent-color:#0d2c54" checked> <span style="font-size:13px;color:#374151">مستعمل بحالة ممتازة</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="checkbox" style="accent-color:#0d2c54"> <span style="font-size:13px;color:#374151">مستعمل جيد</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Brand -->
+      <div style="background:white;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05)">
+        <h4 style="font-size:13px;font-weight:800;color:#0d2c54;margin-bottom:14px">🏷️ الماركة</h4>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="checkbox" style="accent-color:#0d2c54" checked> <span style="font-size:13px;color:#374151">Cressi</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="checkbox" style="accent-color:#0d2c54" checked> <span style="font-size:13px;color:#374151">Mares</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="checkbox" style="accent-color:#0d2c54"> <span style="font-size:13px;color:#374151">ScubaPro</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="checkbox" style="accent-color:#0d2c54"> <span style="font-size:13px;color:#374151">Aqualung</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="checkbox" style="accent-color:#0d2c54"> <span style="font-size:13px;color:#374151">Oceanic</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Ship from -->
+      <div style="background:white;border-radius:16px;padding:20px;box-shadow:0 2px 10px rgba(0,0,0,0.05)">
+        <h4 style="font-size:13px;font-weight:800;color:#0d2c54;margin-bottom:14px">📦 الشحن من</h4>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="checkbox" style="accent-color:#0d2c54" checked> <span style="font-size:13px;color:#374151">المملكة العربية السعودية</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="checkbox" style="accent-color:#0d2c54" checked> <span style="font-size:13px;color:#374151">مصر</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="checkbox" style="accent-color:#0d2c54"> <span style="font-size:13px;color:#374151">الإمارات</span>
+          </label>
+          <label style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 10px;border-radius:9px" style-hover="background:#f8fafc">
+            <input type="checkbox" style="accent-color:#0d2c54"> <span style="font-size:13px;color:#374151">الكويت</span>
+          </label>
+        </div>
+      </div>
+
+      <button style="background:#0d2c54;color:white;border:none;padding:12px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;transition:all .2s" style-hover="background:#0e3d6b;box-shadow:0 4px 14px rgba(13,44,84,0.3)">تطبيق الفلاتر</button>
+    </div>
+
+    <!-- PRODUCTS GRID -->
+    <div>
+      <!-- Toolbar -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div style="font-size:15px;font-weight:700;color:#0d2c54">
+          <span style="color:#c9952a">{{ productCount }}</span> منتج متاح
+        </div>
+        <div style="display:flex;align-items:center;gap:10px">
+          <span style="font-size:13px;color:#64748b">ترتيب:</span>
+          <select style="border:1.5px solid #e2e8f0;border-radius:9px;padding:7px 12px;font-family:inherit;font-size:13px;color:#0d2c54;background:white;cursor:pointer">
+            <option>الأكثر مبيعاً</option>
+            <option>الأقل سعراً</option>
+            <option>الأحدث</option>
+            <option>الأعلى تقييماً</option>
+          </select>
+          <div style="display:flex;gap:4px;background:white;border:1.5px solid #e2e8f0;border-radius:9px;padding:3px">
+            <button onclick="{{ setGrid }}" style="{{ gridBtn }}">▦</button>
+            <button onclick="{{ setList }}" style="{{ listBtn }}">☰</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Featured banner -->
+      <div style="background:linear-gradient(135deg,#c9952a 0%,#e8a830 50%,#f5c218 100%);border-radius:18px;padding:20px 26px;margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:14px">
+        <div style="display:flex;align-items:center;gap:14px">
+          <div style="font-size:40px">🎉</div>
+          <div>
+            <div style="color:white;font-size:18px;font-weight:900;margin-bottom:3px">تخفيضات صيف 2026</div>
+            <div style="color:rgba(255,255,255,0.85);font-size:13px">خصم حتى 40% على معدات الغوص المختارة</div>
+          </div>
+        </div>
+        <button style="background:white;color:#b45309;border:none;padding:10px 22px;border-radius:11px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;box-shadow:0 3px 10px rgba(0,0,0,0.1)" style-hover="box-shadow:0 6px 18px rgba(0,0,0,0.15)">تسوّق الآن ←</button>
+      </div>
+
+      <!-- Products grid -->
+      <div style="{{ gridStyle }}">
+
+        <!-- Product 1 -->
+        <div style="background:white;border-radius:18px;overflow:hidden;border:1px solid #f1f5f9;box-shadow:0 3px 14px rgba(0,0,0,0.06);transition:all .22s" style-hover="transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,0.11)">
+          <div style="height:190px;background:linear-gradient(135deg,#1e3a5f,#2e75b6);display:flex;align-items:center;justify-content:center;position:relative">
+            <span style="font-size:64px;filter:drop-shadow(0 6px 10px rgba(0,0,0,0.25))">🥽</span>
+            <div style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);color:white;font-size:10px;padding:3px 9px;border-radius:7px;font-weight:700">Cressi</div>
+            <div style="position:absolute;top:10px;left:10px;background:#ef4444;color:white;font-size:10px;padding:3px 9px;border-radius:7px;font-weight:700">-20%</div>
+            <button style="position:absolute;bottom:10px;left:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);color:white;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center" onclick="{{ toggleWish1 }}" style-hover="background:rgba(255,255,255,0.28)">{{ wish1Icon }}</button>
+          </div>
+          <div style="padding:16px">
+            <h4 style="font-size:15px;font-weight:800;color:#0d2c54;margin-bottom:4px;line-height:1.35">قناع غوص Cressi Big Eyes احترافي</h4>
+            <div style="font-size:12px;color:#64748b;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+              <span style="color:#f5a623">★★★★★</span><span>4.9 (47 تقييم)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <span style="font-size:22px;font-weight:900;color:#0d2c54">228</span>
+              <span style="font-size:13px;color:#94a3b8;text-decoration:line-through">285 ريال</span>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+              <span style="background:#f0fdf4;color:#16a34a;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600">✅ جديد</span>
+              <span style="background:#f0fdfe;color:#0891b2;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600">📦 توصيل للخليج</span>
+            </div>
+            <a href="https://wa.me/" style="display:flex;align-items:center;justify-content:center;gap:7px;background:#25D366;color:white;padding:11px;border-radius:11px;font-weight:700;font-size:13px;transition:opacity .15s" style-hover="opacity:0.88">
+              <span style="font-size:16px">💬</span> اطلب عبر واتساب
+            </a>
+          </div>
+        </div>
+
+        <!-- Product 2 -->
+        <div style="background:white;border-radius:18px;overflow:hidden;border:1px solid #f1f5f9;box-shadow:0 3px 14px rgba(0,0,0,0.06);transition:all .22s" style-hover="transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,0.11)">
+          <div style="height:190px;background:linear-gradient(135deg,#4a1942,#7c3aed);display:flex;align-items:center;justify-content:center;position:relative">
+            <span style="font-size:64px;filter:drop-shadow(0 6px 10px rgba(0,0,0,0.25))">🤿</span>
+            <div style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);color:white;font-size:10px;padding:3px 9px;border-radius:7px;font-weight:700">Mares</div>
+            <div style="position:absolute;top:10px;left:10px;background:#f5f3ff;color:#7c3aed;font-size:10px;padding:3px 9px;border-radius:7px;font-weight:700">🧕 للسيدات</div>
+            <button style="position:absolute;bottom:10px;left:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);color:white;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center" onclick="{{ toggleWish2 }}" style-hover="background:rgba(255,255,255,0.28)">{{ wish2Icon }}</button>
+          </div>
+          <div style="padding:16px">
+            <h4 style="font-size:15px;font-weight:800;color:#0d2c54;margin-bottom:4px;line-height:1.35">بدلة غوص نسائية Mares Pioneer 3mm</h4>
+            <div style="font-size:12px;color:#64748b;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+              <span style="color:#f5a623">★★★★★</span><span>4.8 (31 تقييم)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <span style="font-size:22px;font-weight:900;color:#0d2c54">890</span>
+              <span style="font-size:13px;color:#64748b">ريال</span>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+              <span style="background:#f0fdf4;color:#16a34a;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600">✅ جديد</span>
+              <span style="background:#f5f3ff;color:#7c3aed;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600">🧕 مقاسات كاملة</span>
+            </div>
+            <a href="https://wa.me/" style="display:flex;align-items:center;justify-content:center;gap:7px;background:#25D366;color:white;padding:11px;border-radius:11px;font-weight:700;font-size:13px;transition:opacity .15s" style-hover="opacity:0.88">
+              <span style="font-size:16px">💬</span> اطلب عبر واتساب
+            </a>
+          </div>
+        </div>
+
+        <!-- Product 3 -->
+        <div style="background:white;border-radius:18px;overflow:hidden;border:1px solid #f1f5f9;box-shadow:0 3px 14px rgba(0,0,0,0.06);transition:all .22s" style-hover="transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,0.11)">
+          <div style="height:190px;background:linear-gradient(135deg,#064e3b,#10b981);display:flex;align-items:center;justify-content:center;position:relative">
+            <span style="font-size:64px;filter:drop-shadow(0 6px 10px rgba(0,0,0,0.25))">🦵</span>
+            <div style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);color:white;font-size:10px;padding:3px 9px;border-radius:7px;font-weight:700">Mares</div>
+            <div style="position:absolute;top:10px;left:10px;background:#ef4444;color:white;font-size:10px;padding:3px 9px;border-radius:7px;font-weight:700">-15%</div>
+            <button style="position:absolute;bottom:10px;left:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);color:white;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center" onclick="{{ toggleWish3 }}" style-hover="background:rgba(255,255,255,0.28)">{{ wish3Icon }}</button>
+          </div>
+          <div style="padding:16px">
+            <h4 style="font-size:15px;font-weight:800;color:#0d2c54;margin-bottom:4px;line-height:1.35">زعانف سيليكون Mares Avanti Quattro</h4>
+            <div style="font-size:12px;color:#64748b;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+              <span style="color:#f5a623">★★★★★</span><span>4.9 (58 تقييم)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <span style="font-size:22px;font-weight:900;color:#0d2c54">357</span>
+              <span style="font-size:13px;color:#94a3b8;text-decoration:line-through">420 ريال</span>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+              <span style="background:#f0fdf4;color:#16a34a;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600">✅ جديد</span>
+              <span style="background:#f0fdfe;color:#0891b2;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600">📦 توصيل</span>
+            </div>
+            <a href="https://wa.me/" style="display:flex;align-items:center;justify-content:center;gap:7px;background:#25D366;color:white;padding:11px;border-radius:11px;font-weight:700;font-size:13px;transition:opacity .15s" style-hover="opacity:0.88">
+              <span style="font-size:16px">💬</span> اطلب عبر واتساب
+            </a>
+          </div>
+        </div>
+
+        <!-- Product 4 -->
+        <div style="background:white;border-radius:18px;overflow:hidden;border:1px solid #f1f5f9;box-shadow:0 3px 14px rgba(0,0,0,0.06);transition:all .22s" style-hover="transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,0.11)">
+          <div style="height:190px;background:linear-gradient(135deg,#1e40af,#3b82f6);display:flex;align-items:center;justify-content:center;position:relative">
+            <span style="font-size:64px;filter:drop-shadow(0 6px 10px rgba(0,0,0,0.25))">🎒</span>
+            <div style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);color:white;font-size:10px;padding:3px 9px;border-radius:7px;font-weight:700">ScubaPro</div>
+            <div style="position:absolute;top:10px;left:10px;background:#f0fdfe;color:#0891b2;font-size:10px;padding:3px 9px;border-radius:7px;font-weight:700">🐠 أطفال</div>
+            <button style="position:absolute;bottom:10px;left:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);color:white;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center" onclick="{{ toggleWish4 }}" style-hover="background:rgba(255,255,255,0.28)">{{ wish4Icon }}</button>
+          </div>
+          <div style="padding:16px">
+            <h4 style="font-size:15px;font-weight:800;color:#0d2c54;margin-bottom:4px;line-height:1.35">طقم غوص أطفال ScubaPro كامل</h4>
+            <div style="font-size:12px;color:#64748b;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+              <span style="color:#f5a623">★★★★★</span><span>5.0 (22 تقييم)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <span style="font-size:22px;font-weight:900;color:#0d2c54">650</span>
+              <span style="font-size:13px;color:#64748b">ريال</span>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+              <span style="background:#f0fdf4;color:#16a34a;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600">✅ جديد</span>
+              <span style="background:#fef9c3;color:#b45309;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600">🎁 هدية مثالية</span>
+            </div>
+            <a href="https://wa.me/" style="display:flex;align-items:center;justify-content:center;gap:7px;background:#25D366;color:white;padding:11px;border-radius:11px;font-weight:700;font-size:13px;transition:opacity .15s" style-hover="opacity:0.88">
+              <span style="font-size:16px">💬</span> اطلب عبر واتساب
+            </a>
+          </div>
+        </div>
+
+        <!-- Product 5 - Camera -->
+        <div style="background:white;border-radius:18px;overflow:hidden;border:1px solid #f1f5f9;box-shadow:0 3px 14px rgba(0,0,0,0.06);transition:all .22s" style-hover="transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,0.11)">
+          <div style="height:190px;background:linear-gradient(135deg,#1a1a2e,#374151);display:flex;align-items:center;justify-content:center;position:relative">
+            <span style="font-size:64px;filter:drop-shadow(0 6px 10px rgba(0,0,0,0.25))">📷</span>
+            <div style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);color:white;font-size:10px;padding:3px 9px;border-radius:7px;font-weight:700">GoPro</div>
+            <button style="position:absolute;bottom:10px;left:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);color:white;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center" onclick="{{ toggleWish5 }}" style-hover="background:rgba(255,255,255,0.28)">{{ wish5Icon }}</button>
+          </div>
+          <div style="padding:16px">
+            <h4 style="font-size:15px;font-weight:800;color:#0d2c54;margin-bottom:4px;line-height:1.35">GoPro Hero 12 Black للغوص</h4>
+            <div style="font-size:12px;color:#64748b;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+              <span style="color:#f5a623">★★★★☆</span><span>4.7 (19 تقييم)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <span style="font-size:22px;font-weight:900;color:#0d2c54">1,490</span>
+              <span style="font-size:13px;color:#64748b">ريال</span>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+              <span style="background:#f0fdf4;color:#16a34a;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600">✅ جديد</span>
+              <span style="background:#eff6ff;color:#1d4ed8;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600">🌊 مقاوم 60م</span>
+            </div>
+            <a href="https://wa.me/" style="display:flex;align-items:center;justify-content:center;gap:7px;background:#25D366;color:white;padding:11px;border-radius:11px;font-weight:700;font-size:13px;transition:opacity .15s" style-hover="opacity:0.88">
+              <span style="font-size:16px">💬</span> اطلب عبر واتساب
+            </a>
+          </div>
+        </div>
+
+        <!-- Product 6 - Used -->
+        <div style="background:white;border-radius:18px;overflow:hidden;border:1px solid #f1f5f9;box-shadow:0 3px 14px rgba(0,0,0,0.06);transition:all .22s" style-hover="transform:translateY(-4px);box-shadow:0 14px 32px rgba(0,0,0,0.11)">
+          <div style="height:190px;background:linear-gradient(135deg,#78350f,#d97706);display:flex;align-items:center;justify-content:center;position:relative">
+            <span style="font-size:64px;filter:drop-shadow(0 6px 10px rgba(0,0,0,0.25))">🎽</span>
+            <div style="position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);color:white;font-size:10px;padding:3px 9px;border-radius:7px;font-weight:700">Aqualung</div>
+            <div style="position:absolute;top:10px;left:10px;background:#fffbeb;color:#b45309;font-size:10px;padding:3px 9px;border-radius:7px;font-weight:700">♻️ مستعمل</div>
+            <button style="position:absolute;bottom:10px;left:10px;background:rgba(255,255,255,0.15);backdrop-filter:blur(4px);border:1px solid rgba(255,255,255,0.2);color:white;width:34px;height:34px;border-radius:50%;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center" onclick="{{ toggleWish6 }}" style-hover="background:rgba(255,255,255,0.28)">{{ wish6Icon }}</button>
+          </div>
+          <div style="padding:16px">
+            <h4 style="font-size:15px;font-weight:800;color:#0d2c54;margin-bottom:4px;line-height:1.35">سترة تعويم BCD Aqualung — حالة ممتازة</h4>
+            <div style="font-size:12px;color:#64748b;margin-bottom:10px;display:flex;align-items:center;gap:6px">
+              <span style="color:#f5a623">★★★★★</span><span>4.8 (8 تقييم)</span>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+              <span style="font-size:22px;font-weight:900;color:#0d2c54">680</span>
+              <span style="font-size:13px;color:#94a3b8;text-decoration:line-through">1,400 ريال</span>
+              <span style="background:#f0fdf4;color:#16a34a;font-size:11px;padding:2px 8px;border-radius:6px;font-weight:700">-51%</span>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+              <span style="background:#fffbeb;color:#d97706;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600">♻️ بحالة ممتازة</span>
+              <span style="background:#f0fdfe;color:#0891b2;font-size:11px;padding:3px 9px;border-radius:7px;font-weight:600">📦 توصيل</span>
+            </div>
+            <a href="https://wa.me/" style="display:flex;align-items:center;justify-content:center;gap:7px;background:#25D366;color:white;padding:11px;border-radius:11px;font-weight:700;font-size:13px;transition:opacity .15s" style-hover="opacity:0.88">
+              <span style="font-size:16px">💬</span> اطلب عبر واتساب
+            </a>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Pagination -->
+      <div style="display:flex;justify-content:center;gap:8px;margin-top:36px;align-items:center">
+        <button style="width:38px;height:38px;border-radius:9px;border:1.5px solid #e2e8f0;background:white;cursor:pointer;font-family:inherit;font-size:14px" style-hover="border-color:#0d2c54">‹</button>
+        <button style="width:38px;height:38px;border-radius:9px;border:none;background:#0d2c54;color:white;cursor:pointer;font-family:inherit;font-size:14px;font-weight:700">1</button>
+        <button style="width:38px;height:38px;border-radius:9px;border:1.5px solid #e2e8f0;background:white;cursor:pointer;font-family:inherit;font-size:14px" style-hover="border-color:#0d2c54">2</button>
+        <button style="width:38px;height:38px;border-radius:9px;border:1.5px solid #e2e8f0;background:white;cursor:pointer;font-family:inherit;font-size:14px" style-hover="border-color:#0d2c54">3</button>
+        <span style="font-size:14px;color:#94a3b8;padding:0 4px">...</span>
+        <button style="width:38px;height:38px;border-radius:9px;border:1.5px solid #e2e8f0;background:white;cursor:pointer;font-family:inherit;font-size:14px" style-hover="border-color:#0d2c54">12</button>
+        <button style="width:38px;height:38px;border-radius:9px;border:1.5px solid #e2e8f0;background:white;cursor:pointer;font-family:inherit;font-size:14px" style-hover="border-color:#0d2c54">›</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:#060e24;padding:28px 24px;color:rgba(255,255,255,0.5)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+    <a href="/" style="display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;background:linear-gradient(135deg,#0891b2,#c9952a);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px">🤿</div>
+      <span style="color:white;font-size:16px;font-weight:800">ArabDiving</span>
+    </a>
+    <p style="font-size:13px">© 2025 ArabDiving — جميع الحقوق محفوظة</p>
+    <div style="display:flex;gap:16px">
+      <a href="#" style="font-size:13px" style-hover="color:rgba(255,255,255,0.8)">سياسة الخصوصية</a>
+      <a href="#" style="font-size:13px" style-hover="color:rgba(255,255,255,0.8)">الشروط</a>
+    </div>
+  </div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1440, &quot;height&quot;: 900}}">
+class Component extends DCLogic {
+  state = {
+    cat: 'all',
+    viewGrid: true,
+    wish1: false, wish2: false, wish3: false,
+    wish4: false, wish5: false, wish6: false,
+  };
+
+  renderVals() {
+    const { cat, viewGrid, wish1, wish2, wish3, wish4, wish5, wish6 } = this.state;
+
+    const pill = (key) => ({
+      background: cat === key ? '#0d2c54' : 'white',
+      color: cat === key ? 'white' : '#475569',
+      border: cat === key ? '1.5px solid #0d2c54' : '1.5px solid #e2e8f0',
+      padding: '8px 18px',
+      borderRadius: '22px',
+      fontSize: '13px',
+      cursor: 'pointer',
+      fontFamily: 'inherit',
+      fontWeight: cat === key ? '700' : '500',
+      transition: 'all .18s',
+      whiteSpace: 'nowrap',
+      flexShrink: 0,
+    });
+
+    const viewBtn = (active) => ({
+      background: active ? '#0d2c54' : 'transparent',
+      color: active ? 'white' : '#94a3b8',
+      border: 'none',
+      width: '30px',
+      height: '30px',
+      borderRadius: '7px',
+      cursor: 'pointer',
+      fontFamily: 'inherit',
+      fontSize: '14px',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      transition: 'all .15s',
+    });
+
+    const counts = { all: 127, masks: 24, suits: 31, fins: 18, bcd: 14, regulators: 12, cameras: 9, kids: 11, women: 22, used: 38 };
+
+    return {
+      productCount: counts[cat] || 127,
+
+      catAll:        pill('all'),
+      catMasks:      pill('masks'),
+      catSuits:      pill('suits'),
+      catFins:       pill('fins'),
+      catBCD:        pill('bcd'),
+      catRegulators: pill('regulators'),
+      catCameras:    pill('cameras'),
+      catKids:       pill('kids'),
+      catWomen:      pill('women'),
+      catUsed:       pill('used'),
+      setCatAll:        () => this.setState({ cat: 'all' }),
+      setCatMasks:      () => this.setState({ cat: 'masks' }),
+      setCatSuits:      () => this.setState({ cat: 'suits' }),
+      setCatFins:       () => this.setState({ cat: 'fins' }),
+      setCatBCD:        () => this.setState({ cat: 'bcd' }),
+      setCatRegulators: () => this.setState({ cat: 'regulators' }),
+      setCatCameras:    () => this.setState({ cat: 'cameras' }),
+      setCatKids:       () => this.setState({ cat: 'kids' }),
+      setCatWomen:      () => this.setState({ cat: 'women' }),
+      setCatUsed:       () => this.setState({ cat: 'used' }),
+
+      gridBtn: viewBtn(viewGrid),
+      listBtn: viewBtn(!viewGrid),
+      setGrid: () => this.setState({ viewGrid: true }),
+      setList: () => this.setState({ viewGrid: false }),
+
+      gridStyle: {
+        display: 'grid',
+        gridTemplateColumns: viewGrid ? 'repeat(3, 1fr)' : '1fr',
+        gap: viewGrid ? '20px' : '14px',
+      },
+
+      wish1Icon: wish1 ? '❤️' : '🤍',
+      wish2Icon: wish2 ? '❤️' : '🤍',
+      wish3Icon: wish3 ? '❤️' : '🤍',
+      wish4Icon: wish4 ? '❤️' : '🤍',
+      wish5Icon: wish5 ? '❤️' : '🤍',
+      wish6Icon: wish6 ? '❤️' : '🤍',
+      toggleWish1: () => this.setState(s => ({ wish1: !s.wish1 })),
+      toggleWish2: () => this.setState(s => ({ wish2: !s.wish2 })),
+      toggleWish3: () => this.setState(s => ({ wish3: !s.wish3 })),
+      toggleWish4: () => this.setState(s => ({ wish4: !s.wish4 })),
+      toggleWish5: () => this.setState(s => ({ wish5: !s.wish5 })),
+      toggleWish6: () => this.setState(s => ({ wish6: !s.wish6 })),
+    };
+  }
+}
+</script>
+</body>
+</html>

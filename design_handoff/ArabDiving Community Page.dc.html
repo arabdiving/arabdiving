@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { direction: rtl; font-family: 'Cairo', sans-serif; background: #f1f5fb; color: #0f172a; overflow-x: hidden; }
+    a { text-decoration: none; color: inherit; }
+    @keyframes fadeInUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+    @keyframes storyRing { 0%,100% { opacity:.7; } 50% { opacity:1; } }
+    ::-webkit-scrollbar { width:5px; height:4px; }
+    ::-webkit-scrollbar-thumb { background:#cbd5e1; border-radius:8px; }
+  </style>
+</helmet>
+
+<!-- NAVBAR -->
+<nav style="position:sticky;top:0;z-index:100;background:rgba(6,14,36,0.97);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.07);padding:0 24px">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:66px;gap:16px">
+    <a href="/" style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <div style="width:38px;height:38px;background:linear-gradient(135deg,#0891b2,#c9952a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px">🤿</div>
+      <span style="color:white;font-size:19px;font-weight:900">ArabDiving</span>
+    </a>
+    <div style="display:flex;align-items:center;gap:4px;flex:1;justify-content:center">
+      <a href="/"               style="color:rgba(255,255,255,0.7);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,0.08)">الرئيسية</a>
+      <a href="/family-booking" style="color:rgba(255,255,255,0.7);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,0.08)">احجز رحلة</a>
+      <a href="/dive-sites"     style="color:rgba(255,255,255,0.7);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,0.08)">مواقع الغوص</a>
+      <a href="/community"      style="color:white;font-size:13px;padding:7px 11px;border-radius:8px;background:rgba(201,149,42,0.2);font-weight:700">المجتمع</a>
+      <a href="/marketplace"    style="color:rgba(255,255,255,0.7);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,0.08)">المتجر</a>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-shrink:0">
+      <a href="/login"    style="color:rgba(255,255,255,0.65);font-size:13px;padding:7px 14px">تسجيل الدخول</a>
+      <a href="/register" style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;padding:8px 18px;border-radius:9px;font-weight:700;font-size:13px">انضم الآن</a>
+    </div>
+  </div>
+</nav>
+
+<!-- PAGE HEADER -->
+<section style="background:linear-gradient(160deg,#060e24 0%,#0d2c54 40%,#0e4a7a 75%,#0891b2 100%);padding:56px 24px 90px;position:relative;overflow:hidden">
+  <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);width:600px;height:100%;background:radial-gradient(ellipse at 50% 0%,rgba(8,145,178,0.18) 0%,transparent 65%);pointer-events:none"></div>
+  <div style="max-width:1280px;margin:0 auto;position:relative;z-index:2">
+    <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:24px">
+      <div>
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);padding:7px 18px;border-radius:30px;margin-bottom:16px">
+          <span style="width:6px;height:6px;border-radius:50%;background:#c9952a"></span>
+          <span style="color:rgba(255,255,255,0.9);font-size:13px">12,400+ غوّاص عربي</span>
+        </div>
+        <h1 style="font-size:clamp(28px,4.5vw,52px);font-weight:900;color:white;line-height:1.2;margin-bottom:12px">
+          مجتمع الغوّاصين العرب
+        </h1>
+        <p style="font-size:clamp(14px,1.8vw,17px);color:rgba(255,255,255,0.72);line-height:1.8;max-width:500px">
+          شارك تجاربك، اكتشف مواقع جديدة، تواصل مع غوّاصين من الخليج والمنطقة العربية
+        </p>
+      </div>
+      <button style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;border:none;padding:14px 30px;border-radius:14px;font-weight:800;font-size:15px;cursor:pointer;font-family:inherit;box-shadow:0 6px 20px rgba(201,149,42,0.4);flex-shrink:0" style-hover="box-shadow:0 10px 28px rgba(201,149,42,0.55);transform:translateY(-2px)">
+        ✏️ شارك تجربتك
+      </button>
+    </div>
+
+    <!-- Stats row -->
+    <div style="display:flex;gap:28px;margin-top:36px;flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);padding:10px 18px;border-radius:12px">
+        <span style="font-size:20px">🤿</span>
+        <div><div style="color:white;font-weight:800;font-size:16px">12.4K</div><div style="color:rgba(255,255,255,0.55);font-size:11px">عضو</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);padding:10px 18px;border-radius:12px">
+        <span style="font-size:20px">📸</span>
+        <div><div style="color:white;font-weight:800;font-size:16px">34K</div><div style="color:rgba(255,255,255,0.55);font-size:11px">منشور</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);padding:10px 18px;border-radius:12px">
+        <span style="font-size:20px">❤️</span>
+        <div><div style="color:white;font-weight:800;font-size:16px">180K</div><div style="color:rgba(255,255,255,0.55);font-size:11px">تفاعل</div></div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);padding:10px 18px;border-radius:12px">
+        <span style="font-size:20px">🌍</span>
+        <div><div style="color:white;font-weight:800;font-size:16px">18</div><div style="color:rgba(255,255,255,0.55);font-size:11px">دولة عربية</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Wave -->
+  <div style="position:absolute;bottom:-1px;left:0;right:0;height:60px;overflow:hidden">
+    <svg viewBox="0 0 1440 60" preserveAspectRatio="none" style="width:100%;height:100%;display:block">
+      <path d="M0,35 C300,8 600,55 900,30 C1100,12 1280,50 1440,28 L1440,60 L0,60 Z" fill="#f1f5fb"></path>
+    </svg>
+  </div>
+</section>
+
+<!-- MAIN LAYOUT -->
+<div style="background:#f1f5fb;padding:32px 24px 70px">
+  <div style="max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 320px;gap:28px;align-items:start">
+
+    <!-- LEFT COLUMN: Feed -->
+    <div>
+
+      <!-- Stories row -->
+      <div style="background:white;border-radius:18px;padding:18px 20px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05)">
+        <div style="display:flex;gap:18px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none">
+
+          <!-- Add story -->
+          <div style="flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer">
+            <div style="width:60px;height:60px;border-radius:50%;background:#f8fafc;border:2px dashed #c9952a;display:flex;align-items:center;justify-content:center;font-size:22px;color:#c9952a;flex-shrink:0">+</div>
+            <span style="font-size:11px;color:#64748b;white-space:nowrap">أضف</span>
+          </div>
+
+          <!-- Story items -->
+          <div style="flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer">
+            <div style="padding:2.5px;background:linear-gradient(135deg,#c9952a 0%,#f5c218 100%);border-radius:50%">
+              <div style="width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#9333ea);border:2.5px solid white;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:20px">ن</div>
+            </div>
+            <span style="font-size:11px;font-weight:600;color:#0f172a;white-space:nowrap">نورة</span>
+          </div>
+
+          <div style="flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer">
+            <div style="padding:2.5px;background:linear-gradient(135deg,#c9952a 0%,#f5c218 100%);border-radius:50%">
+              <div style="width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,#0d2c54,#2e75b6);border:2.5px solid white;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:20px">ف</div>
+            </div>
+            <span style="font-size:11px;font-weight:600;color:#0f172a;white-space:nowrap">فهد</span>
+          </div>
+
+          <div style="flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer">
+            <div style="padding:2.5px;background:linear-gradient(135deg,#c9952a 0%,#f5c218 100%);border-radius:50%">
+              <div style="width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#06b6d4);border:2.5px solid white;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:20px">ه</div>
+            </div>
+            <span style="font-size:11px;font-weight:600;color:#0f172a;white-space:nowrap">هيا</span>
+          </div>
+
+          <div style="flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer">
+            <div style="padding:2.5px;background:linear-gradient(135deg,#c9952a 0%,#f5c218 100%);border-radius:50%">
+              <div style="width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,#0e4a2e,#16a34a);border:2.5px solid white;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:20px">م</div>
+            </div>
+            <span style="font-size:11px;font-weight:600;color:#0f172a;white-space:nowrap">محمد</span>
+          </div>
+
+          <div style="flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer">
+            <div style="padding:2.5px;background:linear-gradient(135deg,#c9952a 0%,#f5c218 100%);border-radius:50%">
+              <div style="width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,#312e81,#4f46e5);border:2.5px solid white;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:20px">س</div>
+            </div>
+            <span style="font-size:11px;font-weight:600;color:#0f172a;white-space:nowrap">سارة</span>
+          </div>
+
+          <div style="flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer">
+            <div style="padding:2.5px;background:#e2e8f0;border-radius:50%">
+              <div style="width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,#475569,#64748b);border:2.5px solid white;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:20px">خ</div>
+            </div>
+            <span style="font-size:11px;font-weight:400;color:#94a3b8;white-space:nowrap">خالد</span>
+          </div>
+
+          <div style="flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer">
+            <div style="padding:2.5px;background:linear-gradient(135deg,#c9952a 0%,#f5c218 100%);border-radius:50%">
+              <div style="width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,#be185d,#ec4899);border:2.5px solid white;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:20px">ر</div>
+            </div>
+            <span style="font-size:11px;font-weight:600;color:#0f172a;white-space:nowrap">ريم</span>
+          </div>
+
+          <div style="flex:0 0 64px;display:flex;flex-direction:column;align-items:center;gap:7px;cursor:pointer">
+            <div style="padding:2.5px;background:linear-gradient(135deg,#c9952a 0%,#f5c218 100%);border-radius:50%">
+              <div style="width:55px;height:55px;border-radius:50%;background:linear-gradient(135deg,#b45309,#f59e0b);border:2.5px solid white;display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:20px">أ</div>
+            </div>
+            <span style="font-size:11px;font-weight:600;color:#0f172a;white-space:nowrap">أحمد</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab filter bar -->
+      <div style="display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap">
+        <button style="{{ tabAll }}" onclick="{{ setAll }}">🌊 كل المنشورات</button>
+        <button style="{{ tabPhotos }}" onclick="{{ setPhotos }}">📸 صور وفيديو</button>
+        <button style="{{ tabExperiences }}" onclick="{{ setExperiences }}">🤿 تجارب الغوص</button>
+        <button style="{{ tabTips }}" onclick="{{ setTips }}">💡 نصائح ومعلومات</button>
+        <button style="{{ tabWomen }}" onclick="{{ setWomen }}">🧕 قسم السيدات</button>
+      </div>
+
+      <!-- Post composer -->
+      <div style="background:white;border-radius:18px;padding:18px 20px;margin-bottom:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05)">
+        <div style="display:flex;gap:12px;align-items:flex-start">
+          <div style="width:42px;height:42px;border-radius:50%;background:linear-gradient(135deg,#c9952a,#e8a830);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:18px;flex-shrink:0">أ</div>
+          <div style="flex:1">
+            <div style="background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:12px;padding:12px 16px;cursor:pointer;color:#94a3b8;font-size:14px" style-hover="border-color:#94a3b8">
+              شارك تجربتك في الغوص... 🤿
+            </div>
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button style="display:flex;align-items:center;gap:6px;background:#f0fdfe;color:#0891b2;border:1.5px solid #a5f3fc;padding:7px 14px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit" style-hover="background:#e0f9fe">📷 صورة</button>
+              <button style="display:flex;align-items:center;gap:6px;background:#f0fdf4;color:#16a34a;border:1.5px solid #bbf7d0;padding:7px 14px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit" style-hover="background:#e0fce8">🎥 فيديو</button>
+              <button style="display:flex;align-items:center;gap:6px;background:#fff7ed;color:#c9952a;border:1.5px solid #fed7aa;padding:7px 14px;border-radius:9px;font-size:12px;font-weight:600;cursor:pointer;font-family:inherit" style-hover="background:#ffedd5">📍 موقع</button>
+              <button style="margin-right:auto;background:linear-gradient(135deg,#c9952a,#e8a830);color:white;border:none;padding:8px 22px;border-radius:9px;font-weight:700;font-size:13px;cursor:pointer;font-family:inherit">نشر</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Post 1 -->
+      <div style="background:white;border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.05);margin-bottom:18px;border:1px solid #f1f5f9">
+        <!-- post header -->
+        <div style="padding:16px 20px 14px;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="position:relative">
+              <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#9333ea);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:19px">ن</div>
+              <div style="position:absolute;bottom:1px;left:1px;width:12px;height:12px;background:#22c55e;border-radius:50%;border:2px solid white"></div>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#0d2c54">نورة الزهراني</div>
+              <div style="font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:5px">
+                <span>منذ ساعتين</span>
+                <span>·</span>
+                <span style="background:#f5f3ff;color:#7c3aed;padding:2px 8px;border-radius:6px;font-weight:600">🧕 سيدات</span>
+              </div>
+            </div>
+          </div>
+          <button style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:20px;padding:4px" style-hover="color:#475569">⋯</button>
+        </div>
+        <!-- post content -->
+        <div style="padding:0 20px 14px">
+          <p style="font-size:14px;line-height:1.8;color:#374151;margin-bottom:14px">تجربة الغوص في دهب كانت من أجمل تجارب حياتي! الشعاب المرجانية رائعة والمركز كان محترف جداً — طاقم نسائي بالكامل وبيئة مريحة للغاية 💙🤿 أنصح كل سيدة تخشى التجربة تجربها!</p>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px">
+            <span style="background:#f0fdfe;color:#0891b2;font-size:12px;padding:4px 12px;border-radius:8px;font-weight:600"># غوص_دهب</span>
+            <span style="background:#f5f3ff;color:#7c3aed;font-size:12px;padding:4px 12px;border-radius:8px;font-weight:600"># سيدات_غوص</span>
+            <span style="background:#f0fdf4;color:#16a34a;font-size:12px;padding:4px 12px;border-radius:8px;font-weight:600"># البحر_الأحمر</span>
+          </div>
+        </div>
+        <!-- post image -->
+        <div style="height:280px;background:linear-gradient(135deg,#0891b2,#0e4a7a);position:relative;display:flex;align-items:center;justify-content:center">
+          <div style="text-align:center;color:rgba(255,255,255,0.55)">
+            <div style="font-size:48px;margin-bottom:8px">🤿</div>
+            <div style="font-size:13px">صورة من رحلة دهب</div>
+          </div>
+          <div style="position:absolute;bottom:12px;right:12px;background:rgba(0,0,0,0.4);backdrop-filter:blur(4px);color:white;font-size:11px;padding:5px 12px;border-radius:8px;font-weight:600">📍 دهب، مصر</div>
+        </div>
+        <!-- post actions -->
+        <div style="padding:14px 20px;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;gap:16px">
+            <button onclick="{{ toggleLike1 }}" style="{{ like1Btn }}">❤️ {{ like1Count }}</button>
+            <button style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;color:#64748b;font-size:13px;font-weight:600;font-family:inherit;padding:0" style-hover="color:#0891b2">💬 12 تعليق</button>
+            <button style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;color:#64748b;font-size:13px;font-weight:600;font-family:inherit;padding:0" style-hover="color:#16a34a">↗️ مشاركة</button>
+          </div>
+          <button style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:14px;font-family:inherit;padding:0" style-hover="color:#c9952a">🔖</button>
+        </div>
+        <!-- comment preview -->
+        <div style="padding:0 20px 16px;border-top:1px solid #f8fafc">
+          <div style="display:flex;gap:10px;align-items:flex-start;margin-top:14px">
+            <div style="width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,#0d2c54,#2e75b6);display:flex;align-items:center;justify-content:center;color:white;font-size:14px;font-weight:700;flex-shrink:0">ف</div>
+            <div style="background:#f8fafc;border-radius:12px;padding:10px 14px;flex:1">
+              <div style="font-size:12px;font-weight:700;color:#0d2c54;margin-bottom:4px">فهد العتيبي</div>
+              <div style="font-size:13px;color:#374151;line-height:1.6">ماشاء الله! أنا جربت نفس المركز الشهر الماضي — ممتاز فعلاً 👌</div>
+            </div>
+          </div>
+          <button style="font-size:12px;color:#94a3b8;background:none;border:none;cursor:pointer;margin-top:10px;font-family:inherit" style-hover="color:#0891b2">عرض 11 تعليق آخر ←</button>
+        </div>
+      </div>
+
+      <!-- Post 2 - Achievement -->
+      <div style="background:white;border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.05);margin-bottom:18px;border:1px solid #f1f5f9">
+        <div style="padding:16px 20px 14px;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="position:relative">
+              <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0d2c54,#2e75b6);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:19px">ف</div>
+            </div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#0d2c54">فهد العتيبي</div>
+              <div style="font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:5px">
+                <span>منذ 5 ساعات</span>
+                <span>·</span>
+                <span style="background:#fffbeb;color:#d97706;padding:2px 8px;border-radius:6px;font-weight:600">🏆 إنجاز</span>
+              </div>
+            </div>
+          </div>
+          <button style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:20px;padding:4px">⋯</button>
+        </div>
+        <div style="padding:0 20px 16px">
+          <p style="font-size:14px;line-height:1.8;color:#374151;margin-bottom:14px">
+            أخيراً حصلت على شهادة PADI Open Water من مركز الأعماق في شرم الشيخ 🤿🏆<br>
+            بعد سنة من الخوف قررت أتغلب عليه — الحمد لله الآن غوّاص معتمد!
+          </p>
+          <!-- Achievement card -->
+          <div style="background:linear-gradient(135deg,#060e24,#0d2c54);border-radius:16px;padding:22px;margin-bottom:14px;display:flex;align-items:center;gap:20px">
+            <div style="width:70px;height:70px;background:linear-gradient(135deg,#c9952a,#f5c218);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0">🏅</div>
+            <div>
+              <div style="color:rgba(255,255,255,0.55);font-size:11px;margin-bottom:4px;font-weight:600;letter-spacing:0.5px">شهادة مُعترف بها دولياً</div>
+              <div style="color:white;font-size:20px;font-weight:900;margin-bottom:2px">PADI Open Water</div>
+              <div style="color:rgba(255,255,255,0.55);font-size:12px">فهد العتيبي · شرم الشيخ · يونيو 2026</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span style="background:#fffbeb;color:#d97706;font-size:12px;padding:4px 12px;border-radius:8px;font-weight:600"># PADI</span>
+            <span style="background:#f0fdfe;color:#0891b2;font-size:12px;padding:4px 12px;border-radius:8px;font-weight:600"># شرم_الشيخ</span>
+            <span style="background:#f0fdf4;color:#16a34a;font-size:12px;padding:4px 12px;border-radius:8px;font-weight:600"># مبتدئ_غوص</span>
+          </div>
+        </div>
+        <div style="padding:12px 20px 16px;border-top:1px solid #f8fafc;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;gap:16px">
+            <button onclick="{{ toggleLike2 }}" style="{{ like2Btn }}">❤️ {{ like2Count }}</button>
+            <button style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;color:#64748b;font-size:13px;font-weight:600;font-family:inherit;padding:0" style-hover="color:#0891b2">💬 23 تعليق</button>
+            <button style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;color:#64748b;font-size:13px;font-weight:600;font-family:inherit;padding:0" style-hover="color:#16a34a">↗️ مشاركة</button>
+          </div>
+          <button style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:14px;font-family:inherit;padding:0">🔖</button>
+        </div>
+      </div>
+
+      <!-- Post 3 - Family experience -->
+      <div style="background:white;border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.05);margin-bottom:18px;border:1px solid #f1f5f9">
+        <div style="padding:16px 20px 14px;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#06b6d4);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:19px">ه</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#0d2c54">هيا المطيري</div>
+              <div style="font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:5px">
+                <span>أمس</span>
+                <span>·</span>
+                <span style="background:#f0fdfe;color:#0891b2;padding:2px 8px;border-radius:6px;font-weight:600">👨‍👩‍👧‍👦 عائلة</span>
+              </div>
+            </div>
+          </div>
+          <button style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:20px">⋯</button>
+        </div>
+        <div style="padding:0 20px 14px">
+          <p style="font-size:14px;line-height:1.8;color:#374151;margin-bottom:14px">رحلة الأطفال كانت تجربة لا تُنسى 🐠 ابني عمره 8 سنوات وكان خايف في البداية — لكن بعد ما خلّاه المدرب يلعب مع الأسماك صار يرفض يطلع من البحر 😂❤️</p>
+          <!-- Photo grid 2x2 -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;grid-template-rows:130px 130px;gap:6px;border-radius:14px;overflow:hidden;margin-bottom:14px">
+            <div style="background:linear-gradient(135deg,#0891b2,#0e7490);display:flex;align-items:center;justify-content:center;font-size:36px">🐠</div>
+            <div style="background:linear-gradient(135deg,#0e4a2e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:36px">🪸</div>
+            <div style="background:linear-gradient(135deg,#1e3a5f,#2e75b6);display:flex;align-items:center;justify-content:center;font-size:36px">🤿</div>
+            <div style="background:linear-gradient(135deg,#312e81,#4f46e5);position:relative;display:flex;align-items:center;justify-content:center;font-size:36px">
+              🐙
+              <div style="position:absolute;inset:0;background:rgba(0,0,0,0.4);display:flex;align-items:center;justify-content:center;color:white;font-size:18px;font-weight:800">+14 صورة</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <span style="background:#f0fdfe;color:#0891b2;font-size:12px;padding:4px 12px;border-radius:8px;font-weight:600"># غوص_أطفال</span>
+            <span style="background:#fff7ed;color:#c9952a;font-size:12px;padding:4px 12px;border-radius:8px;font-weight:600"># رحلة_عائلية</span>
+            <span style="background:#f5f3ff;color:#7c3aed;font-size:12px;padding:4px 12px;border-radius:8px;font-weight:600"># الغردقة</span>
+          </div>
+        </div>
+        <div style="padding:12px 20px 16px;border-top:1px solid #f8fafc;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;gap:16px">
+            <button onclick="{{ toggleLike3 }}" style="{{ like3Btn }}">❤️ {{ like3Count }}</button>
+            <button style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;color:#64748b;font-size:13px;font-weight:600;font-family:inherit;padding:0" style-hover="color:#0891b2">💬 41 تعليق</button>
+            <button style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;color:#64748b;font-size:13px;font-weight:600;font-family:inherit;padding:0" style-hover="color:#16a34a">↗️ مشاركة</button>
+          </div>
+          <button style="background:none;border:none;cursor:pointer;color:#c9952a;font-size:14px;font-family:inherit;padding:0">🔖</button>
+        </div>
+      </div>
+
+      <!-- Post 4 - Tip -->
+      <div style="background:white;border-radius:18px;overflow:hidden;box-shadow:0 2px 12px rgba(0,0,0,0.05);margin-bottom:18px;border:1px solid #f1f5f9">
+        <div style="padding:16px 20px 14px;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;align-items:center;gap:12px">
+            <div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,#b45309,#f59e0b);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:19px">أ</div>
+            <div>
+              <div style="font-size:14px;font-weight:700;color:#0d2c54">أحمد الشمري</div>
+              <div style="font-size:11px;color:#94a3b8;display:flex;align-items:center;gap:5px">
+                <span>منذ يومين</span>
+                <span>·</span>
+                <span style="background:#fef3c7;color:#b45309;padding:2px 8px;border-radius:6px;font-weight:600">💡 نصيحة</span>
+              </div>
+            </div>
+          </div>
+          <button style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:20px">⋯</button>
+        </div>
+        <div style="padding:0 20px 16px">
+          <p style="font-size:14px;line-height:1.8;color:#374151;margin-bottom:16px;font-weight:600">🧠 5 نصائح للغوّاص المبتدئ من تجربتي</p>
+          <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px">
+            <div style="display:flex;gap:12px;align-items:flex-start;background:#f8fafc;border-radius:12px;padding:12px 14px">
+              <div style="width:28px;height:28px;background:linear-gradient(135deg,#c9952a,#e8a830);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:13px;flex-shrink:0">1</div>
+              <div style="font-size:13px;color:#374151;line-height:1.7">لا تتنفس بفمك خارج الماء — يسبب جفاف ودوار للبعض</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;background:#f8fafc;border-radius:12px;padding:12px 14px">
+              <div style="width:28px;height:28px;background:linear-gradient(135deg,#c9952a,#e8a830);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:13px;flex-shrink:0">2</div>
+              <div style="font-size:13px;color:#374151;line-height:1.7">اشرب ماء كثير قبل وبعد الغوص — الجفاف عدو الغوّاص</div>
+            </div>
+            <div style="display:flex;gap:12px;align-items:flex-start;background:#f8fafc;border-radius:12px;padding:12px 14px">
+              <div style="width:28px;height:28px;background:linear-gradient(135deg,#c9952a,#e8a830);border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:800;font-size:13px;flex-shrink:0">3</div>
+              <div style="font-size:13px;color:#374151;line-height:1.7">أفضل وقت للغوص في البحر الأحمر: الصباح الباكر قبل الـ 10</div>
+            </div>
+          </div>
+          <button style="background:none;border:none;cursor:pointer;color:#0891b2;font-size:13px;font-weight:700;font-family:inherit;padding:0" style-hover="color:#0d2c54">عرض النصائح الكاملة ←</button>
+        </div>
+        <div style="padding:12px 20px 16px;border-top:1px solid #f8fafc;display:flex;align-items:center;justify-content:space-between">
+          <div style="display:flex;gap:16px">
+            <button onclick="{{ toggleLike4 }}" style="{{ like4Btn }}">❤️ {{ like4Count }}</button>
+            <button style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;color:#64748b;font-size:13px;font-weight:600;font-family:inherit;padding:0" style-hover="color:#0891b2">💬 67 تعليق</button>
+            <button style="display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;color:#64748b;font-size:13px;font-weight:600;font-family:inherit;padding:0" style-hover="color:#16a34a">↗️ مشاركة</button>
+          </div>
+          <button style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:14px;font-family:inherit;padding:0">🔖</button>
+        </div>
+      </div>
+
+      <!-- Load more -->
+      <div style="text-align:center">
+        <button style="background:white;color:#0d2c54;border:2px solid #e2e8f0;padding:12px 32px;border-radius:12px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;transition:all .2s" style-hover="border-color:#0d2c54;box-shadow:0 4px 14px rgba(0,0,0,0.07)">تحميل المزيد ↓</button>
+      </div>
+
+    </div>
+
+    <!-- RIGHT SIDEBAR -->
+    <div style="display:flex;flex-direction:column;gap:18px">
+
+      <!-- My profile mini -->
+      <div style="background:white;border-radius:18px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05)">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
+          <div style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#c9952a,#e8a830);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:22px">أ</div>
+          <div>
+            <div style="font-size:15px;font-weight:800;color:#0d2c54">أهلاً، أحمد!</div>
+            <div style="font-size:12px;color:#64748b">Diver Level 2 · 48 غوصة</div>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:14px">
+          <div style="text-align:center;background:#f8fafc;border-radius:10px;padding:10px 6px">
+            <div style="font-size:18px;font-weight:800;color:#0d2c54">48</div>
+            <div style="font-size:10px;color:#94a3b8">غوصة</div>
+          </div>
+          <div style="text-align:center;background:#f8fafc;border-radius:10px;padding:10px 6px">
+            <div style="font-size:18px;font-weight:800;color:#0d2c54">12</div>
+            <div style="font-size:10px;color:#94a3b8">منشور</div>
+          </div>
+          <div style="text-align:center;background:#f8fafc;border-radius:10px;padding:10px 6px">
+            <div style="font-size:18px;font-weight:800;color:#0d2c54">340</div>
+            <div style="font-size:10px;color:#94a3b8">متابع</div>
+          </div>
+        </div>
+        <a href="/profile" style="display:block;text-align:center;background:#f1f5f9;color:#0d2c54;padding:10px;border-radius:11px;font-weight:700;font-size:13px;transition:background .15s" style-hover="background:#e2e8f0">عرض ملفي الشخصي</a>
+      </div>
+
+      <!-- Trending topics -->
+      <div style="background:white;border-radius:18px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05)">
+        <h4 style="font-size:14px;font-weight:800;color:#0d2c54;margin-bottom:16px">🔥 الأكثر تداولاً</h4>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f8fafc;border-radius:11px;cursor:pointer" style-hover="background:#f1f5f9">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#0d2c54">#غوص_دهب</div>
+              <div style="font-size:11px;color:#94a3b8">1.2K منشور</div>
+            </div>
+            <span style="font-size:18px">🌊</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f8fafc;border-radius:11px;cursor:pointer" style-hover="background:#f1f5f9">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#0d2c54">#سيدات_غوص</div>
+              <div style="font-size:11px;color:#94a3b8">890 منشور</div>
+            </div>
+            <span style="font-size:18px">🧕</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f8fafc;border-radius:11px;cursor:pointer" style-hover="background:#f1f5f9">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#0d2c54">#البحيرة_الزرقاء</div>
+              <div style="font-size:11px;color:#94a3b8">654 منشور</div>
+            </div>
+            <span style="font-size:18px">💙</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f8fafc;border-radius:11px;cursor:pointer" style-hover="background:#f1f5f9">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#0d2c54">#PADI_بالعربي</div>
+              <div style="font-size:11px;color:#94a3b8">412 منشور</div>
+            </div>
+            <span style="font-size:18px">🏅</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:#f8fafc;border-radius:11px;cursor:pointer" style-hover="background:#f1f5f9">
+            <div>
+              <div style="font-size:13px;font-weight:700;color:#0d2c54">#رحلة_عائلية_غوص</div>
+              <div style="font-size:11px;color:#94a3b8">378 منشور</div>
+            </div>
+            <span style="font-size:18px">👨‍👩‍👧‍👦</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Suggested members -->
+      <div style="background:white;border-radius:18px;padding:20px;box-shadow:0 2px 12px rgba(0,0,0,0.05)">
+        <h4 style="font-size:14px;font-weight:800;color:#0d2c54;margin-bottom:16px">👥 غوّاصون مقترحون</h4>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#9333ea);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:16px;flex-shrink:0">ن</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#0d2c54">نورة الزهراني</div>
+                <div style="font-size:11px;color:#94a3b8">PADI Master · دهب</div>
+              </div>
+            </div>
+            <button style="background:#f0fdfe;color:#0891b2;border:1.5px solid #a5f3fc;padding:6px 14px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap" style-hover="background:#e0f9fe">تابع</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#be185d,#ec4899);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:16px;flex-shrink:0">ر</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#0d2c54">ريم القحطاني</div>
+                <div style="font-size:11px;color:#94a3b8">مبتدئة · شرم الشيخ</div>
+              </div>
+            </div>
+            <button style="background:#f0fdfe;color:#0891b2;border:1.5px solid #a5f3fc;padding:6px 14px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap" style-hover="background:#e0f9fe">تابع</button>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;align-items:center;gap:10px">
+              <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0e4a2e,#16a34a);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:16px;flex-shrink:0">م</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:#0d2c54">محمد الغامدي</div>
+                <div style="font-size:11px;color:#94a3b8">Dive Master · الغردقة</div>
+              </div>
+            </div>
+            <button style="background:#f0fdfe;color:#0891b2;border:1.5px solid #a5f3fc;padding:6px 14px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap" style-hover="background:#e0f9fe">تابع</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Next trip CTA -->
+      <div style="background:linear-gradient(135deg,#0d2c54,#0891b2);border-radius:18px;padding:22px;text-align:center">
+        <div style="font-size:32px;margin-bottom:10px">🤿</div>
+        <h4 style="color:white;font-size:15px;font-weight:800;margin-bottom:8px">جاهز لرحلتك القادمة؟</h4>
+        <p style="color:rgba(255,255,255,0.7);font-size:12px;line-height:1.7;margin-bottom:16px">احجز مع مركز معتمد — طاقم نسائي وعائلي</p>
+        <a href="/family-booking" style="display:block;background:linear-gradient(135deg,#c9952a,#e8a830);color:white;padding:11px;border-radius:11px;font-weight:700;font-size:13px;box-shadow:0 4px 12px rgba(201,149,42,0.35);transition:all .2s" style-hover="box-shadow:0 6px 20px rgba(201,149,42,0.5)">احجز الآن ←</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer style="background:#060e24;padding:28px 24px;color:rgba(255,255,255,0.5);text-align:center">
+  <div style="max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+    <a href="/" style="display:flex;align-items:center;gap:10px">
+      <div style="width:32px;height:32px;background:linear-gradient(135deg,#0891b2,#c9952a);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:16px">🤿</div>
+      <span style="color:white;font-size:16px;font-weight:800">ArabDiving</span>
+    </a>
+    <p style="font-size:13px">© 2025 ArabDiving — جميع الحقوق محفوظة</p>
+    <div style="display:flex;gap:16px">
+      <a href="#" style="font-size:13px" style-hover="color:rgba(255,255,255,0.8)">سياسة الخصوصية</a>
+      <a href="#" style="font-size:13px" style-hover="color:rgba(255,255,255,0.8)">الشروط والأحكام</a>
+    </div>
+  </div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;: {&quot;width&quot;: 1440, &quot;height&quot;: 900}}">
+class Component extends DCLogic {
+  state = {
+    activeTab: 'all',
+    liked1: false, count1: 47,
+    liked2: false, count2: 89,
+    liked3: false, count3: 134,
+    liked4: false, count4: 212,
+  };
+
+  renderVals() {
+    const { activeTab, liked1, count1, liked2, count2, liked3, count3, liked4, count4 } = this.state;
+
+    const tab = (key) => ({
+      background: activeTab === key ? '#0d2c54' : 'white',
+      color: activeTab === key ? 'white' : '#475569',
+      border: activeTab === key ? '1.5px solid #0d2c54' : '1.5px solid #e2e8f0',
+      padding: '8px 16px',
+      borderRadius: '22px',
+      fontSize: '13px',
+      cursor: 'pointer',
+      fontFamily: 'inherit',
+      fontWeight: activeTab === key ? '700' : '500',
+      transition: 'all .18s',
+    });
+
+    const likeBtn = (liked) => ({
+      display: 'flex',
+      alignItems: 'center',
+      gap: '5px',
+      background: 'none',
+      border: 'none',
+      cursor: 'pointer',
+      color: liked ? '#e11d48' : '#64748b',
+      fontSize: '13px',
+      fontWeight: '700',
+      fontFamily: 'inherit',
+      padding: '0',
+      transition: 'color .15s',
+    });
+
+    return {
+      tabAll:         tab('all'),
+      tabPhotos:      tab('photos'),
+      tabExperiences: tab('experiences'),
+      tabTips:        tab('tips'),
+      tabWomen:       tab('women'),
+      setAll:         () => this.setState({ activeTab: 'all' }),
+      setPhotos:      () => this.setState({ activeTab: 'photos' }),
+      setExperiences: () => this.setState({ activeTab: 'experiences' }),
+      setTips:        () => this.setState({ activeTab: 'tips' }),
+      setWomen:       () => this.setState({ activeTab: 'women' }),
+
+      like1Btn:    likeBtn(liked1),
+      like1Count:  count1,
+      toggleLike1: () => this.setState(s => ({ liked1: !s.liked1, count1: s.liked1 ? s.count1 - 1 : s.count1 + 1 })),
+
+      like2Btn:    likeBtn(liked2),
+      like2Count:  count2,
+      toggleLike2: () => this.setState(s => ({ liked2: !s.liked2, count2: s.liked2 ? s.count2 - 1 : s.count2 + 1 })),
+
+      like3Btn:    likeBtn(liked3),
+      like3Count:  count3,
+      toggleLike3: () => this.setState(s => ({ liked3: !s.liked3, count3: s.liked3 ? s.count3 - 1 : s.count3 + 1 })),
+
+      like4Btn:    likeBtn(liked4),
+      like4Count:  count4,
+      toggleLike4: () => this.setState(s => ({ liked4: !s.liked4, count4: s.liked4 ? s.count4 - 1 : s.count4 + 1 })),
+    };
+  }
+}
+</script>
+</body>
+</html>
