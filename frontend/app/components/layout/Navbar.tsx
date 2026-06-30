@@ -9,7 +9,6 @@ interface CurrentUser { name?: string; role?: string; }
 interface MItem { href: string; label: string; }
 interface MEntry { label: string; href?: string; items: MItem[]; }
 
-// 7 روابط رئيسية فقط في شريط desktop
 const NAV_MAIN: MItem[] = [
   { href: "/", label: "الرئيسية" },
   { href: "/family-booking", label: "احجز رحلة" },
@@ -20,7 +19,6 @@ const NAV_MAIN: MItem[] = [
   { href: "/courses", label: "الدورات" },
 ];
 
-// باقي الروابط في قائمة "المزيد"
 const NAV_MORE: MItem[] = [
   { href: "/retreats", label: "باقات خاصة" },
   { href: "/trips", label: "الرحلات" },
@@ -29,6 +27,7 @@ const NAV_MORE: MItem[] = [
   { href: "/trends", label: "الصيحات والأمان" },
   { href: "/temperatures", label: "حرارة المياه" },
   { href: "/quiz", label: "اكتشف نمطك" },
+  { href: "/survey", label: "استبيان التعلم" },
   { href: "/stories", label: "القصص" },
   { href: "/youth", label: "الشباب" },
   { href: "/women", label: "النساء" },
@@ -42,7 +41,6 @@ const NAV_MORE: MItem[] = [
 
 const ALL_LINKS: MItem[] = [...NAV_MAIN, ...NAV_MORE];
 
-// للـ desktop: 7 روابط + قائمة المزيد
 function buildDesktopMenu(groups: any[], hidden: string[]): MEntry[] {
   const vis = (h: string) => !hidden.includes(h);
   if (groups && groups.length) {
@@ -60,7 +58,6 @@ function buildDesktopMenu(groups: any[], hidden: string[]): MEntry[] {
   return main;
 }
 
-// للهامبرغر: كل الروابط بدون تجميع
 function buildMobileMenu(hidden: string[]): MEntry[] {
   return ALL_LINKS
     .filter((l) => !hidden.includes(l.href))
@@ -130,28 +127,26 @@ export default function Navbar() {
   const deskMenu = buildDesktopMenu(navGroups, hidden);
   const mobileMenu = buildMobileMenu(hidden);
 
-  // Auth buttons
   const authButtons = !user ? (
     <>
       <Link href="/login" onClick={closeAll} style={{ color: "rgba(255,255,255,0.65)", fontSize: "13.5px", padding: "7px 14px" }}>
-        تسجيل الدخول
+        {"تسجيل الدخول"}
       </Link>
       <Link href="/register" onClick={closeAll} style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "white", padding: "9px 20px", borderRadius: "10px", fontWeight: 700, fontSize: "13.5px", boxShadow: "0 4px 12px rgba(201,149,42,0.4)" }}>
-        انضم الآن
+        {"انضم الآن"}
       </Link>
     </>
   ) : (
     <>
-      <span style={{ fontSize: "13.5px", color: "rgba(255,255,255,0.82)" }}>👋 {user.name}</span>
-      {user.role === "admin" && <Link href="/admin" onClick={closeAll} style={lnkBase}>لوحة الإدارة</Link>}
+      <span style={{ fontSize: "13.5px", color: "rgba(255,255,255,0.82)" }}>{"\u{1F44B}"} {user.name}</span>
+      {user.role === "admin" && <Link href="/admin" onClick={closeAll} style={lnkBase}>{"لوحة الإدارة"}</Link>}
       <button onClick={logout} style={{ background: "transparent", color: "rgba(255,255,255,0.65)", border: "1px solid rgba(255,255,255,0.3)", padding: "8px 16px", borderRadius: "8px", cursor: "pointer", fontSize: "13.5px", fontFamily: "inherit" }}>
-        تسجيل الخروج
+        {"تسجيل الخروج"}
       </button>
     </>
   );
 
   const modeClass = navStyle === "dropdown" ? "nav-dropdown-mode" : navStyle === "sidebar" ? "nav-sidebar-mode" : undefined;
-
   const navBg = scrolled ? "rgba(6,14,36,0.97)" : "rgba(6,14,36,0.72)";
   const navShadow = scrolled ? "0 4px 28px rgba(0,0,0,0.35)" : "none";
   const navBorder = scrolled ? "1px solid rgba(255,255,255,0.07)" : "none";
@@ -163,18 +158,16 @@ export default function Navbar() {
     >
       <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", alignItems: "center", height: "68px", gap: "20px", padding: "0 24px" }}>
 
-        {/* Logo */}
         <Link href="/" onClick={closeAll} style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0, textDecoration: "none" }}>
           <div style={{ width: "40px", height: "40px", background: "linear-gradient(135deg,#0891b2,#c9952a)", borderRadius: "11px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px", flexShrink: 0 }}>
-            🤿
+            {"\u{1F93F}"}
           </div>
           <div>
             <div style={{ color: "white", fontSize: "19px", fontWeight: 900, lineHeight: 1.1 }}>ArabDiving</div>
-            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "10px" }}>مجتمع الغوص العربي</div>
+            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "10px" }}>{"مجتمع الغوص العربي"}</div>
           </div>
         </Link>
 
-        {/* Desktop nav — 7 links + المزيد, no wrap */}
         <div className="nav-desktop" style={{ flex: 1, alignItems: "center", justifyContent: "center", gap: "2px" }}>
           {deskMenu.map((e, i) =>
             e.href ? (
@@ -184,7 +177,7 @@ export default function Navbar() {
             ) : (
               <div key={i} style={{ position: "relative" }}>
                 <button className="nav-pill" onClick={() => setOpenIdx(openIdx === i ? null : i)} style={{ ...lnkBase, background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit" }}>
-                  {e.label} ▾
+                  {e.label} {"▾"}
                 </button>
                 {openIdx === i && (
                   <div style={{ position: "absolute", top: "calc(100% + 6px)", insetInlineEnd: 0, background: "rgba(6,14,36,0.97)", backdropFilter: "blur(20px)", borderRadius: "10px", padding: "8px", minWidth: "180px", boxShadow: "0 12px 30px rgba(0,0,0,0.35)", border: "1px solid rgba(255,255,255,0.07)", zIndex: 60, display: "flex", flexDirection: "column", gap: "4px" }}>
@@ -198,21 +191,18 @@ export default function Navbar() {
               </div>
             )
           )}
-          {user && <Link href="/profile" className="nav-pill" onClick={closeAll} style={lnkBase}>ملفي الشخصي</Link>}
+          {user && <Link href="/profile" className="nav-pill" onClick={closeAll} style={lnkBase}>{"ملفي الشخصي"}</Link>}
         </div>
 
-        {/* Desktop auth */}
         <div className="nav-desktop" style={{ alignItems: "center", gap: "10px", flexShrink: 0 }}>
           {authButtons}
         </div>
 
-        {/* Hamburger */}
         <button className="nav-burger" onClick={() => setOpen((o) => !o)} aria-label="القائمة" style={{ background: "transparent", border: "none", color: "white", fontSize: "28px", cursor: "pointer", lineHeight: 1 }}>
           {open ? "✕" : "☰"}
         </button>
       </div>
 
-      {/* Mobile panel (dropdown + default) */}
       {open && navStyle !== "sidebar" && (
         <div className="nav-mobile-panel" style={{ flexDirection: "column", gap: "6px", padding: "14px 24px 18px", maxWidth: "1280px", margin: "0 auto" }}>
           {mobileMenu.map((e, i) => (
@@ -220,13 +210,12 @@ export default function Navbar() {
               {e.label}{msgBadge(e.href || "")}
             </Link>
           ))}
-          {user && <Link href="/profile" onClick={closeAll} style={{ ...lnkBase, padding: "7px 11px" }}>ملفي الشخصي</Link>}
+          {user && <Link href="/profile" onClick={closeAll} style={{ ...lnkBase, padding: "7px 11px" }}>{"ملفي الشخصي"}</Link>}
           <div style={{ height: "1px", background: "rgba(255,255,255,0.12)", margin: "6px 0" }} />
           <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>{authButtons}</div>
         </div>
       )}
 
-      {/* Side drawer (sidebar mode) */}
       {open && navStyle === "sidebar" && (
         <>
           <div onClick={closeAll} style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.45)", zIndex: 150 }} />
@@ -236,7 +225,7 @@ export default function Navbar() {
                 {e.label}{msgBadge(e.href || "")}
               </Link>
             ))}
-            {user && <Link href="/profile" onClick={closeAll} style={lnkBase}>ملفي الشخصي</Link>}
+            {user && <Link href="/profile" onClick={closeAll} style={lnkBase}>{"ملفي الشخصي"}</Link>}
             <div style={{ height: "1px", background: "rgba(255,255,255,0.12)", margin: "6px 0" }} />
             <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>{authButtons}</div>
           </div>
