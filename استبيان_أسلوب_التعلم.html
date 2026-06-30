@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>استبيان أسلوب التعلم والتركيز</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
+
+  :root {
+    --navy: #0d2c54;
+    --gold: #c9952a;
+    --gold-light: #f5c218;
+    --sky: #0891b2;
+    --surface: #ffffff;
+    --bg: #f1f5fb;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e2e8f0;
+    --green: #16a34a;
+    --amber: #d97706;
+    --red: #dc2626;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Cairo', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    direction: rtl;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #060e24 0%, #0d2c54 60%, #0891b2 100%);
+    padding: 40px 24px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 0; right: 0;
+    height: 40px;
+    background: var(--bg);
+    clip-path: ellipse(55% 100% at 50% 100%);
+  }
+  .header h1 {
+    font-size: clamp(26px, 5vw, 42px);
+    font-weight: 900;
+    color: white;
+    margin-bottom: 12px;
+  }
+  .header p {
+    color: rgba(255,255,255,0.8);
+    font-size: 16px;
+    max-width: 620px;
+    margin: 0 auto;
+    line-height: 1.8;
+  }
+  .header-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.12);
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 30px;
+    padding: 7px 20px;
+    color: rgba(255,255,255,0.9);
+    font-size: 13px;
+    margin-bottom: 20px;
+  }
+  .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--gold); }
+
+  /* Notice */
+  .notice {
+    max-width: 720px;
+    margin: 32px auto 0;
+    background: white;
+    border-radius: 16px;
+    padding: 20px 24px;
+    border-right: 4px solid var(--sky);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.9;
+  }
+  .notice strong { color: var(--navy); }
+
+  /* Main container */
+  .container {
+    max-width: 760px;
+    margin: 32px auto 60px;
+    padding: 0 20px;
+  }
+
+  /* Progress */
+  .progress-wrap {
+    margin-bottom: 32px;
+  }
+  .progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--sky), var(--gold));
+    border-radius: 10px;
+    transition: width 0.4s ease;
+  }
+
+  /* Section card */
+  .section-card {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 28px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+    display: none;
+  }
+  .section-card.active { display: block; animation: fadeIn 0.4s ease; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .section-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 8px;
+  }
+  .section-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    flex-shrink: 0;
+  }
+  .section-icon.blue { background: #e0f2fe; }
+  .section-icon.amber { background: #fef3c7; }
+  .section-icon.purple { background: #ede9fe; }
+
+  .section-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--navy);
+  }
+  .section-subtitle {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+  .section-desc {
+    font-size: 14px;
+    color: var(--muted);
+    line-height: 1.8;
+    margin: 14px 0 28px;
+    padding: 14px 16px;
+    background: var(--bg);
+    border-radius: 10px;
+  }
+
+  /* Scale labels */
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--muted);
+    margin-bottom: 20px;
+    padding: 0 2px;
+  }
+
+  /* Question */
+  .question {
+    margin-bottom: 26px;
+    padding-bottom: 26px;
+    border-bottom: 1px solid var(--border);
+  }
+  .question:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+  .question-text {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 14px;
+    line-height: 1.7;
+  }
+  .question-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: var(--navy);
+    color: white;
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 700;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+
+  /* Radio options */
+  .options {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .option-label {
+    flex: 1;
+    min-width: 80px;
+    cursor: pointer;
+  }
+  .option-label input { display: none; }
+  .option-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 8px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    transition: all 0.15s ease;
+    cursor: pointer;
+    background: white;
+    min-height: 60px;
+    line-height: 1.4;
+  }
+  .option-label input:checked + .option-box {
+    border-color: var(--navy);
+    background: var(--navy);
+    color: white;
+    font-weight: 700;
+  }
+  .option-box:hover { border-color: var(--sky); background: #f0f9ff; }
+  .option-label input:checked + .option-box:hover { background: var(--navy); }
+
+  /* Navigation */
+  .nav-row {
+    display: flex;
+    gap: 12px;
+    margin-top: 28px;
+    justify-content: space-between;
+  }
+  .btn {
+    padding: 13px 28px;
+    border-radius: 12px;
+    border: none;
+    font-family: 'Cairo', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--navy), var(--sky));
+    color: white;
+    box-shadow: 0 4px 14px rgba(13,44,84,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(13,44,84,0.35); }
+  .btn-secondary {
+    background: var(--bg);
+    color: var(--navy);
+    border: 1px solid var(--border);
+  }
+  .btn-gold {
+    background: linear-gradient(135deg, var(--gold), var(--gold-light));
+    color: white;
+    box-shadow: 0 4px 14px rgba(201,149,42,0.35);
+  }
+
+  /* Error hint */
+  .error-hint {
+    display: none;
+    color: #dc2626;
+    font-size: 13px;
+    margin-top: 10px;
+  }
+  .error-hint.show { display: block; }
+
+  /* Results */
+  #results { display: none; animation: fadeIn 0.5s ease; }
+
+  .result-header {
+    background: linear-gradient(135deg, #060e24 0%, #0d2c54 100%);
+    border-radius: 20px;
+    padding: 32px;
+    text-align: center;
+    color: white;
+    margin-bottom: 24px;
+  }
+  .result-header h2 { font-size: 26px; font-weight: 900; margin-bottom: 8px; }
+  .result-header p { color: rgba(255,255,255,0.75); font-size: 14px; }
+
+  .result-card {
+    background: white;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    border: 1px solid var(--border);
+  }
+  .result-card-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .level-badge {
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-right: auto;
+  }
+  .level-low    { background: #dcfce7; color: #16a34a; }
+  .level-mid    { background: #fef3c7; color: #d97706; }
+  .level-high   { background: #fee2e2; color: #dc2626; }
+
+  .score-bar-wrap {
+    height: 10px;
+    background: var(--border);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-bottom: 12px;
+  }
+  .score-bar-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s ease;
+  }
+  .score-bar-fill.low    { background: linear-gradient(90deg, #4ade80, #16a34a); }
+  .score-bar-fill.mid    { background: linear-gradient(90deg, #fbbf24, #d97706); }
+  .score-bar-fill.high   { background: linear-gradient(90deg, #f87171, #dc2626); }
+
+  .result-score-text {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+
+  .recommendations h4 {
+    font-size: 15px;
+    font-weight: 800;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+  .rec-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: 10px;
+    font-size: 14px;
+    line-height: 1.7;
+    color: var(--text);
+  }
+  .rec-icon { font-size: 16px; flex-shrink: 0; margin-top: 2px; }
+
+  .disclaimer {
+    background: #fef9ec;
+    border: 1px solid #fde68a;
+    border-radius: 12px;
+    padding: 16px 20px;
+    font-size: 13px;
+    color: #92400e;
+    line-height: 1.8;
+    margin-top: 24px;
+  }
+
+  .print-btn {
+    display: block;
+    width: 100%;
+    margin-top: 24px;
+    padding: 14px;
+    border-radius: 12px;
+    border: 2px dashed var(--border);
+    background: transparent;
+    color: var(--muted);
+    font-family: 'Cairo', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+  }
+  .print-btn:hover { border-color: var(--navy); color: var(--navy); background: #f8faff; }
+
+  /* Intro screen */
+  #intro { animation: fadeIn 0.4s ease; }
+  .intro-card {
+    background: white;
+    border-radius: 20px;
+    padding: 36px;
+    text-align: center;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    border: 1px solid var(--border);
+  }
+  .intro-card h2 { font-size: 22px; font-weight: 900; color: var(--navy); margin-bottom: 14px; }
+  .intro-card p  { color: var(--muted); font-size: 15px; line-height: 1.9; margin-bottom: 18px; }
+  .intro-features {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 24px 0;
+  }
+  .intro-feature {
+    background: var(--bg);
+    border-radius: 12px;
+    padding: 14px 18px;
+    font-size: 13px;
+    color: var(--navy);
+    font-weight: 600;
+    text-align: center;
+    min-width: 140px;
+  }
+  .intro-feature span { display: block; font-size: 22px; margin-bottom: 6px; }
+
+  @media (max-width: 600px) {
+    .options { flex-direction: column; }
+    .option-label { min-width: auto; }
+    .option-box { flex-direction: row; justify-content: flex-start; gap: 10px; min-height: auto; padding: 12px 14px; }
+    .section-card { padding: 20px; }
+    .nav-row { flex-direction: column-reverse; }
+    .btn { width: 100%; }
+  }
+
+  @media print {
+    .header { background: #0d2c54 !important; -webkit-print-color-adjust: exact; }
+    .nav-row, .print-btn { display: none !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">
+    <div class="dot"></div>
+    أداة توعوية — ليست تشخيصًا طبيًا
+  </div>
+  <h1>🧠 استبيان أسلوب التعلم والتركيز</h1>
+  <p>اكتشف نمط تعلّمك وتلقّ توصيات مخصصة تساعدك على تحقيق أفضل النتائج</p>
+</div>
+
+<div class="container">
+
+  <!-- Intro -->
+  <div id="intro">
+    <div class="intro-card">
+      <h2>مرحبًا بك 👋</h2>
+      <p>
+        هذا الاستبيان مستوحى من أدوات معتمدة دوليًا مثل <strong>ASRS (WHO)</strong> لتقييم الانتباه،
+        ومؤشرات <strong>DSM-5</strong> لصعوبات التعلم. يساعدك على التعرف على أسلوب تعلّمك
+        وتلقّي توصيات عملية، <strong>وليس تشخيصًا طبيًا</strong>.
+      </p>
+      <div class="intro-features">
+        <div class="intro-feature">
+          <span>⏱️</span>
+          5 - 8 دقائق
+        </div>
+        <div class="intro-feature">
+          <span>🔒</span>
+          سري وغير محفوظ
+        </div>
+        <div class="intro-feature">
+          <span>📋</span>
+          17 سؤالاً فقط
+        </div>
+        <div class="intro-feature">
+          <span>💡</span>
+          توصيات فورية
+        </div>
+      </div>
+      <p style="font-size:14px;">
+        أجب بصدق عن كيفية شعورك <strong>في الستة أشهر الماضية</strong> بشكل عام،
+        وليس في يوم أو موقف محدد.
+      </p>
+      <button class="btn btn-gold" onclick="startSurvey()" style="margin-top:8px; font-size:17px; padding:15px 40px;">
+        ابدأ الاستبيان ◀
+      </button>
+    </div>
+  </div>
+
+  <!-- Survey -->
+  <div id="survey" style="display:none;">
+
+    <!-- Progress -->
+    <div class="progress-wrap">
+      <div class="progress-label">
+        <span id="progress-text">القسم 1 من 3</span>
+        <span id="progress-pct">0%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width:5%"></div>
+      </div>
+    </div>
+
+    <!-- Section 1: Attention/ADHD -->
+    <div class="section-card active" id="section-1">
+      <div class="section-header">
+        <div class="section-icon blue">🎯</div>
+        <div>
+          <div class="section-title">الانتباه والتنظيم الذاتي</div>
+          <div class="section-subtitle">القسم 1 من 3 — 6 أسئلة</div>
+        </div>
+      </div>
+      <div class="section-desc">
+        هذه الأسئلة تستكشف أنماط التركيز والتنظيم الذاتي. كثيرون يجدون هذه المواقف صعبة،
+        والهدف هو فهم أسلوبك وليس الحكم عليك.
+      </div>
+
+      <div class="scale-labels">
+        <span>لا أبدًا ← </span>
+        <span>← دائمًا</span>
+      </div>
+
+      <div class="question" data-section="1" data-q="1">
+        <div class="question-text">
+          <span class="question-num">١</span>
+          أجد صعوبة في إتمام المهام التي تتطلب تركيزًا مستمرًا (كقراءة تقرير أو إنجاز مشروع)
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q1" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q1" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q1" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q1" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q1" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="1" data-q="2">
+        <div class="question-text">
+          <span class="question-num">٢</span>
+          يشرد ذهني بسرعة عند الاستماع إلى محاضرة أو تعليمات طويلة
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q2" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q2" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q2" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q2" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q2" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="1" data-q="3">
+        <div class="question-text">
+          <span class="question-num">٣</span>
+          أؤجّل المهام حتى اللحظة الأخيرة حتى لو كانت مهمة
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q3" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q3" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q3" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q3" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q3" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="1" data-q="4">
+        <div class="question-text">
+          <span class="question-num">٤</span>
+          أفقد الأشياء (الهاتف، المفاتيح، الأوراق) بشكل متكرر
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q4" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q4" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q4" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q4" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q4" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="1" data-q="5">
+        <div class="question-text">
+          <span class="question-num">٥</span>
+          أنتقل من نشاط لآخر بسرعة دون إتمام الأول
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q5" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q5" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q5" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q5" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q5" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="1" data-q="6">
+        <div class="question-text">
+          <span class="question-num">٦</span>
+          أشعر بالملل الشديد من الأنشطة المتكررة وأفقد الاهتمام بها بسرعة
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q6" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q6" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q6" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q6" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q6" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="error-hint" id="error-1">⚠️ يرجى الإجابة على جميع الأسئلة قبل المتابعة</div>
+      <div class="nav-row">
+        <button class="btn btn-primary" onclick="nextSection(1)">التالي ◀</button>
+      </div>
+    </div>
+
+    <!-- Section 2: Reading/Dyslexia -->
+    <div class="section-card" id="section-2">
+      <div class="section-header">
+        <div class="section-icon amber">📖</div>
+        <div>
+          <div class="section-title">القراءة والمعالجة اللغوية</div>
+          <div class="section-subtitle">القسم 2 من 3 — 6 أسئلة</div>
+        </div>
+      </div>
+      <div class="section-desc">
+        هذه الأسئلة تستكشف أسلوبك في معالجة النصوص المكتوبة. الكثيرون يعالجون المعلومات
+        بطريقة بصرية أو سمعية أفضل من القراءة التقليدية — وهذا تنوع طبيعي.
+      </div>
+
+      <div class="scale-labels">
+        <span>لا أبدًا ← </span>
+        <span>← دائمًا</span>
+      </div>
+
+      <div class="question" data-section="2" data-q="7">
+        <div class="question-text">
+          <span class="question-num">٧</span>
+          أفقد مكاني أثناء القراءة وأعيد نفس السطر أو أتخطى أسطرًا دون قصد
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q7" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q7" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q7" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q7" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q7" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="2" data-q="8">
+        <div class="question-text">
+          <span class="question-num">٨</span>
+          أحتاج إلى إعادة قراءة الجملة أكثر من مرة لأفهم معناها
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q8" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q8" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q8" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q8" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q8" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="2" data-q="9">
+        <div class="question-text">
+          <span class="question-num">٩</span>
+          أعاني من صعوبة في تهجئة الكلمات أو الخلط بين حروف أو كلمات متشابهة المظهر
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q9" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q9" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q9" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q9" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q9" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="2" data-q="10">
+        <div class="question-text">
+          <span class="question-num">١٠</span>
+          أفضّل الاستماع إلى المحتوى (بودكاست، فيديو، شرح شفهي) على قراءته
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q10" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q10" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q10" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q10" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q10" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="2" data-q="11">
+        <div class="question-text">
+          <span class="question-num">١١</span>
+          يستغرق مني الكتابة أو صياغة النصوص وقتًا أطول مما أتوقع
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q11" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q11" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q11" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q11" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q11" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="2" data-q="12">
+        <div class="question-text">
+          <span class="question-num">١٢</span>
+          أجد صعوبة في تنظيم أفكاري وكتابتها بشكل متسلسل حتى لو كانت واضحة في ذهني
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q12" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q12" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q12" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q12" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q12" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="error-hint" id="error-2">⚠️ يرجى الإجابة على جميع الأسئلة قبل المتابعة</div>
+      <div class="nav-row">
+        <button class="btn btn-primary" onclick="nextSection(2)">التالي ◀</button>
+        <button class="btn btn-secondary" onclick="prevSection(2)">▶ السابق</button>
+      </div>
+    </div>
+
+    <!-- Section 3: Math/Dyscalculia -->
+    <div class="section-card" id="section-3">
+      <div class="section-header">
+        <div class="section-icon purple">🔢</div>
+        <div>
+          <div class="section-title">الأرقام والتوجه الزماني والمكاني</div>
+          <div class="section-subtitle">القسم 3 من 3 — 5 أسئلة</div>
+        </div>
+      </div>
+      <div class="section-desc">
+        بعض الأشخاص يعالجون المعلومات المنطقية والرقمية بطريقة مختلفة — وهذا يؤثر
+        على تعلّم الرياضيات أو المهام المرتبطة بالتسلسل والزمن.
+      </div>
+
+      <div class="scale-labels">
+        <span>لا أبدًا ← </span>
+        <span>← دائمًا</span>
+      </div>
+
+      <div class="question" data-section="3" data-q="13">
+        <div class="question-text">
+          <span class="question-num">١٣</span>
+          أجد صعوبة في تذكّر تسلسل خطوات المسائل أو الإجراءات (مثل خطوات حل مسألة أو اتباع وصفة)
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q13" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q13" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q13" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q13" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q13" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="3" data-q="14">
+        <div class="question-text">
+          <span class="question-num">١٤</span>
+          أخلط بين أرقام أو تسلسلات متشابهة (مثل ٦ و٩، أو ١٣ و٣١)
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q14" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q14" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q14" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q14" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q14" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="3" data-q="15">
+        <div class="question-text">
+          <span class="question-num">١٥</span>
+          أجد صعوبة في تقدير الوقت أو المسافات أو الكميات بدقة معقولة
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q15" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q15" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q15" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q15" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q15" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="3" data-q="16">
+        <div class="question-text">
+          <span class="question-num">١٦</span>
+          أشعر بقلق أو توتر ملحوظ عند التعامل مع الأرقام أو الحسابات في الحياة اليومية
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q16" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q16" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q16" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q16" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q16" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="question" data-section="3" data-q="17">
+        <div class="question-text">
+          <span class="question-num">١٧</span>
+          أضيع في الخرائط أو التعليمات المكانية (يمين/يسار) حتى في أماكن أعرفها
+        </div>
+        <div class="options">
+          <label class="option-label"><input type="radio" name="q17" value="0"><div class="option-box">لا أبدًا</div></label>
+          <label class="option-label"><input type="radio" name="q17" value="1"><div class="option-box">نادرًا</div></label>
+          <label class="option-label"><input type="radio" name="q17" value="2"><div class="option-box">أحيانًا</div></label>
+          <label class="option-label"><input type="radio" name="q17" value="3"><div class="option-box">غالبًا</div></label>
+          <label class="option-label"><input type="radio" name="q17" value="4"><div class="option-box">دائمًا</div></label>
+        </div>
+      </div>
+
+      <div class="error-hint" id="error-3">⚠️ يرجى الإجابة على جميع الأسئلة قبل المتابعة</div>
+      <div class="nav-row">
+        <button class="btn btn-gold" onclick="showResults()" style="font-size:16px;">✅ عرض النتائج والتوصيات</button>
+        <button class="btn btn-secondary" onclick="prevSection(3)">▶ السابق</button>
+      </div>
+    </div>
+
+  </div><!-- /survey -->
+
+  <!-- Results -->
+  <div id="results">
+    <div class="result-header">
+      <h2>نتائجك وتوصياتك 🎯</h2>
+      <p>بناءً على إجاباتك — هذه توصيات لمساعدتك على التعلم بشكل أفضل</p>
+    </div>
+
+    <!-- Card 1: Attention -->
+    <div class="result-card" id="card-attention">
+      <div class="result-card-header">
+        <div class="section-icon blue" style="width:44px;height:44px;font-size:22px;">🎯</div>
+        <div>
+          <div style="font-size:17px;font-weight:800;color:var(--navy);">الانتباه والتنظيم الذاتي</div>
+          <div id="score-attention-text" style="font-size:13px;color:var(--muted);"></div>
+        </div>
+        <span class="level-badge" id="badge-attention"></span>
+      </div>
+      <div class="score-bar-wrap">
+        <div class="score-bar-fill" id="bar-attention" style="width:0%"></div>
+      </div>
+      <div class="recommendations" id="recs-attention"></div>
+    </div>
+
+    <!-- Card 2: Reading -->
+    <div class="result-card" id="card-reading">
+      <div class="result-card-header">
+        <div class="section-icon amber" style="width:44px;height:44px;font-size:22px;">📖</div>
+        <div>
+          <div style="font-size:17px;font-weight:800;color:var(--navy);">القراءة والمعالجة اللغوية</div>
+          <div id="score-reading-text" style="font-size:13px;color:var(--muted);"></div>
+        </div>
+        <span class="level-badge" id="badge-reading"></span>
+      </div>
+      <div class="score-bar-wrap">
+        <div class="score-bar-fill" id="bar-reading" style="width:0%"></div>
+      </div>
+      <div class="recommendations" id="recs-reading"></div>
+    </div>
+
+    <!-- Card 3: Numbers -->
+    <div class="result-card" id="card-numbers">
+      <div class="result-card-header">
+        <div class="section-icon purple" style="width:44px;height:44px;font-size:22px;">🔢</div>
+        <div>
+          <div style="font-size:17px;font-weight:800;color:var(--navy);">الأرقام والتوجه المكاني</div>
+          <div id="score-numbers-text" style="font-size:13px;color:var(--muted);"></div>
+        </div>
+        <span class="level-badge" id="badge-numbers"></span>
+      </div>
+      <div class="score-bar-wrap">
+        <div class="score-bar-fill" id="bar-numbers" style="width:0%"></div>
+      </div>
+      <div class="recommendations" id="recs-numbers"></div>
+    </div>
+
+    <div class="disclaimer">
+      <strong>⚠️ تنبيه مهم:</strong> هذا الاستبيان أداة توعوية تعليمية مبنية على مؤشرات معتمدة دوليًا، وليس تشخيصًا طبيًا.
+      لا يمكن لأي استبيان ذاتي أن يشخّص صعوبات التعلم أو اضطرابات الانتباه، إذ تتطلب عملية التشخيص
+      تقييمًا متخصصًا من معالج نفسي أو طبيب نفسي معتمد. إن كانت نتائجك في النطاق "الملحوظ"،
+      يُنصح باستشارة متخصص للحصول على تقييم دقيق وخطة دعم مناسبة.
+    </div>
+
+    <button class="print-btn" onclick="window.print()">🖨️ طباعة النتائج أو حفظها كـ PDF</button>
+
+    <button class="btn btn-secondary" onclick="restartSurvey()" style="width:100%;margin-top:12px;">🔄 إعادة الاستبيان</button>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+  const RECS = {
+    attention: {
+      low: [
+        { icon: "✅", text: "أداؤك جيد في مجال التركيز والتنظيم. استمر في استخدام قوائم المهام اليومية لتحسين إنتاجيتك." },
+        { icon: "🎯", text: "جرّب تقنية Pomodoro (25 دقيقة عمل + 5 راحة) لتعزيز تركيزك بشكل أكبر." },
+        { icon: "📱", text: "أبعد مصادر التشتيت (الهاتف) أثناء المهام الهامة لتحقيق أداء أفضل." },
+      ],
+      mid: [
+        { icon: "⏱️", text: "استخدم مؤقتًا زمنيًا: خصص 25 دقيقة للعمل المركّز ثم استراح 5 دقائق — هذا يساعد كثيرًا في إدارة الانتباه." },
+        { icon: "📋", text: "قسّم المهام الكبيرة إلى خطوات صغيرة وحدّد موعدًا لكل خطوة. الأهداف الصغيرة أسهل على الدماغ." },
+        { icon: "🎧", text: "جرّب الاستماع إلى موسيقى بدون كلمات (موسيقى الفوكوس) أثناء الدراسة — تحسّن التركيز لدى كثيرين." },
+        { icon: "🏃", text: "النشاط البدني المنتظم (حتى 20 دقيقة مشي) يحسّن التركيز بشكل ملحوظ وفق أبحاث 2024." },
+        { icon: "🗂️", text: "خصّص مكانًا ثابتًا لأغراضك الأساسية (المفاتيح، المحفظة) وعوّد نفسك وضعها فيه دائمًا." },
+        { icon: "👨‍⚕️", text: "إن كانت هذه الصعوبات تؤثر على حياتك اليومية، يُنصح باستشارة متخصص لتقييم شامل." },
+      ],
+      high: [
+        { icon: "👨‍⚕️", text: "النتائج تشير إلى وجود مؤشرات ملحوظة تستحق الاهتمام. يُنصح بشدة بمراجعة طبيب أو معالج نفسي متخصص." },
+        { icon: "📝", text: "دوّن ملاحظاتك وقوائم مهامك فور التفكير فيها — الاعتماد على الذاكرة وحدها قد يكون مجهدًا." },
+        { icon: "⏰", text: "استخدم تنبيهات وتذكيرات متعددة على الهاتف لكل موعد ومهمة، وتحقق منها صباحًا." },
+        { icon: "🌿", text: "أنشئ بيئة دراسة هادئة ومنظمة، بعيدة عن الشاشات والأصوات المشتتة." },
+        { icon: "🤝", text: "اطلب من المدرب أو المعلم تقديم التعليمات كتابيًا إضافةً إلى الشفهي، مما يسهّل متابعتها." },
+        { icon: "💊", text: "إن أُشير إلى ADHD في التقييم المتخصص، تتوفر خيارات علاجية فعّالة (سلوكية ودوائية) تُحدث فرقًا كبيرًا." },
+      ],
+    },
+    reading: {
+      low: [
+        { icon: "✅", text: "معالجتك للنصوص المكتوبة تبدو ضمن النطاق المعتاد — استمر في القراءة لتعزيز هذه المهارة." },
+        { icon: "📚", text: "جرّب قراءة ألوان خلفية مختلفة (خلفية كريمية بدلاً من البيضاء) لتقليل الإجهاد البصري." },
+      ],
+      mid: [
+        { icon: "🎧", text: "استخدم ميزة تحويل النص إلى كلام (Text-to-Speech) في قراءة المواد الطويلة — تساعد كثيرًا في الاستيعاب." },
+        { icon: "🖊️", text: "استخدم مسطرة أو إصبعك لتتبع السطور أثناء القراءة لتجنب فقدان مكانك." },
+        { icon: "🎨", text: "جرّب قراءة النصوص على خلفية صفراء فاتحة أو كريمية — بعض الأشخاص يجدون هذا أريح على العينين." },
+        { icon: "📝", text: "لخّص ما تقرأه بكلماتك فور الانتهاء — هذا يعزز الفهم ويكشف أي ثغرات في الاستيعاب." },
+        { icon: "🎬", text: "ابحث عن المحتوى في صيغة فيديو أو صوت إضافةً للنص المكتوب، خاصةً للموضوعات المعقدة." },
+        { icon: "👨‍⚕️", text: "إن كانت هذه الصعوبات تعيق تقدمك الدراسي أو المهني، يُنصح بتقييم من متخصص في صعوبات التعلم." },
+      ],
+      high: [
+        { icon: "👨‍⚕️", text: "المؤشرات تستحق تقييمًا متخصصًا من أخصائي صعوبات تعلم. الكشف المبكر يفتح الباب لدعم فعّال جدًا." },
+        { icon: "🎧", text: "اعتمد على المحتوى الصوتي والمرئي كأداة تعلم رئيسية، وليس بديلاً مؤقتًا — كثيرون يتعلمون هكذا بكفاءة أعلى." },
+        { icon: "⏰", text: "اطلب وقتًا إضافيًا في الاختبارات والتقييمات — هذا حق مشروع لمن لديهم صعوبات في معالجة النص." },
+        { icon: "🖊️", text: "استخدم الخرائط الذهنية بدلاً من النصوص الطولية لتنظيم الأفكار والمعلومات." },
+        { icon: "💻", text: "استخدم برامج التدقيق الإملائي دائمًا، واستعن بأدوات الذكاء الاصطناعي لمراجعة ما تكتب." },
+        { icon: "🌟", text: "تذكّر: ديسلكسيا لا تعني انخفاض الذكاء — كثيرون من أصحاب أعلى الإنجازات عالميًا يعيشون معها بنجاح." },
+      ],
+    },
+    numbers: {
+      low: [
+        { icon: "✅", text: "تبدو راحتك مع الأرقام والتسلسل ضمن النطاق المعتاد." },
+        { icon: "📊", text: "استخدم الجداول والمخططات البصرية عند تقديم البيانات — تُبسّط المعلومات للجميع." },
+      ],
+      mid: [
+        { icon: "📱", text: "استخدم الآلة الحاسبة بلا تردد في الحياة اليومية — إتقان المفاهيم أهم من الحساب الذهني." },
+        { icon: "📅", text: "استخدم التقويم الرقمي مع تنبيهات للمواعيد بدلاً من الاعتماد على الذاكرة الزمنية." },
+        { icon: "🗺️", text: "اعتمد على تطبيقات الخرائط دومًا ولا تتردد في ذلك — فهي موجودة لهذا الغرض تحديدًا." },
+        { icon: "📊", text: "حوّل الأرقام إلى صور بصرية ومخططات بيانية — الدماغ يعالج الصور أسرع من الأرقام المجردة." },
+        { icon: "✍️", text: "اكتب المعادلات والخطوات بصوت عالٍ أثناء حلّها — هذا يُفعّل معالجة مختلفة في الدماغ." },
+      ],
+      high: [
+        { icon: "👨‍⚕️", text: "المؤشرات ملحوظة. يُنصح بتقييم من متخصص في صعوبات التعلم لاستكشاف إمكانية وجود دصعوبات في الحساب (Dyscalculia)." },
+        { icon: "📱", text: "استخدم التكنولوجيا بشكل ممنهج: تطبيقات الحاسبة، والتقويم، والخرائط — هي أدوات دائمة لك." },
+        { icon: "🎨", text: "استخدم الألوان لتمييز الخطوات والمعطيات في المسائل — يُقلّل التشابه بين الأرقام المتشابهة." },
+        { icon: "⏰", text: "اطلب وقتًا إضافيًا في أي تقييمات تشمل أرقامًا — هذا حق مشروع لمن لديهم صعوبات في معالجة الأرقام." },
+        { icon: "🤝", text: "تحدّث مع المدرب أو المدير عن احتياجاتك — وصف احتياجاتك تعليميًا يساعد الآخرين على دعمك." },
+        { icon: "🌟", text: "صعوبات الأرقام لا تحدّ من قدرتك الإبداعية أو العلاقاتية — كثيرون يمتلكون مهارات استثنائية في مجالات أخرى." },
+      ],
+    },
+  };
+
+  let currentSection = 0;
+
+  function startSurvey() {
+    document.getElementById('intro').style.display = 'none';
+    document.getElementById('survey').style.display = 'block';
+    updateProgress(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function updateProgress(section) {
+    const pct = Math.round((section - 1) / 3 * 100);
+    document.getElementById('progress-fill').style.width = Math.max(5, pct) + '%';
+    document.getElementById('progress-text').textContent = 'القسم ' + section + ' من 3';
+    document.getElementById('progress-pct').textContent = pct + '%';
+  }
+
+  function getScore(qs) {
+    let total = 0;
+    for (const name of qs) {
+      const checked = document.querySelector('input[name="' + name + '"]:checked');
+      if (checked) total += parseInt(checked.value);
+    }
+    return total;
+  }
+
+  function validateSection(sectionNum, questions) {
+    for (const name of questions) {
+      if (!document.querySelector('input[name="' + name + '"]:checked')) {
+        document.getElementById('error-' + sectionNum).classList.add('show');
+        return false;
+      }
+    }
+    document.getElementById('error-' + sectionNum).classList.remove('show');
+    return true;
+  }
+
+  function nextSection(from) {
+    const qMap = { 1: ['q1','q2','q3','q4','q5','q6'], 2: ['q7','q8','q9','q10','q11','q12'] };
+    if (!validateSection(from, qMap[from])) return;
+    document.getElementById('section-' + from).classList.remove('active');
+    document.getElementById('section-' + (from + 1)).classList.add('active');
+    updateProgress(from + 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function prevSection(from) {
+    document.getElementById('section-' + from).classList.remove('active');
+    document.getElementById('section-' + (from - 1)).classList.add('active');
+    updateProgress(from - 1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function showResults() {
+    if (!validateSection(3, ['q13','q14','q15','q16','q17'])) return;
+
+    const scores = {
+      attention: getScore(['q1','q2','q3','q4','q5','q6']),   // max 24
+      reading:   getScore(['q7','q8','q9','q10','q11','q12']), // max 24
+      numbers:   getScore(['q13','q14','q15','q16','q17']),    // max 20
+    };
+    const maxes = { attention: 24, reading: 24, numbers: 20 };
+
+    function getLevel(score, max) {
+      const pct = score / max;
+      if (pct < 0.35) return 'low';
+      if (pct < 0.65) return 'mid';
+      return 'high';
+    }
+
+    const labels = { low: 'مؤشرات منخفضة', mid: 'مؤشرات متوسطة', high: 'مؤشرات ملحوظة' };
+    const cards = [
+      { key: 'attention', id: 'attention' },
+      { key: 'reading',   id: 'reading' },
+      { key: 'numbers',   id: 'numbers' },
+    ];
+
+    for (const c of cards) {
+      const score = scores[c.key];
+      const max = maxes[c.key];
+      const level = getLevel(score, max);
+      const pct = Math.round(score / max * 100);
+
+      document.getElementById('score-' + c.id + '-text').textContent =
+        'النتيجة: ' + score + ' / ' + max + ' (' + pct + '%)';
+      document.getElementById('badge-' + c.id).textContent = labels[level];
+      document.getElementById('badge-' + c.id).className = 'level-badge level-' + level;
+      document.getElementById('bar-' + c.id).style.width = pct + '%';
+      document.getElementById('bar-' + c.id).className = 'score-bar-fill ' + level;
+
+      const recsEl = document.getElementById('recs-' + c.id);
+      const recs = RECS[c.key][level];
+      recsEl.innerHTML = '<h4>التوصيات:</h4>' +
+        recs.map(r => '<div class="rec-item"><span class="rec-icon">' + r.icon + '</span><span>' + r.text + '</span></div>').join('');
+    }
+
+    document.getElementById('survey').style.display = 'none';
+    document.getElementById('results').style.display = 'block';
+    document.getElementById('progress-fill').style.width = '100%';
+    document.getElementById('progress-pct').textContent = '100%';
+    document.getElementById('progress-text').textContent = 'مكتمل ✅';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function restartSurvey() {
+    document.querySelectorAll('input[type=radio]').forEach(r => r.checked = false);
+    document.querySelectorAll('.error-hint').forEach(e => e.classList.remove('show'));
+    document.getElementById('results').style.display = 'none';
+    document.getElementById('section-2').classList.remove('active');
+    document.getElementById('section-3').classList.remove('active');
+    document.getElementById('section-1').classList.add('active');
+    document.getElementById('intro').style.display = 'block';
+    document.getElementById('survey').style.display = 'none';
+    updateProgress(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>

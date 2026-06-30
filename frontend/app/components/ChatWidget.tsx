@@ -107,7 +107,7 @@ export default function ChatWidget() {
                 <div style={{ display: "flex", gap: "8px", padding: "12px", borderTop: "1px solid #eef2f6" }}>
                   <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()}
                     placeholder={step === 1 ? "رقم الجوال أو البريد..." : "اكتب هنا..."} type={step === 1 ? "text" : "text"}
-                    style={{ flex: 1, padding: "10px 12px", borderRadius: "10px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "14px" }} />
+                    style={{ flex: 1, padding: "10px 12px", borderRadius: "10px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "14px", color: "#0f172a", background: "white" }} />
                   <button onClick={send} disabled={sending} style={{ background: "var(--gold, #c9952a)", color: "white", border: "none", borderRadius: "10px", padding: "0 16px", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 }}>إرسال</button>
                 </div>
               ) : (
