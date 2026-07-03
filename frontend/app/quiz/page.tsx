@@ -133,7 +133,10 @@ export default function QuizPage() {
   return (
     <div style={{ maxWidth: "760px", margin: "0 auto", padding: "clamp(16px,4vw,40px) 16px" }}>
       <h1 style={{ textAlign: "center", fontSize: "clamp(24px,5vw,34px)", color: "var(--navy)", marginBottom: "6px" }}>🧠 اكتشف نمطك الشخصي</h1>
-      <p style={{ textAlign: "center", color: "#64748b", marginBottom: "26px" }}>نموذج الألوان (DISC) — لمطابقة المدرّب المناسب بالمتدرّب المناسب</p>
+      <p style={{ textAlign: "center", color: "#64748b", marginBottom: "10px" }}>نموذج الألوان (DISC) — لمطابقة المدرّب المناسب بالمتدرّب المناسب</p>
+      <p style={{ textAlign: "center", color: "#94a3b8", fontSize: "13px", marginBottom: "26px", lineHeight: 1.7 }}>
+        💡 أداة استرشادية ممتعة لتسهيل التفاهم — ليست تشخيصًا نفسيًا علميًا، والناس أعقد وأجمل من أربعة ألوان.
+      </p>
 
       {step === "role" && (
         <div style={card}>

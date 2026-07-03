@@ -296,8 +296,34 @@ const savePersonality = async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
+// Save training-fit survey (استبيان التوافق التدريبي)
+const saveTrainingFit = async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ success: false, message: "غير موجود" });
+    const { goal, scores, prefs } = req.body || {};
+    const clamp = (v) => Math.max(0, Math.min(8, Number(v) || 0));
+    user.trainingFit = {
+      goal: ["certification", "fun", "pro", "fear"].includes(goal) ? goal : "",
+      scores: {
+        comfort: clamp(scores?.comfort), pace: clamp(scores?.pace),
+        theory: clamp(scores?.theory), support: clamp(scores?.support),
+      },
+      prefs: {
+        arabic: !!prefs?.arabic,
+        femaleInstructor: !!prefs?.femaleInstructor,
+        smallGroup: !!prefs?.smallGroup,
+      },
+      takenAt: new Date(),
+    };
+    await user.save();
+    res.json({ success: true, trainingFit: user.trainingFit });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
 module.exports = {
   savePersonality,
+  saveTrainingFit,
   getProfile,
   updateProfile,
   getAllUsers,

@@ -28,6 +28,7 @@ export default function CommunitiesPage() {
       <div style={{ textAlign: "center", marginBottom: "30px" }}>
         <h1 style={{ color: "var(--navy)", fontSize: "clamp(26px,5vw,36px)" }}>🎨 المجتمعات اللونية</h1>
         <p style={{ color: "#666", lineHeight: 1.8, maxWidth: "640px", margin: "8px auto 0" }}>مجتمعات مبنية على نمط شخصيتك من <Link href="/quiz" style={{ color: "var(--mid)" }}>اختبار النمط</Link>. اكتشف نمطك وانضم لمجتمعك من إعدادات ملفك الشخصي.</p>
+        <p style={{ color: "#94a3b8", fontSize: "13px", maxWidth: "640px", margin: "6px auto 0", lineHeight: 1.7 }}>💡 نموذج الألوان أداة استرشادية للتفاهم وكسر الجليد — ليس تصنيفًا علميًا نهائيًا للبشر.</p>
       </div>
 
       <div style={{ display: "flex", flexDirection: "column", gap: "26px" }}>

@@ -17,6 +17,7 @@ const {
   getUserById,
   uploadProfileImage,
   savePersonality,
+  saveTrainingFit,
   followUser,
   unfollowUser,
 } = require("../controllers/userController");
@@ -35,6 +36,7 @@ router.put(
 );
 
 router.put("/personality", protect, savePersonality);
+router.put("/training-fit", protect, saveTrainingFit);
 
 // Profile image
 router.post(

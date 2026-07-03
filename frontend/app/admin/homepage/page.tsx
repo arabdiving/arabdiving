@@ -12,6 +12,7 @@ interface Block {
 
 // Single source of truth for ALL available blocks
 const BLOCK_REGISTRY: Record<string, { label: string; icon: string; desc: string }> = {
+  // ─── بلوكات أساسية ───────────────────────────────────────────
   hero:              { label: "الهيرو الرئيسي",          icon: "🏠", desc: "الصورة الكبيرة والعنوان الرئيسي" },
   community_feed:    { label: "فيد المجتمع",              icon: "💬", desc: "آخر منشورات الغوّاصين" },
   gulf_focus:        { label: "لماذا الخليج؟",            icon: "🌊", desc: "مزايا الغوص في المنطقة العربية" },
@@ -22,6 +23,31 @@ const BLOCK_REGISTRY: Record<string, { label: string; icon: string; desc: string
   weight_calculator: { label: "حاسبة وزن الحزام",        icon: "⚖️", desc: "أداة تفاعلية لحساب وزن الرصاص" },
   community_survey:  { label: "استطلاع المجتمع",         icon: "📋", desc: "تصويت للغوّاصين على سؤال أسبوعي" },
   page_cards:        { label: "بطاقات الصفحات",          icon: "🃏", desc: "بطاقات لأي صفحة تختارها (حرّرها من «بطاقات الرئيسية»)" },
+
+  // ─── بروموشن الصفحات المنفردة ────────────────────────────────
+  survey_promo:      { label: "استبيان التعلم",           icon: "🧠", desc: "قسم ترويجي يوجّه الزوار لاستبيان أسلوب التعلم /survey" },
+  courses_promo:     { label: "الدورات المعتمدة",         icon: "🎓", desc: "قسم ترويجي لصفحة الدورات والشهادات /courses" },
+  guide_promo:       { label: "دليل الغوّاص",             icon: "📖", desc: "قسم ترويجي للدليل الشامل /guide" },
+  quiz_promo:        { label: "اكتشف نمطك",               icon: "🧩", desc: "قسم ترويجي لاختبار شخصية الغواص /quiz" },
+  try_diving_promo:  { label: "جرّب الغوص",               icon: "🤿", desc: "قسم ترويجي لتجربة الغوص بدون شهادة /try-diving" },
+  retreats_promo:    { label: "الباقات الخاصة",           icon: "✨", desc: "قسم ترويجي للباقات الفاخرة /retreats" },
+  trips_promo:       { label: "جميع الرحلات",             icon: "🚢", desc: "قسم ترويجي لقائمة الرحلات /trips" },
+  women_promo:       { label: "غوص السيدات",              icon: "🧕", desc: "قسم ترويجي للرحلات النسائية /women" },
+  youth_promo:       { label: "برامج الشباب",             icon: "⚡", desc: "قسم ترويجي لمبادرات الشباب /youth" },
+  kids_promo:        { label: "غوص الأطفال",              icon: "👧", desc: "قسم ترويجي لبرامج الأطفال /kids" },
+  logbook_promo:     { label: "اللوج بوك الرقمي",        icon: "📒", desc: "قسم ترويجي لسجل الغطسات الرقمي /logbook" },
+  marketplace_promo: { label: "متجر المعدات",             icon: "🛍️", desc: "قسم ترويجي للمتجر والمعدات /marketplace" },
+  temperatures_promo:{ label: "حرارة المياه",             icon: "🌡️", desc: "قسم ترويجي لصفحة درجات الحرارة /temperatures" },
+  trends_promo:      { label: "الصيحات والأمان",          icon: "🛡️", desc: "قسم ترويجي لنصائح السلامة والاتجاهات /trends" },
+  weight_calc_promo: { label: "حاسبة الحزام (بروموشن)",  icon: "⚖️", desc: "قسم ترويجي يوجّه لحاسبة الوزن /weight-calculator" },
+  communities_promo: { label: "المجتمعات",                icon: "🌐", desc: "قسم ترويجي للمجتمعات المتخصصة /communities" },
+  stories_promo:     { label: "قصص الغوّاصين",           icon: "📝", desc: "قسم ترويجي لقصص وتجارب الأعضاء /stories" },
+  dive_sites_promo:  { label: "دليل مواقع الغوص",        icon: "📍", desc: "قسم ترويجي لدليل المواقع الكامل /dive-sites" },
+  game_promo:        { label: "لعبة أبطال البحر",        icon: "🎮", desc: "قسم ترويجي للعبة التعليمية /game" },
+  family_booking_promo: { label: "الحجز العائلي",        icon: "👨‍👩‍👧‍👦", desc: "قسم ترويجي لرحلات العائلات /family-booking" },
+  sizes_promo:       { label: "دليل المقاسات",           icon: "📏", desc: "قسم ترويجي لدليل مقاسات المعدات /sizes" },
+  members_promo:     { label: "دليل الأعضاء",            icon: "🤝", desc: "قسم ترويجي لتصفح أعضاء المجتمع /members" },
+  training_fit_promo:{ label: "استبيان التوافق التدريبي", icon: "🧭", desc: "قسم ترويجي لاستبيان التوافق العملي /training-fit" },
 };
 
 export default function HomepageBlocksAdmin() {

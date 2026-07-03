@@ -82,6 +82,23 @@ following: [
     },
     showInColor: { type: Boolean, default: false },
 
+    // استبيان التوافق التدريبي — احتياجات عملية لمطابقة المدرب بالمتدرب
+    trainingFit: {
+      goal: { type: String, default: "" }, // certification | fun | pro | fear
+      scores: {
+        comfort: Number,  // الطمأنينة في الماء (2-8)
+        pace: Number,     // تفضيل التدرج الهادئ (2-8)
+        theory: Number,   // تفضيل الشرح النظري أولًا (2-8)
+        support: Number,  // الحاجة للتشجيع والدعم (2-8)
+      },
+      prefs: {
+        arabic: { type: Boolean, default: false },
+        femaleInstructor: { type: Boolean, default: false },
+        smallGroup: { type: Boolean, default: false },
+      },
+      takenAt: Date,
+    },
+
     role: {
       type: String,
       enum: ["member", "admin"],
