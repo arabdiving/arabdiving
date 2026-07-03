@@ -4,13 +4,13 @@ import { useState, useRef, useEffect } from "react";
 
 /* ─── Data ─────────────────────────────────────────────── */
 const QUESTIONS = [
-  // Section 1 — Attention
-  { id: 1, section: 1, text: "أجد صعوبة في إتمام المهام التي تتطلب تركيزًا مستمرًا (كقراءة تقرير أو إنجاز مشروع)" },
-  { id: 2, section: 1, text: "يشرد ذهني بسرعة عند الاستماع إلى محاضرة أو تعليمات طويلة" },
-  { id: 3, section: 1, text: "أؤجّل المهام حتى اللحظة الأخيرة حتى لو كانت مهمة" },
-  { id: 4, section: 1, text: "أفقد الأشياء (الهاتف، المفاتيح، الأوراق) بشكل متكرر" },
-  { id: 5, section: 1, text: "أنتقل من نشاط لآخر بسرعة دون إتمام الأول" },
-  { id: 6, section: 1, text: "أشعر بالملل الشديد من الأنشطة المتكررة وأفقد الاهتمام بها بسرعة" },
+  // Section 1 — Attention: أسئلة ASRS-v1.1 الجزء A الرسمية (منظمة الصحة العالمية)
+  { id: 1, section: 1, text: "كم مرة تواجه صعوبة في إنهاء التفاصيل الأخيرة من مشروع أو مهمة بعد إنجاز الأجزاء الصعبة منها؟" },
+  { id: 2, section: 1, text: "كم مرة تجد صعوبة في ترتيب الأمور عندما تتطلب المهمة تنظيمًا؟" },
+  { id: 3, section: 1, text: "كم مرة تنسى المواعيد أو الالتزامات؟" },
+  { id: 4, section: 1, text: "عندما تكون هناك مهمة تتطلب تفكيرًا طويلًا، كم مرة تتجنبها أو تؤجل البدء فيها؟" },
+  { id: 5, section: 1, text: "كم مرة تتململ أو تحرك يديك أو قدميك عندما تضطر للجلوس لوقت طويل؟" },
+  { id: 6, section: 1, text: "كم مرة تشعر بنشاط زائد واندفاع للحركة كأن بداخلك محركًا لا يتوقف؟" },
   // Section 2 — Reading
   { id: 7,  section: 2, text: "أفقد مكاني أثناء القراءة وأعيد نفس السطر أو أتخطى أسطرًا دون قصد" },
   { id: 8,  section: 2, text: "أحتاج إلى إعادة قراءة الجملة أكثر من مرة لأفهم معناها" },
@@ -27,6 +27,33 @@ const QUESTIONS = [
 ];
 
 const SCALE = ["لا أبدًا", "نادرًا", "أحيانًا", "غالبًا", "دائمًا"];
+
+/*
+  منهجية ASRS-v1.1 الرسمية للجزء A:
+  الأسئلة 1-3 تُحسب «إيجابية» من إجابة «أحيانًا» فأعلى (>=2)،
+  والأسئلة 4-6 من «غالبًا» فأعلى (>=3).
+  4 إجابات إيجابية أو أكثر من 6 = مؤشرات تستحق تقييمًا متخصصًا.
+*/
+const ASRS_THRESHOLD = [2, 2, 2, 3, 3, 3];
+
+/* توصيات خاصة بتعلم الغوص — ميزة ArabDiving: كيف تتعلم الغوص بنجاح مع كل نمط */
+const DIVE_RECS: Record<string, { icon: string; text: string }[]> = {
+  attention: [
+    { icon: "🤿", text: "اطلب بريفينج قصيرًا ومركّزًا: مهارة واحدة في كل مرة بدل شرح طويل — وكرر الخطوات بصوتك للمدرب قبل النزول." },
+    { icon: "✅", text: "استخدم قوائم فحص مكتوبة للمعدات (BWRAF) ولا تعتمد على الذاكرة — حتى المحترفون يفعلون ذلك." },
+    { icon: "⚡", text: "الخبر الجيد: كثير من أصحاب فرط الحركة يبدعون تحت الماء — البيئة الغنية بالمحفزات تناسبهم، والحركة المستمرة تفرّغ الطاقة." },
+  ],
+  reading: [
+    { icon: "🎧", text: "اطلب من مدربك الاعتماد على الشرح الشفهي والفيديو بدل القراءة — مناهج PADI وSSI متوفرة بصيغ فيديو وصوت." },
+    { icon: "🖼️", text: "تعلّم إشارات اليد تحت الماء بالممارسة والصور لا بالكتيبات — وهي أصلًا لغة بصرية تناسبك." },
+    { icon: "⏰", text: "لك الحق في وقت إضافي في الاختبار النظري — اطلبه بلا حرج، ومعظم المنظمات تسمح بقراءة الأسئلة صوتيًا." },
+  ],
+  numbers: [
+    { icon: "⌚", text: "كمبيوتر الغوص يحسب لك كل شيء (العمق، الوقت، التشبع) — أتقن قراءته بدل الحسابات اليدوية، وهذا هو المعيار الحديث أصلًا." },
+    { icon: "🎨", text: "اطلب شرح جداول الغوص بالرسم والألوان، وتدرّب على السيناريوهات عمليًا في الماء بدل الورق." },
+    { icon: "🧭", text: "في الملاحة تحت الماء، اعتمد على المعالم البصرية (شعاب، تكوينات) مع البوصلة — أخبر مدربك ليدرّبك على الطريقتين." },
+  ],
+};
 
 const RECS: Record<string, Record<string, { icon: string; text: string }[]>> = {
   attention: {
@@ -133,6 +160,16 @@ export default function SurveyPage() {
     return "high";
   };
 
+  // قسم الانتباه يُقيَّم بمنهجية ASRS الرسمية (عدد المعايير الإيجابية) لا بالمجموع
+  const asrsPositives = () =>
+    sectionQs(1).reduce((acc, q, i) => acc + ((answers[q.id] ?? 0) >= ASRS_THRESHOLD[i] ? 1 : 0), 0);
+  const asrsLevel = (): "low" | "mid" | "high" => {
+    const p = asrsPositives();
+    if (p <= 1) return "low";
+    if (p <= 3) return "mid";
+    return "high"; // 4+ من 6 حسب العتبة الرسمية
+  };
+
   const levelLabel: Record<string, string> = { low: "مؤشرات منخفضة", mid: "مؤشرات متوسطة", high: "مؤشرات ملحوظة" };
   const levelColor: Record<string, string> = { low: "#16a34a", mid: "#d97706", high: "#dc2626" };
   const levelBg:    Record<string, string> = { low: "#dcfce7", mid: "#fef3c7", high: "#fee2e2" };
@@ -190,9 +227,10 @@ export default function SurveyPage() {
           <div style={{ background: "white", borderRadius: "20px", padding: "40px 36px", textAlign: "center", boxShadow: "0 4px 20px rgba(0,0,0,0.07)", border: "1px solid var(--border)" }}>
             <h2 style={{ fontSize: "22px", fontWeight: 900, color: "var(--navy)", marginBottom: "14px" }}>مرحبًا بك 👋</h2>
             <p style={{ color: "var(--muted)", fontSize: "15px", lineHeight: 1.9, marginBottom: "24px" }}>
-              هذا الاستبيان مستوحى من أدوات معتمدة دوليًا مثل <strong style={{ color: "var(--navy)" }}>ASRS (WHO)</strong> لتقييم الانتباه
-              ومؤشرات <strong style={{ color: "var(--navy)" }}>DSM-5</strong> لصعوبات التعلم.
-              يساعدك على التعرف على أسلوب تعلّمك وتلقّي توصيات عملية، <strong style={{ color: "var(--navy)" }}>وليس تشخيصًا طبيًا</strong>.
+              قسم الانتباه يستخدم أسئلة ومنهجية <strong style={{ color: "var(--navy)" }}>ASRS-v1.1 الرسمية (منظمة الصحة العالمية)</strong> بعتبات
+              التقييم المعتمدة، وقسما القراءة والأرقام مستوحيان من مؤشرات <strong style={{ color: "var(--navy)" }}>DSM-5</strong> لصعوبات التعلم.
+              ستحصل على توصيات عملية عامة <strong style={{ color: "var(--navy)" }}>+ توصيات خاصة بتعلم الغوص 🤿</strong> وبطاقة دعم ترسلها لمدربك —
+              <strong style={{ color: "var(--navy)" }}> وهو ليس تشخيصًا طبيًا</strong>.
             </p>
             <div style={{ display: "flex", gap: "12px", justifyContent: "center", flexWrap: "wrap", margin: "20px 0 28px" }}>
               {[["⏱️","5 - 8 دقائق"],["🔒","سري وغير محفوظ"],["📋","17 سؤالاً فقط"],["💡","توصيات فورية"]].map(([icon, label]) => (
@@ -303,7 +341,7 @@ export default function SurveyPage() {
             {(["attention","reading","numbers"] as const).map((key, idx) => {
               const score = getScore(idx + 1);
               const max = SECTION_INFO[idx].max;
-              const level = getLevel(score, max);
+              const level = key === "attention" ? asrsLevel() : getLevel(score, max);
               const pct = Math.round(score / max * 100);
               const recs = RECS[key][level];
               return (
@@ -314,7 +352,11 @@ export default function SurveyPage() {
                     </div>
                     <div style={{ flex: 1 }}>
                       <div style={{ fontSize: "17px", fontWeight: 800, color: "var(--navy)" }}>{SECTION_INFO[idx].label}</div>
-                      <div style={{ fontSize: "13px", color: "var(--muted)" }}>النتيجة: {score} / {max} ({pct}%)</div>
+                      <div style={{ fontSize: "13px", color: "var(--muted)" }}>
+                        {key === "attention"
+                          ? `${asrsPositives()} من 6 معايير إيجابية — منهجية ASRS الرسمية (WHO)`
+                          : `النتيجة: ${score} / ${max} (${pct}%)`}
+                      </div>
                     </div>
                     <span style={{ padding: "5px 14px", borderRadius: "20px", fontSize: "13px", fontWeight: 700, background: levelBg[level], color: levelColor[level] }}>
                       {levelLabel[level]}
@@ -332,15 +374,59 @@ export default function SurveyPage() {
                       </div>
                     ))}
                   </div>
+                  {level !== "low" && (
+                    <div style={{ marginTop: "16px", background: "#f0fdfa", border: "1px solid #99f6e4", borderRadius: "12px", padding: "16px" }}>
+                      <div style={{ fontSize: "15px", fontWeight: 800, color: "#134e4a", marginBottom: "12px" }}>🤿 وتحت الماء — كيف تتعلم الغوص بنجاح مع هذا النمط:</div>
+                      {DIVE_RECS[key].map((r, i) => (
+                        <div key={i} style={{ display: "flex", alignItems: "flex-start", gap: "10px", marginBottom: "10px", fontSize: "14px", lineHeight: 1.7, color: "#134e4a" }}>
+                          <span style={{ fontSize: "16px", flexShrink: 0, marginTop: "2px" }}>{r.icon}</span>
+                          <span>{r.text}</span>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               );
             })}
 
+            {/* بطاقة دعم المدرب */}
+            {(() => {
+              const lines: string[] = [];
+              const aLevel = asrsLevel();
+              if (aLevel !== "low") lines.push(`🎯 الانتباه والتنظيم (${aLevel === "high" ? "ملحوظ" : "متوسط"}): بريفينج قصير ومركّز، مهارة واحدة في كل مرة، تعليمات مكتوبة مع الشفهية، وقوائم فحص للمعدات.`);
+              const rLevel = getLevel(getScore(2), SECTION_INFO[1].max);
+              if (rLevel !== "low") lines.push(`📖 معالجة النصوص (${rLevel === "high" ? "ملحوظ" : "متوسط"}): اعتمد الشرح الشفهي والفيديو والصور بدل القراءة، وامنحه وقتًا إضافيًا في الاختبار النظري.`);
+              const nLevel = getLevel(getScore(3), SECTION_INFO[2].max);
+              if (nLevel !== "low") lines.push(`🔢 الأرقام والتسلسل (${nLevel === "high" ? "ملحوظ" : "متوسط"}): درّبه على كمبيوتر الغوص بدل الجداول اليدوية، واشرح التسلسلات بالرسم والألوان والتطبيق العملي.`);
+              if (lines.length === 0) return null;
+              const copyText = () => {
+                const t = `📋 بطاقة دعم التعلم (ArabDiving) — لمشاركتها مع مدرب الغوص:\n${lines.join("\n")}\n(نتائج استبيان توعوي ذاتي — ليست تشخيصًا)`;
+                navigator.clipboard?.writeText(t).then(() => alert("✅ تم نسخ البطاقة — أرسلها لمدربك")).catch(() => {});
+              };
+              return (
+                <div style={{ background: "linear-gradient(135deg,#134e4a,#0d9488)", borderRadius: "16px", padding: "24px", marginBottom: "20px", color: "white" }}>
+                  <h3 style={{ fontSize: "18px", fontWeight: 800, marginBottom: "6px" }}>📋 بطاقة دعم المدرب</h3>
+                  <p style={{ fontSize: "13px", color: "rgba(255,255,255,0.8)", marginBottom: "14px", lineHeight: 1.8 }}>
+                    أرسل هذه البطاقة لمدرب غوصك قبل أول حصة — المدرب الذي يعرف أسلوب تعلمك من اليوم الأول يوفّر عليك أسابيع.
+                  </p>
+                  <div style={{ background: "rgba(255,255,255,0.1)", borderRadius: "10px", padding: "14px", fontSize: "14px", lineHeight: 2, marginBottom: "14px" }}>
+                    {lines.map((l, i) => <p key={i} style={{ margin: 0 }}>{l}</p>)}
+                  </div>
+                  <button onClick={copyText}
+                    style={{ background: "var(--gold)", color: "#0f172a", border: "none", borderRadius: "10px", padding: "11px 24px", fontSize: "14px", fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+                    📋 انسخ البطاقة
+                  </button>
+                </div>
+              );
+            })()}
+
             {/* Disclaimer */}
             <div style={{ background: "#fef9ec", border: "1px solid #fde68a", borderRadius: "12px", padding: "16px 20px", fontSize: "13px", color: "#92400e", lineHeight: 1.9, marginBottom: "20px" }}>
               <strong>⚠️ تنبيه مهم:</strong> هذا الاستبيان أداة توعوية تعليمية مبنية على مؤشرات معتمدة دوليًا، وليس تشخيصًا طبيًا.
-              لا يمكن لأي استبيان ذاتي أن يشخّص صعوبات التعلم أو اضطرابات الانتباه — تتطلب عملية التشخيص تقييمًا متخصصًا.
-              إن كانت نتائجك في النطاق "الملحوظ"، يُنصح باستشارة متخصص للحصول على تقييم دقيق.
+              قسم الانتباه يستخدم أسئلة ومنهجية ASRS-v1.1 (منظمة الصحة العالمية) وهي أداة <strong>فرز أولي</strong> فقط —
+              لا يمكن لأي استبيان ذاتي أن يشخّص صعوبات التعلم أو اضطرابات الانتباه، فالتشخيص يتطلب تقييمًا متخصصًا.
+              إن كانت نتائجك في النطاق "الملحوظ"، ننصحك بصدق باستشارة متخصص — الكشف المبكر يفتح باب دعم فعّال جدًا.
+              نتائجك لا تُحفظ على خوادمنا — خصوصيتك الصحية تخصك وحدك.
             </div>
 
             <button onClick={() => window.print()}
