@@ -24,7 +24,66 @@
 
   /* Legacy aliases */
   --hero:       #060e24;
+
+  /* لون العناوين المضمون القراءة — يضبطه ThemeStyle حسب الوضع */
+  --ink:        var(--navy);
 }
+
+/* ══════════════════════════════════════════════
+   طبقة إنقاذ الوضع الداكن — تصحيح تلقائي للتباين
+   ThemeStyle يضبط data-theme على <html> بعد فحص الألوان رياضيًا.
+   هذه القواعد تصحّح المكونات القديمة ذات الألوان الثابتة
+   دون الحاجة لتعديل كل ملف على حدة.
+   ══════════════════════════════════════════════ */
+
+/* 1) نصوص navy على الأسطح الداكنة → نسخة فاتحة مقروءة (--ink) */
+html[data-theme="dark"] [style*="color:var(--navy)"],
+html[data-theme="dark"] [style*="color: var(--navy)"] {
+  color: var(--ink) !important;
+}
+
+/* 2) رماديات داكنة ثابتة على الخلفيات الداكنة → نص الثيم */
+html[data-theme="dark"] [style*="color:#0f172a"],
+html[data-theme="dark"] [style*="color: #0f172a"],
+html[data-theme="dark"] [style*="color:#1e293b"],
+html[data-theme="dark"] [style*="color:#334155"],
+html[data-theme="dark"] [style*="color:#444"],
+html[data-theme="dark"] [style*="color:#475569"],
+html[data-theme="dark"] [style*="color:#555"],
+html[data-theme="dark"] [style*="color: #444"],
+html[data-theme="dark"] [style*="color: #555"] {
+  color: var(--text) !important;
+}
+html[data-theme="dark"] [style*="color:#666"],
+html[data-theme="dark"] [style*="color: #666"] {
+  color: var(--muted) !important;
+}
+
+/* 3) استثناء: داخل البطاقات البيضاء الثابتة تبقى النصوص داكنة كما صُممت */
+html[data-theme="dark"] [style*="background:white"] [style*="color:var(--navy)"],
+html[data-theme="dark"] [style*="background: white"] [style*="color:var(--navy)"],
+html[data-theme="dark"] [style*="background:#fff"] [style*="color:var(--navy)"],
+html[data-theme="dark"] [style*="background:white"][style*="color:var(--navy)"],
+html[data-theme="dark"] [style*="background: white"][style*="color:var(--navy)"],
+html[data-theme="dark"] [style*="background:#fff"][style*="color:var(--navy)"] {
+  color: var(--navy) !important;
+}
+html[data-theme="dark"] [style*="background:white"] [style*="color:#334155"],
+html[data-theme="dark"] [style*="background: white"] [style*="color:#334155"] { color: #334155 !important; }
+html[data-theme="dark"] [style*="background:white"] [style*="color:#444"],
+html[data-theme="dark"] [style*="background: white"] [style*="color:#444"] { color: #444 !important; }
+html[data-theme="dark"] [style*="background:white"] [style*="color:#555"],
+html[data-theme="dark"] [style*="background: white"] [style*="color:#555"] { color: #555 !important; }
+html[data-theme="dark"] [style*="background:white"] [style*="color:#666"],
+html[data-theme="dark"] [style*="background: white"] [style*="color:#666"] { color: #666 !important; }
+html[data-theme="dark"] [style*="background:white"] [style*="color:#0f172a"],
+html[data-theme="dark"] [style*="background: white"] [style*="color:#0f172a"] { color: #0f172a !important; }
+html[data-theme="dark"] [style*="background:white"] [style*="color:#1e293b"],
+html[data-theme="dark"] [style*="background: white"] [style*="color:#1e293b"] { color: #1e293b !important; }
+html[data-theme="dark"] [style*="background:white"] [style*="color:#475569"],
+html[data-theme="dark"] [style*="background: white"] [style*="color:#475569"] { color: #475569 !important; }
+
+/* 4) الشرائح الفاتحة الثابتة (chips) تحتفظ بنصوصها الداكنة — تباينها الداخلي سليم أصلًا */
 
 /* ══════════════════════════════════════════════
    BASE RESET
