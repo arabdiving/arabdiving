@@ -48,6 +48,7 @@ const BLOCK_REGISTRY: Record<string, { label: string; icon: string; desc: string
   sizes_promo:       { label: "دليل المقاسات",           icon: "📏", desc: "قسم ترويجي لدليل مقاسات المعدات /sizes" },
   members_promo:     { label: "دليل الأعضاء",            icon: "🤝", desc: "قسم ترويجي لتصفح أعضاء المجتمع /members" },
   training_fit_promo:{ label: "استبيان التوافق التدريبي", icon: "🧭", desc: "قسم ترويجي لاستبيان التوافق العملي /training-fit" },
+  standards_promo:   { label: "معايير اعتماد المراكز",   icon: "🛡️", desc: "قسم ترويجي لصفحة الميثاق المعلن /standards" },
 };
 
 export default function HomepageBlocksAdmin() {

@@ -90,6 +90,7 @@ function renderBlock(key: string) {
     case "sizes_promo":        return <HomePromoSection key="sizes_promo"        pageKey="sizes" />;
     case "members_promo":      return <HomePromoSection key="members_promo"      pageKey="members" />;
     case "training_fit_promo": return <HomePromoSection key="training_fit_promo" pageKey="training_fit" />;
+    case "standards_promo":    return <HomePromoSection key="standards_promo"    pageKey="standards" />;
     default:                   return null;
   }
 }
