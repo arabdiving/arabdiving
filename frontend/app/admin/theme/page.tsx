@@ -31,8 +31,21 @@ const FIELDS: { key: keyof Theme; label: string }[] = [
   { key: "hero", label: "لون الواجهة العلوية (Hero)" },
 ];
 
+type Branding = { siteName: string; tagline: string; logo: string; logoEmoji: string; description: string; footerText: string };
+const BRAND_DEFAULT: Branding = { siteName: "ArabDiving", tagline: "مجتمع الغوص العربي", logo: "", logoEmoji: "🤿", description: "", footerText: "" };
+
+const BRAND_FIELDS: { key: keyof Branding; label: string; hint?: string }[] = [
+  { key: "siteName", label: "اسم الموقع", hint: "يظهر في الهيدر والفوتر وعنوان المتصفح" },
+  { key: "tagline", label: "الشعار النصي", hint: "السطر الصغير تحت الاسم" },
+  { key: "logo", label: "رابط الشعار (صورة)", hint: "اتركه فارغًا لاستخدام الإيموجي" },
+  { key: "logoEmoji", label: "إيموجي الشعار", hint: "يُستخدم إن لم يوجد شعار" },
+  { key: "description", label: "وصف الموقع (SEO)", hint: "يظهر في نتائج البحث والمشاركات" },
+  { key: "footerText", label: "نص الفوتر", hint: "اتركه فارغًا: © السنة + اسم الموقع" },
+];
+
 export default function AdminTheme() {
   const [t, setT] = useState<Theme>(DEFAULT);
+  const [brand, setBrand] = useState<Branding>(BRAND_DEFAULT);
   const [dnEnabled, setDnEnabled] = useState(false);
   const [day, setDay] = useState<Theme | null>(null);
   const [night, setNight] = useState<Theme | null>(null);
@@ -42,6 +55,7 @@ export default function AdminTheme() {
   useEffect(() => {
     fetch(`${API_BASE}/api/settings`).then((r) => r.json()).then((d) => {
       setT({ ...DEFAULT, ...(d.settings?.theme || {}) });
+      setBrand({ ...BRAND_DEFAULT, ...(d.settings?.branding || {}) });
       const dn = d.settings?.dayNight || {};
       setDnEnabled(!!dn.enabled);
       if (dn.day && Object.keys(dn.day).length) setDay({ ...DEFAULT, ...dn.day });
@@ -58,17 +72,46 @@ export default function AdminTheme() {
   const save = async () => {
     setSaving(true); setMsg("");
     try {
-      const res = await fetch(`${API_BASE}/api/settings`, { method: "PUT", headers: authHeaders(), body: JSON.stringify({ theme: t, dayNight: { enabled: dnEnabled, day: day || {}, night: night || {} } }) });
+      const res = await fetch(`${API_BASE}/api/settings`, { method: "PUT", headers: authHeaders(), body: JSON.stringify({ theme: t, branding: brand, dayNight: { enabled: dnEnabled, day: day || {}, night: night || {} } }) });
       const d = await res.json();
-      setMsg(d.success ? "تم حفظ الألوان ✅ (تطبّق على الموقع كله)" : d.message || "تعذّر الحفظ");
+      setMsg(d.success ? "تم حفظ الهوية والألوان ✅ (تطبّق على الموقع كله)" : d.message || "تعذّر الحفظ");
     } catch { setMsg("تعذّر الاتصال بالخادم"); } finally { setSaving(false); }
   };
 
   return (
     <div style={{ maxWidth: "680px" }}>
-      <h1 style={{ color: "var(--navy)", marginBottom: "6px" }}>ألوان الموقع</h1>
-      <p style={{ color: "#666", fontSize: "14px", marginBottom: "16px" }}>غيّر ألوان الموقع كله (٩ متغيّرات). «سطح البطاقات» و«لون النص» منفصلان عن «خلفية الصفحة» — فالبطاقات لا تنقلب داكنة والنص يبقى واضحًا. معاينة حيّة فورية.</p>
+      <h1 style={{ color: "var(--navy)", marginBottom: "6px" }}>هوية الموقع وألوانه</h1>
+      <p style={{ color: "#666", fontSize: "14px", marginBottom: "16px" }}>غيّر اسم الموقع وشعاره وألوانه بالكامل من هنا — يمكنك تحويل المنصة لأي علامة تجارية أخرى دون لمس الكود (White-Label).</p>
       {msg && <p style={{ color: msg.includes("✅") ? "#1e7e34" : "#c0392b", marginBottom: "12px" }}>{msg}</p>}
+
+      {/* العلامة التجارية */}
+      <div style={{ background: "white", borderRadius: "14px", padding: "20px", boxShadow: "0 8px 24px rgba(0,0,0,0.06)", marginBottom: "18px" }}>
+        <div style={{ fontWeight: 700, color: "var(--navy)", marginBottom: "12px" }}>🏷️ العلامة التجارية</div>
+        {BRAND_FIELDS.map((f) => (
+          <div key={f.key} style={{ marginBottom: "12px" }}>
+            <label style={{ display: "block", color: "#444", fontSize: "13.5px", fontWeight: 600, marginBottom: "4px" }}>{f.label}</label>
+            <input
+              value={brand[f.key]}
+              onChange={(e) => setBrand({ ...brand, [f.key]: e.target.value })}
+              style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "14px" }}
+            />
+            {f.hint && <div style={{ color: "#94a3b8", fontSize: "12px", marginTop: "3px" }}>{f.hint}</div>}
+          </div>
+        ))}
+        <div style={{ background: "#f8fafc", borderRadius: "10px", padding: "12px", display: "flex", alignItems: "center", gap: "10px" }}>
+          {brand.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={brand.logo} alt="logo" style={{ width: "38px", height: "38px", borderRadius: "10px", objectFit: "cover" }} />
+          ) : (
+            <div style={{ width: "38px", height: "38px", background: "linear-gradient(135deg,#0891b2,#c9952a)", borderRadius: "10px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "20px" }}>{brand.logoEmoji || "🤿"}</div>
+          )}
+          <div>
+            <div style={{ fontWeight: 800, color: "var(--navy)", fontSize: "15px" }}>{brand.siteName || "اسم الموقع"}</div>
+            <div style={{ color: "#94a3b8", fontSize: "11px" }}>{brand.tagline || "الشعار النصي"}</div>
+          </div>
+          <span style={{ marginInlineStart: "auto", color: "#94a3b8", fontSize: "12px" }}>معاينة الهيدر</span>
+        </div>
+      </div>
 
       <div style={{ marginBottom: "18px" }}>
         <div style={{ fontWeight: 700, color: "var(--navy)", marginBottom: "8px" }}>قوالب جاهزة:</div>

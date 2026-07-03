@@ -63,7 +63,7 @@ export default function CoursesPage() {
                       <span style={{ background: "rgba(46,117,182,0.12)", color: "var(--mid)", fontSize: "11px", padding: "3px 10px", borderRadius: "20px" }}>{LEVELS[c.level] || c.level}</span>
                       {c.duration && <span style={{ color: "var(--muted)", fontSize: "12px", alignSelf: "center" }}>⏱ {c.duration}</span>}
                     </div>
-                    <h3 style={{ color: "var(--text)", fontSize: "19px", marginBottom: "6px" }}>{c.title}</h3>
+                    <Link href={`/courses/${c._id}`}><h3 style={{ color: "var(--text)", fontSize: "19px", marginBottom: "6px" }}>{c.title}</h3></Link>
                     {c.description && <p style={{ color: "var(--muted)", fontSize: "14px", lineHeight: 1.7, marginBottom: "10px" }}>{c.description}</p>}
                     {c.includes?.length > 0 && (
                       <ul style={{ margin: "0 0 12px", paddingInlineStart: "18px", color: "var(--muted)", fontSize: "13px", lineHeight: 1.9 }}>
@@ -71,8 +71,11 @@ export default function CoursesPage() {
                       </ul>
                     )}
                     <div style={{ marginTop: "auto", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
-                      <div style={{ color: "var(--text)", fontWeight: 800, fontSize: "18px" }}>{c.price} {symbolOf(c.currency)}</div>
-                      <a href={enroll(c)} target="_blank" rel="noopener noreferrer" style={{ background: "var(--gold)", color: "white", padding: "9px 18px", borderRadius: "10px", fontWeight: 700, fontSize: "14px" }}>سجّل الآن</a>
+                      <div style={{ color: "var(--text)", fontWeight: 800, fontSize: "18px" }}>{c.price > 0 ? `${c.price} ${symbolOf(c.currency)}` : ""}</div>
+                      <div style={{ display: "flex", gap: "8px" }}>
+                        <Link href={`/courses/${c._id}`} style={{ color: "var(--mid)", border: "1px solid var(--mid)", padding: "9px 16px", borderRadius: "10px", fontWeight: 700, fontSize: "14px" }}>التفاصيل</Link>
+                        <a href={enroll(c)} target="_blank" rel="noopener noreferrer" style={{ background: "var(--gold)", color: "white", padding: "9px 18px", borderRadius: "10px", fontWeight: 700, fontSize: "14px" }}>سجّل الآن</a>
+                      </div>
                     </div>
                   </div>
                 </div>

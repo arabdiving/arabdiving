@@ -1,4 +1,33 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { API_BASE } from "@/app/lib/api";
+
+const DEFAULT = {
+  siteName: "ArabDiving",
+  tagline: "أول مجتمع عربي متخصص في الغوص",
+  footerText: "",
+};
+
 export default function Footer() {
+  const [brand, setBrand] = useState(DEFAULT);
+
+  useEffect(() => {
+    fetch(`${API_BASE}/api/settings`)
+      .then((r) => r.json())
+      .then((d) => {
+        const b = d.settings?.branding;
+        if (b) setBrand({
+          siteName: b.siteName || DEFAULT.siteName,
+          tagline: b.tagline || DEFAULT.tagline,
+          footerText: b.footerText || "",
+        });
+      })
+      .catch(() => {});
+  }, []);
+
+  const year = new Date().getFullYear();
+
   return (
     <footer
       style={{
@@ -9,15 +38,11 @@ export default function Footer() {
         textAlign: "center",
       }}
     >
-      <h3>ArabDiving</h3>
+      <h3>{brand.siteName}</h3>
 
-      <p>
-        أول مجتمع عربي متخصص في الغوص
-      </p>
+      <p>{brand.tagline}</p>
 
-      <p>
-        © 2026 ArabDiving
-      </p>
+      <p>{brand.footerText || `© ${year} ${brand.siteName}`}</p>
     </footer>
   );
 }

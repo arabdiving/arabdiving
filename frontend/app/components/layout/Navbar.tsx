@@ -64,6 +64,8 @@ function buildMobileMenu(hidden: string[]): MEntry[] {
     .map((l) => ({ label: l.label, href: l.href, items: [] as MItem[] }));
 }
 
+const BRAND_DEFAULT = { siteName: "ArabDiving", tagline: "مجتمع الغوص العربي", logo: "", logoEmoji: "\u{1F93F}" };
+
 export default function Navbar() {
   const [user, setUser] = useState<CurrentUser | null>(null);
   const [open, setOpen] = useState(false);
@@ -71,6 +73,7 @@ export default function Navbar() {
   const [unread, setUnread] = useState(0);
   const [navStyle, setNavStyle] = useState("buttons");
   const [navGroups, setNavGroups] = useState<any[]>([]);
+  const [brand, setBrand] = useState(BRAND_DEFAULT);
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
@@ -91,6 +94,7 @@ export default function Navbar() {
         setHidden(d.settings?.hiddenPages || []);
         setNavStyle(d.settings?.navStyle || "buttons");
         setNavGroups(d.settings?.navGroups || []);
+        if (d.settings?.branding) setBrand({ ...BRAND_DEFAULT, ...d.settings.branding });
       })
       .catch(() => {});
 
@@ -159,12 +163,17 @@ export default function Navbar() {
       <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", alignItems: "center", height: "68px", gap: "20px", padding: "0 24px" }}>
 
         <Link href="/" onClick={closeAll} style={{ display: "flex", alignItems: "center", gap: "10px", flexShrink: 0, textDecoration: "none" }}>
-          <div style={{ width: "40px", height: "40px", background: "linear-gradient(135deg,#0891b2,#c9952a)", borderRadius: "11px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px", flexShrink: 0 }}>
-            {"\u{1F93F}"}
-          </div>
+          {brand.logo ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={brand.logo} alt={brand.siteName} style={{ width: "40px", height: "40px", borderRadius: "11px", objectFit: "cover", flexShrink: 0 }} />
+          ) : (
+            <div style={{ width: "40px", height: "40px", background: "linear-gradient(135deg,#0891b2,#c9952a)", borderRadius: "11px", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px", flexShrink: 0 }}>
+              {brand.logoEmoji || "\u{1F93F}"}
+            </div>
+          )}
           <div>
-            <div style={{ color: "white", fontSize: "19px", fontWeight: 900, lineHeight: 1.1 }}>ArabDiving</div>
-            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "10px" }}>{"مجتمع الغوص العربي"}</div>
+            <div style={{ color: "white", fontSize: "19px", fontWeight: 900, lineHeight: 1.1 }}>{brand.siteName}</div>
+            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "10px" }}>{brand.tagline}</div>
           </div>
         </Link>
 

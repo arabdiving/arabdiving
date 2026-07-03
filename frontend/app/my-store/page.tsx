@@ -10,8 +10,10 @@ const empty = { name: "", description: "", price: 0, currency: "USD", images: []
 export default function MyStorePage() {
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [center, setCenter] = useState<any>(null);
-  const [tab, setTab] = useState<"products" | "orders">("products");
+  const [tab, setTab] = useState<"products" | "courses" | "orders">("products");
   const [products, setProducts] = useState<any[]>([]);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [templates, setTemplates] = useState<any[]>([]);
   const [orders, setOrders] = useState<any[]>([]);
   const [form, setForm] = useState<any>(empty);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -24,14 +26,43 @@ export default function MyStorePage() {
 
   const loadProducts = () => fetch(`${API_BASE}/api/store/me/products`, { headers: HF }).then((r) => r.json()).then((d) => setProducts(d.products || [])).catch(() => {});
   const loadOrders = () => fetch(`${API_BASE}/api/store/me/orders`, { headers: HF }).then((r) => r.json()).then((d) => setOrders(d.orders || [])).catch(() => {});
+  const loadCourses = () => fetch(`${API_BASE}/api/store/me/courses`, { headers: HF }).then((r) => r.json()).then((d) => setCourses(d.courses || [])).catch(() => {});
+  const loadTemplates = () => fetch(`${API_BASE}/api/store/me/course-templates`, { headers: HF }).then((r) => r.json()).then((d) => setTemplates(d.templates || [])).catch(() => {});
 
   useEffect(() => {
     if (!token) { setAuthed(false); return; }
     setAuthed(true);
     fetch(`${API_BASE}/api/store/me/center`, { headers: HF }).then((r) => r.json()).then((d) => setCenter(d.center || null)).catch(() => {});
-    loadProducts(); loadOrders();
+    loadProducts(); loadOrders(); loadCourses(); loadTemplates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  /* ── كورسات من كتالوج المنصة ── */
+  const addCourse = async (tpl: any) => {
+    const priceStr = prompt(`سعر دورة «${tpl.title}» عندك؟ (رقم فقط)`);
+    if (priceStr === null) return;
+    const res = await fetch(`${API_BASE}/api/store/me/courses`, { method: "POST", headers: H, body: JSON.stringify({ templateId: tpl._id, price: Number(priceStr) || 0 }) });
+    const d = await res.json();
+    setMsg(d.success ? "أُضيفت الدورة لصفحتك ✅" : d.message || "تعذّرت الإضافة");
+    if (d.success) loadCourses();
+  };
+  const updateCoursePrice = async (c: any) => {
+    const priceStr = prompt(`السعر الجديد لدورة «${c.title}»:`, String(c.price || 0));
+    if (priceStr === null) return;
+    const res = await fetch(`${API_BASE}/api/store/me/courses/${c._id}`, { method: "PUT", headers: H, body: JSON.stringify({ price: Number(priceStr) || 0 }) });
+    const d = await res.json();
+    setMsg(d.success ? "تم تحديث السعر ✅" : d.message || "تعذّر التحديث");
+    if (d.success) loadCourses();
+  };
+  const toggleCourse = async (c: any) => {
+    await fetch(`${API_BASE}/api/store/me/courses/${c._id}`, { method: "PUT", headers: H, body: JSON.stringify({ active: !c.active }) });
+    loadCourses();
+  };
+  const delCourse = async (id: string) => {
+    if (!confirm("إزالة الدورة من صفحتك؟")) return;
+    await fetch(`${API_BASE}/api/store/me/courses/${id}`, { method: "DELETE", headers: HF });
+    loadCourses();
+  };
 
   const upload = async (files: FileList | null) => {
     if (!files?.length) return; setBusy(true);
@@ -68,13 +99,51 @@ export default function MyStorePage() {
         {center?.slug && <Link href={`/store/${center.slug}`} style={{ color: "var(--mid)", fontSize: "14px" }}>عرض صفحة متجري ←</Link>}
       </div>
 
-      <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>
+      <div style={{ display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap" }}>
         <button onClick={() => setTab("products")} style={tabBtn(tab === "products")}>المنتجات ({products.length})</button>
+        <button onClick={() => setTab("courses")} style={tabBtn(tab === "courses")}>🎓 دوراتي ({courses.length})</button>
         <button onClick={() => setTab("orders")} style={tabBtn(tab === "orders")}>الطلبات ({orders.length})</button>
       </div>
       {msg && <p style={{ color: msg.includes("✅") ? "#1e7e34" : "#c0392b", marginBottom: "12px" }}>{msg}</p>}
 
-      {tab === "products" ? (
+      {tab === "courses" ? (
+        <>
+          <div style={{ background: "#f0fdfa", border: "1px solid #99f6e4", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px", color: "#134e4a", fontSize: "13.5px", lineHeight: 1.8 }}>
+            💡 محتوى الدورات معتمد وموحّد من المنصة (المنهج، الغطسات، أيام التدريب) — أنت تضيف الدورة لصفحتك وتحدد <strong>سعرك</strong> فقط. هذا يضمن للعميل العربي محتوى موثوقًا أينما حجز.
+          </div>
+
+          <h3 style={{ color: "var(--navy)", marginBottom: "12px" }}>دوراتك المعروضة في صفحتك</h3>
+          {courses.length === 0 ? <p style={{ color: "#888", marginBottom: "22px" }}>لم تضف دورات بعد — اختر من الكتالوج بالأسفل.</p> : (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: "14px", marginBottom: "26px" }}>
+              {courses.map((c) => (
+                <div key={c._id} style={{ background: "white", borderRadius: "12px", padding: "14px", boxShadow: "0 6px 18px rgba(0,0,0,0.05)", opacity: c.active ? 1 : 0.6 }}>
+                  <strong style={{ color: "var(--navy)", fontSize: "14.5px", lineHeight: 1.5, display: "block" }}>{c.title}</strong>
+                  <p style={{ color: "#666", fontSize: "13px", margin: "6px 0" }}>{c.agency} · {c.price} {symbolOf(c.currency)} {c.active ? "" : "· (مخفية)"}</p>
+                  <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginTop: "8px" }}>
+                    <button onClick={() => updateCoursePrice(c)} style={miniBtn("#2e75b6")}>السعر</button>
+                    <button onClick={() => toggleCourse(c)} style={miniBtn("#64748b")}>{c.active ? "إخفاء" : "إظهار"}</button>
+                    <button onClick={() => delCourse(c._id)} style={miniBtn("#b91c1c")}>إزالة</button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <h3 style={{ color: "var(--navy)", marginBottom: "12px" }}>📚 كتالوج دورات المنصة — أضف لصفحتك</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill,minmax(240px,1fr))", gap: "14px" }}>
+            {templates.filter((t) => !courses.some((c) => c.template === t._id)).map((t) => (
+              <div key={t._id} style={{ background: "white", borderRadius: "12px", padding: "14px", boxShadow: "0 6px 18px rgba(0,0,0,0.05)", border: "1px dashed #b8d0f0" }}>
+                <strong style={{ color: "var(--navy)", fontSize: "14.5px", lineHeight: 1.5, display: "block" }}>{t.title}</strong>
+                <p style={{ color: "#666", fontSize: "13px", margin: "6px 0" }}>{t.agency} · {t.duration}</p>
+                <button onClick={() => addCourse(t)} style={{ ...miniBtn("#0d9488"), width: "100%", padding: "9px" }}>＋ أضف لصفحتي وحدد سعري</button>
+              </div>
+            ))}
+            {templates.length > 0 && templates.every((t) => courses.some((c) => c.template === t._id)) && (
+              <p style={{ color: "#888", fontSize: "14px" }}>أضفت كل دورات الكتالوج المتاحة ✅</p>
+            )}
+          </div>
+        </>
+      ) : tab === "products" ? (
         <>
           <form onSubmit={save} style={{ background: "white", borderRadius: "14px", padding: "20px", marginBottom: "24px", boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}>
             <h3 style={{ color: "var(--navy)", marginBottom: "14px" }}>{editingId ? "تعديل منتج" : "إضافة منتج"}</h3>

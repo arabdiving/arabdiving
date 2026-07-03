@@ -10,7 +10,7 @@ const getSettings = async () => {
 const readSettings = async (req, res) => {
   try {
     const s = await getSettings();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [] } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {} } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -91,8 +91,20 @@ const updateSettings = async (req, res) => {
         order:   typeof b.order === "number" ? b.order : i,
       }));
     }
+    // العلامة التجارية (White-Label)
+    if (req.body.branding && typeof req.body.branding === "object") {
+      const b = req.body.branding;
+      s.branding = s.branding || {};
+      if (typeof b.siteName === "string")    s.branding.siteName = b.siteName.trim().slice(0, 60);
+      if (typeof b.tagline === "string")     s.branding.tagline = b.tagline.trim().slice(0, 120);
+      if (typeof b.logo === "string")        s.branding.logo = b.logo.trim().slice(0, 300);
+      if (typeof b.logoEmoji === "string")   s.branding.logoEmoji = b.logoEmoji.trim().slice(0, 8);
+      if (typeof b.description === "string") s.branding.description = b.description.trim().slice(0, 300);
+      if (typeof b.footerText === "string")  s.branding.footerText = b.footerText.trim().slice(0, 200);
+      s.markModified("branding");
+    }
     await s.save();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [] } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {} } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

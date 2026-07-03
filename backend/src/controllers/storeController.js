@@ -1,16 +1,86 @@
 const PartnerCenter = require("../models/PartnerCenter");
 const Product = require("../models/Product");
 const Booking = require("../models/Booking");
+const Course = require("../models/Course");
 
 const findMyCenter = (userId) => PartnerCenter.findOne({ owner: userId });
 
-// Public: store by slug + its active products.
+// Public: partner page by slug + its active products AND courses.
 const getStoreBySlug = async (req, res) => {
   try {
     const center = await PartnerCenter.findOne({ slug: req.params.slug, active: true });
     if (!center) return res.status(404).json({ success: false, message: "المتجر غير موجود" });
-    const products = await Product.find({ center: center._id, active: true }).sort({ createdAt: -1 });
-    res.json({ success: true, center, products });
+    const [products, courses] = await Promise.all([
+      Product.find({ center: center._id, active: true }).sort({ createdAt: -1 }),
+      Course.find({ center: center._id, active: true }).sort({ order: 1, createdAt: -1 }),
+    ]);
+    res.json({ success: true, center, products, courses });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+/* ─── كورسات الشريك: يضيفها من قوالب كتالوج المنصة ─── */
+
+// قوالب الكتالوج المتاحة للشركاء (كورسات المنصة غير المرتبطة بمركز)
+const getCourseTemplates = async (_req, res) => {
+  try {
+    const templates = await Course.find({ center: null, active: true }).sort({ order: 1 });
+    res.json({ success: true, templates });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+const getMyCourses = async (req, res) => {
+  try {
+    const center = await findMyCenter(req.user._id);
+    if (!center) return res.json({ success: true, courses: [] });
+    const courses = await Course.find({ center: center._id }).sort({ order: 1, createdAt: -1 });
+    res.json({ success: true, courses });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+// إضافة كورس من قالب: ينسخ محتوى المنصة المعتمد ويسمح للشريك بتحديد سعره وصورته فقط
+const addMyCourseFromTemplate = async (req, res) => {
+  try {
+    const center = await findMyCenter(req.user._id);
+    if (!center) return res.status(403).json({ success: false, message: "لا تملك صفحة مركز. تواصل مع الإدارة." });
+    const tpl = await Course.findOne({ _id: req.body.templateId, center: null, active: true });
+    if (!tpl) return res.status(404).json({ success: false, message: "القالب غير موجود" });
+    const exists = await Course.findOne({ center: center._id, template: tpl._id });
+    if (exists) return res.status(409).json({ success: false, message: "هذا الكورس مضاف لصفحتك بالفعل" });
+    const course = await Course.create({
+      title: tpl.title, level: tpl.level, agency: tpl.agency,
+      duration: tpl.duration, description: tpl.description, includes: tpl.includes,
+      order: tpl.order, active: true,
+      // ما يتحكم فيه الشريك:
+      price: Number(req.body.price) || 0,
+      currency: req.body.currency || tpl.currency,
+      image: req.body.image || tpl.image || "",
+      images: tpl.images || [],
+      center: center._id, template: tpl._id,
+    });
+    res.status(201).json({ success: true, course });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+// الشريك يعدّل سعره وعملته وصورته وحالة التفعيل فقط — المحتوى المعتمد ثابت من المنصة
+const updateMyCourse = async (req, res) => {
+  try {
+    const center = await findMyCenter(req.user._id);
+    if (!center) return res.status(403).json({ success: false, message: "لا تملك صفحة مركز." });
+    const course = await Course.findOne({ _id: req.params.id, center: center._id });
+    if (!course) return res.status(404).json({ success: false, message: "الكورس غير موجود" });
+    const allowed = ["price", "currency", "image", "active"];
+    allowed.forEach((k) => { if (req.body[k] !== undefined) course[k] = req.body[k]; });
+    await course.save();
+    res.json({ success: true, course });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+const deleteMyCourse = async (req, res) => {
+  try {
+    const center = await findMyCenter(req.user._id);
+    if (!center) return res.status(403).json({ success: false, message: "لا تملك صفحة مركز." });
+    await Course.deleteOne({ _id: req.params.id, center: center._id });
+    res.json({ success: true });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
@@ -68,4 +138,7 @@ const deleteMyProduct = async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
-module.exports = { getStoreBySlug, getMyCenter, getMyOrders, getMyProducts, createMyProduct, updateMyProduct, deleteMyProduct };
+module.exports = {
+  getStoreBySlug, getMyCenter, getMyOrders, getMyProducts, createMyProduct, updateMyProduct, deleteMyProduct,
+  getCourseTemplates, getMyCourses, addMyCourseFromTemplate, updateMyCourse, deleteMyCourse,
+};

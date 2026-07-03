@@ -15,13 +15,24 @@ const getCourses = async (req, res) => {
   try {
     const q = { active: true };
     if (req.query.level) q.level = req.query.level;
+    // الكتالوج العام يعرض قوالب المنصة فقط؛ ?center=<id> يعرض كورسات مركز محدد
+    if (req.query.center) q.center = req.query.center;
+    else q.center = null;
     const courses = await Course.find(q).sort({ order: 1, createdAt: 1 });
     res.json({ success: true, count: courses.length, data: courses });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 const getCourseById = async (req, res) => {
-  try { const c = await Course.findById(req.params.id); if (!c) return res.status(404).json({ success: false, message: "الدورة غير موجودة" }); res.json({ success: true, course: c }); }
-  catch (e) { res.status(500).json({ success: false, message: e.message }); }
+  try {
+    const c = await Course.findById(req.params.id).populate("center", "name slug city country badges tier whatsapp");
+    if (!c) return res.status(404).json({ success: false, message: "الدورة غير موجودة" });
+    // مراكز أخرى تقدم نفس القالب (لعرضها في صفحة التفاصيل)
+    const tplId = c.template || (c.center ? null : c._id);
+    const offeredBy = tplId
+      ? await Course.find({ template: tplId, active: true }).populate("center", "name slug city tier").select("price currency center")
+      : [];
+    res.json({ success: true, course: c, offeredBy });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 const createCourse = async (req, res) => { try { const c = await Course.create(req.body); res.status(201).json({ success: true, course: c }); } catch (e) { res.status(500).json({ success: false, message: e.message }); } };
 const updateCourse = async (req, res) => { try { const c = await Course.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true }); if (!c) return res.status(404).json({ success: false, message: "غير موجودة" }); res.json({ success: true, course: c }); } catch (e) { res.status(500).json({ success: false, message: e.message }); } };

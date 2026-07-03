@@ -3,6 +3,17 @@ const mongoose = require("mongoose");
 const SettingsSchema = new mongoose.Schema(
   {
     key: { type: String, default: "site", unique: true },
+
+    // العلامة التجارية — قابلة للتغيير بالكامل (White-Label)
+    branding: {
+      siteName:    { type: String, default: "ArabDiving" },
+      tagline:     { type: String, default: "مجتمع الغوص العربي" },
+      logo:        { type: String, default: "" },  // رابط شعار (يظهر بدل الإيموجي إن وُجد)
+      logoEmoji:   { type: String, default: "🤿" },
+      description: { type: String, default: "أول مجتمع عربي متخصّص في الغوص بالبحر الأحمر — مواقع الغوص، الرحلات، والدليل الكامل للغوّاص العربي." },
+      footerText:  { type: String, default: "" },  // إن تُرك فارغًا: © السنة + اسم الموقع
+    },
+
     commentsEnabled: { type: Boolean, default: true },
     hiddenPages: { type: [String], default: [] },
     whatsappNumber: { type: String, default: "" },

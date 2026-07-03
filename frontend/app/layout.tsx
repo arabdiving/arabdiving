@@ -6,6 +6,7 @@ import "./globals.css";
 
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
+import { API_BASE } from "./lib/api";
 import ChatWidget from "./components/ChatWidget";
 import PwaRegister from "./components/PwaRegister";
 import ThemeStyle from "./components/ThemeStyle";
@@ -25,31 +26,48 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || "https://arabdiving.com";
 const DESC =
   "أول مجتمع عربي متخصّص في الغوص بالبحر الأحمر — مواقع الغوص، الرحلات، والدليل الكامل للغوّاص العربي.";
 
-export const metadata: Metadata = {
-  metadataBase: new URL(SITE_URL),
-  title: {
-    default: "ArabDiving — مجتمع الغوص العربي",
-    template: "%s | ArabDiving",
-  },
-  description: DESC,
-  icons: { icon: "/icon-192.png", apple: "/icon-192.png" },
-  appleWebApp: { capable: true, statusBarStyle: "default", title: "ArabDiving" },
-  openGraph: {
-    type: "website",
-    siteName: "ArabDiving",
-    locale: "ar_AR",
-    url: SITE_URL,
-    title: "ArabDiving — مجتمع الغوص العربي",
-    description: DESC,
-    images: [{ url: SITE_URL + "/og-default.png", secureUrl: SITE_URL + "/og-default.png", width: 1200, height: 630, type: "image/png", alt: "ArabDiving" }],
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "ArabDiving — مجتمع الغوص العربي",
-    description: DESC,
-    images: [SITE_URL + "/og-default.png"],
-  },
-};
+// الميتاداتا تُبنى من إعدادات العلامة التجارية (White-Label) مع قيم افتراضية آمنة
+async function getBranding() {
+  const fallback = { siteName: "ArabDiving", tagline: "مجتمع الغوص العربي", description: DESC };
+  try {
+    const res = await fetch(`${API_BASE}/api/settings`, { next: { revalidate: 300 } });
+    if (!res.ok) return fallback;
+    const d = await res.json();
+    const b = d.settings?.branding || {};
+    return {
+      siteName: b.siteName || fallback.siteName,
+      tagline: b.tagline || fallback.tagline,
+      description: b.description || fallback.description,
+    };
+  } catch { return fallback; }
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const b = await getBranding();
+  const fullTitle = `${b.siteName} — ${b.tagline}`;
+  return {
+    metadataBase: new URL(SITE_URL),
+    title: { default: fullTitle, template: `%s | ${b.siteName}` },
+    description: b.description,
+    icons: { icon: "/icon-192.png", apple: "/icon-192.png" },
+    appleWebApp: { capable: true, statusBarStyle: "default", title: b.siteName },
+    openGraph: {
+      type: "website",
+      siteName: b.siteName,
+      locale: "ar_AR",
+      url: SITE_URL,
+      title: fullTitle,
+      description: b.description,
+      images: [{ url: SITE_URL + "/og-default.png", secureUrl: SITE_URL + "/og-default.png", width: 1200, height: 630, type: "image/png", alt: b.siteName }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: fullTitle,
+      description: b.description,
+      images: [SITE_URL + "/og-default.png"],
+    },
+  };
+}
 
 export const viewport: Viewport = {
   themeColor: "#0B2C59",
