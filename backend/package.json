@@ -7,6 +7,7 @@
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
     "seed": "node src/seed.js",
+    "seed-courses": "node src/seedCourses.js",
     "make-admin": "node src/makeAdmin.js"
   },
   "keywords": [],
