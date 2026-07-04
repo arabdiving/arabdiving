@@ -128,7 +128,11 @@ export default function ThemeStyle() {
       let choice = "";
       try { choice = localStorage.getItem(THEME_KEY) || ""; } catch {}
       if (choice && THEMES[choice]) { apply(THEMES[choice]); return; }
-      apply(adminPalette);
+      // «ثابت كما في المستند»: البحر العميق هو الافتراضي الثابت للموقع.
+      // لوحة ألوان الأدمن لم تعد تؤثر (adminPalette متجاهل عمدا)،
+      // لكن زر البحر/الشمس في الهيدر ما زال يسمح للزائر بالتبديل يدويا.
+      void adminPalette;
+      apply(THEMES.ocean);
     };
 
     fetch(`${API_BASE}/api/settings`).then((r) => r.json()).then((d) => {

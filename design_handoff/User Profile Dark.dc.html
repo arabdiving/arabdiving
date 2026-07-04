@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{direction:rtl;font-family:'Cairo',sans-serif;background:#040d1a;color:white;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}
+    @keyframes floatUp{0%{transform:translateY(0) scale(1);opacity:.35}100%{transform:translateY(-100px) scale(.7);opacity:0}}
+    @keyframes pulseGlow{0%,100%{opacity:.6}50%{opacity:1}}
+    @keyframes shimmer{0%,100%{opacity:.7}50%{opacity:1}}
+    .glass{background:rgba(8,20,48,.78);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08)}
+    .glass-light{background:rgba(255,255,255,.07);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.1)}
+    .bubble{position:absolute;border-radius:50%;background:rgba(201,149,42,.2);animation:floatUp ease-in infinite;pointer-events:none}
+    @media(max-width:767px){
+      .nav-links{display:none!important}
+      .profile-layout{grid-template-columns:1fr!important}
+      .profile-sidebar{position:static!important}
+      .logbook-grid{grid-template-columns:1fr!important}
+      .badges-grid{grid-template-columns:repeat(3,1fr)!important}
+      .stats-row{grid-template-columns:repeat(2,1fr)!important}
+    }
+  </style>
+</helmet>
+
+<!-- NAVBAR -->
+<nav style="position:sticky;top:0;z-index:100;padding:0 24px;background:rgba(4,8,18,.94);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;gap:14px">
+    <a href="ArabDiving Home Dark.dc.html" style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,#0891b2,#c9952a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">🤿</div>
+      <span style="color:white;font-size:17px;font-weight:900">ArabDiving</span>
+    </a>
+    <div class="nav-links" style="display:flex;gap:2px;flex:1;justify-content:center">
+      <a href="ArabDiving Home Dark.dc.html"        style="color:rgba(255,255,255,.5);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,.07)">الرئيسية</a>
+      <a href="ArabDiving Community Dark.dc.html"   style="color:rgba(255,255,255,.5);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,.07)">المجتمع</a>
+      <a href="ArabDiving Booking Dark.dc.html"     style="color:rgba(255,255,255,.5);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,.07)">احجز رحلة</a>
+      <a href="ArabDiving Marketplace Dark.dc.html" style="color:rgba(255,255,255,.5);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,.07)">المتجر</a>
+    </div>
+    <div style="display:flex;gap:10px;flex-shrink:0">
+      <button class="glass-light" style="color:white;border:none;padding:8px 16px;border-radius:9px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit">تعديل الملف</button>
+      <a href="#" style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;padding:8px 18px;border-radius:9px;font-weight:700;font-size:13px">احجز رحلة</a>
+    </div>
+  </div>
+</nav>
+
+<!-- PROFILE HERO -->
+<section style="position:relative;padding:48px 24px 80px;overflow:hidden">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 30% 50%,rgba(201,149,42,.1),transparent 55%)"></div>
+  <div style="position:absolute;inset:0;opacity:.04;background-image:linear-gradient(rgba(100,180,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(100,180,255,1) 1px,transparent 1px);background-size:55px 55px"></div>
+  <div class="bubble" style="width:6px;height:6px;left:8%;bottom:18%;animation-duration:5.5s"></div>
+  <div class="bubble" style="width:4px;height:4px;right:12%;bottom:10%;animation-duration:4.8s;animation-delay:1.3s"></div>
+
+  <div style="max-width:1280px;margin:0 auto;position:relative;z-index:2;display:flex;align-items:center;gap:28px;flex-wrap:wrap">
+    <!-- Avatar -->
+    <div style="position:relative;flex-shrink:0">
+      <div style="width:110px;height:110px;border-radius:50%;background:linear-gradient(135deg,#c9952a,#e8a830);display:flex;align-items:center;justify-content:center;font-size:48px;font-weight:900;color:white;box-shadow:0 0 32px rgba(201,149,42,.45),0 0 0 4px rgba(201,149,42,.25)">أ</div>
+      <div style="position:absolute;bottom:4px;left:4px;width:22px;height:22px;background:#22c55e;border-radius:50%;border:3px solid #040d1a;animation:pulseGlow 2s infinite"></div>
+    </div>
+    <!-- Info -->
+    <div style="flex:1;min-width:220px">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;flex-wrap:wrap">
+        <h1 style="font-size:clamp(20px,3.5vw,32px);font-weight:900;color:white">أحمد الشمري</h1>
+        <span style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;font-size:10px;font-weight:800;padding:3px 10px;border-radius:8px;box-shadow:0 0 10px rgba(201,149,42,.4)">Level 3 Diver</span>
+      </div>
+      <div style="font-size:13px;color:rgba(255,255,255,.5);margin-bottom:12px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+        <span>📍 الرياض، السعودية</span><span style="color:rgba(255,255,255,.2)">·</span>
+        <span>انضم مارس 2023</span><span style="color:rgba(255,255,255,.2)">·</span>
+        <span>340 متابع</span>
+      </div>
+      <p style="font-size:13px;color:rgba(255,255,255,.55);max-width:480px;line-height:1.75">
+        غوّاص شغوف من الرياض — أعشق البحر الأحمر والشعاب المرجانية 🤿 حلمي الوصول لـ Dive Master قبل 2027
+      </p>
+    </div>
+    <!-- Level ring -->
+    <div style="flex-shrink:0;text-align:center">
+      <svg width="90" height="90" viewBox="0 0 90 90">
+        <circle cx="45" cy="45" r="38" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="7"/>
+        <circle cx="45" cy="45" r="38" fill="none" stroke="url(#levelGrad)" stroke-width="7" stroke-linecap="round" stroke-dasharray="239" stroke-dashoffset="72" transform="rotate(-90 45 45)"/>
+        <defs><linearGradient id="levelGrad" x1="0" y1="0" x2="1" y2="0"><stop offset="0%" stop-color="#c9952a"/><stop offset="100%" stop-color="#f5c218"/></linearGradient></defs>
+        <text x="45" y="42" font-size="18" font-weight="900" fill="white" text-anchor="middle" font-family="Cairo">70%</text>
+        <text x="45" y="56" font-size="8" fill="rgba(255,255,255,0.4)" text-anchor="middle" font-family="Cairo">Level 4</text>
+      </svg>
+      <div style="font-size:10px;color:rgba(255,255,255,.4);margin-top:4px">للمستوى القادم</div>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:-1px;left:0;right:0;height:50px;overflow:hidden">
+    <svg viewBox="0 0 1440 50" preserveAspectRatio="none" style="width:100%;height:100%;display:block">
+      <path d="M0,28 C360,5 720,48 1440,18 L1440,50 L0,50 Z" fill="#040d1a"></path>
+    </svg>
+  </div>
+</section>
+
+<!-- MAIN LAYOUT -->
+<div style="padding:24px 24px 70px">
+  <div class="profile-layout" style="max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 280px;gap:24px;align-items:start">
+
+    <!-- MAIN CONTENT -->
+    <div>
+
+      <!-- Tab navigation -->
+      <div style="display:flex;gap:4px;margin-bottom:22px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px">
+        <button style="{{ tabLogbook }}" onclick="{{ setTabLogbook }}">📓 اللوج بوك</button>
+        <button style="{{ tabBadges }}"  onclick="{{ setTabBadges }}">🏅 الإنجازات</button>
+        <button style="{{ tabPosts }}"   onclick="{{ setTabPosts }}">📸 المنشورات</button>
+        <button style="{{ tabCerts }}"   onclick="{{ setTabCerts }}">🎓 الشهادات</button>
+      </div>
+
+      <!-- LOGBOOK TAB -->
+      <sc-if value="{{ isLogbook }}" hint-placeholder-val="{{ true }}">
+        <div>
+          <!-- Stats row -->
+          <div class="stats-row" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:22px">
+            <div class="glass" style="border-radius:16px;padding:18px;text-align:center">
+              <div style="font-size:36px;font-weight:900;background:linear-gradient(135deg,#06b6d4,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:5px">48</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.4)">غوصة مُسجَّلة</div>
+            </div>
+            <div class="glass" style="border-radius:16px;padding:18px;text-align:center">
+              <div style="font-size:36px;font-weight:900;background:linear-gradient(135deg,#c9952a,#f5c218);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:5px">142h</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.4)">إجمالي وقت الغوص</div>
+            </div>
+            <div class="glass" style="border-radius:16px;padding:18px;text-align:center">
+              <div style="font-size:36px;font-weight:900;background:linear-gradient(135deg,#a855f7,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:5px">34m</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.4)">أقصى عمق</div>
+            </div>
+            <div class="glass" style="border-radius:16px;padding:18px;text-align:center">
+              <div style="font-size:36px;font-weight:900;background:linear-gradient(135deg,#34d399,#6ee7b7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:5px">8</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.4)">مواقع مختلفة</div>
+            </div>
+          </div>
+
+          <!-- Add dive button -->
+          <button class="glass-light" style="color:white;border:none;padding:13px;border-radius:14px;font-weight:700;font-size:14px;cursor:pointer;font-family:inherit;width:100%;margin-bottom:18px;transition:.15s;display:flex;align-items:center;justify-content:center;gap:8px" style-hover="background:rgba(255,255,255,.12)">
+            <span style="font-size:20px">+</span> تسجيل غوصة جديدة
+          </button>
+
+          <!-- Logbook entries -->
+          <div class="logbook-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px">
+
+            <div class="glass" style="border-radius:18px;overflow:hidden;transition:.2s" style-hover="transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,0,0,.4),0 0 20px rgba(6,182,212,.12)">
+              <div style="height:130px;background:linear-gradient(135deg,#0a2540,#0891b2);position:relative;display:flex;align-items:center;justify-content:center;font-size:40px">🤿
+                <div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);color:white;font-size:9px;padding:3px 8px;border-radius:6px;font-weight:600">📍 دهب</div>
+                <div style="position:absolute;top:10px;left:10px;background:rgba(6,182,212,.3);border:1px solid rgba(6,182,212,.4);color:#22d3ee;font-size:9px;padding:3px 8px;border-radius:6px;font-weight:600">12م</div>
+              </div>
+              <div style="padding:14px">
+                <div style="font-size:14px;font-weight:800;color:white;margin-bottom:4px">البحيرة الزرقاء</div>
+                <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px">15 يناير 2026 · 62 دقيقة</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+                  <span style="background:rgba(6,182,212,.12);color:#22d3ee;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(6,182,212,.2)">رؤية: 25م</span>
+                  <span style="background:rgba(52,211,153,.12);color:#6ee7b7;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(52,211,153,.2)">26°C</span>
+                </div>
+                <p style="font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">أجمل غوصة في حياتي! الرؤية كانت استثنائية والشعاب المرجانية في أفضل حالاتها</p>
+              </div>
+            </div>
+
+            <div class="glass" style="border-radius:18px;overflow:hidden;transition:.2s" style-hover="transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,0,0,.4),0 0 20px rgba(52,211,153,.1)">
+              <div style="height:130px;background:linear-gradient(135deg,#042015,#16a34a);position:relative;display:flex;align-items:center;justify-content:center;font-size:40px">🪸
+                <div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);color:white;font-size:9px;padding:3px 8px;border-radius:6px;font-weight:600">📍 شرم الشيخ</div>
+                <div style="position:absolute;top:10px;left:10px;background:rgba(52,211,153,.3);border:1px solid rgba(52,211,153,.4);color:#6ee7b7;font-size:9px;padding:3px 8px;border-radius:6px;font-weight:600">18م</div>
+              </div>
+              <div style="padding:14px">
+                <div style="font-size:14px;font-weight:800;color:white;margin-bottom:4px">رأس محمد</div>
+                <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px">2 ديسمبر 2025 · 48 دقيقة</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+                  <span style="background:rgba(6,182,212,.12);color:#22d3ee;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(6,182,212,.2)">رؤية: 20م</span>
+                  <span style="background:rgba(52,211,153,.12);color:#6ee7b7;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(52,211,153,.2)">24°C</span>
+                </div>
+                <p style="font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">رأيت سمكة نمر لأول مرة في حياتي — كانت اللحظة لا تُنسى والمدرّب كان محترفاً</p>
+              </div>
+            </div>
+
+            <div class="glass" style="border-radius:18px;overflow:hidden;transition:.2s" style-hover="transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,0,0,.4),0 0 20px rgba(168,85,247,.1)">
+              <div style="height:130px;background:linear-gradient(135deg,#130e2a,#4f46e5);position:relative;display:flex;align-items:center;justify-content:center;font-size:40px">⚓
+                <div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);color:white;font-size:9px;padding:3px 8px;border-radius:6px;font-weight:600">📍 البحر الأحمر</div>
+                <div style="position:absolute;top:10px;left:10px;background:rgba(168,85,247,.3);border:1px solid rgba(168,85,247,.4);color:#c084fc;font-size:9px;padding:3px 8px;border-radius:6px;font-weight:600">28م</div>
+              </div>
+              <div style="padding:14px">
+                <div style="font-size:14px;font-weight:800;color:white;margin-bottom:4px">حطام ثيستلجورم</div>
+                <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px">18 أكتوبر 2025 · 55 دقيقة</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+                  <span style="background:rgba(6,182,212,.12);color:#22d3ee;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(6,182,212,.2)">رؤية: 18م</span>
+                  <span style="background:rgba(52,211,153,.12);color:#6ee7b7;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(52,211,153,.2)">23°C</span>
+                </div>
+                <p style="font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">أعمق غوصة حتى الآن — الحطام الحربي مذهل والأسماك حول السفينة كانت بالآلاف</p>
+              </div>
+            </div>
+
+            <div class="glass" style="border-radius:18px;overflow:hidden;transition:.2s" style-hover="transform:translateY(-3px);box-shadow:0 14px 36px rgba(0,0,0,.4),0 0 20px rgba(245,194,24,.08)">
+              <div style="height:130px;background:linear-gradient(135deg,#1a0c08,#d97706);position:relative;display:flex;align-items:center;justify-content:center;font-size:40px">🐠
+                <div style="position:absolute;top:10px;right:10px;background:rgba(0,0,0,.45);backdrop-filter:blur(4px);color:white;font-size:9px;padding:3px 8px;border-radius:6px;font-weight:600">📍 الغردقة</div>
+                <div style="position:absolute;top:10px;left:10px;background:rgba(245,194,24,.3);border:1px solid rgba(245,194,24,.4);color:#fde047;font-size:9px;padding:3px 8px;border-radius:6px;font-weight:600">8م</div>
+              </div>
+              <div style="padding:14px">
+                <div style="font-size:14px;font-weight:800;color:white;margin-bottom:4px">شعاب الجولي</div>
+                <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:10px">5 أغسطس 2025 · 40 دقيقة</div>
+                <div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px">
+                  <span style="background:rgba(6,182,212,.12);color:#22d3ee;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(6,182,212,.2)">رؤية: 22م</span>
+                  <span style="background:rgba(52,211,153,.12);color:#6ee7b7;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(52,211,153,.2)">28°C</span>
+                </div>
+                <p style="font-size:11.5px;color:rgba(255,255,255,.5);line-height:1.7;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden">رحلة عائلية — الأطفال مبسوطون جداً والأسماك الملونة كانت رائعة</p>
+              </div>
+            </div>
+
+          </div>
+          <button class="glass-light" style="color:white;border:none;padding:12px;border-radius:12px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;width:100%;margin-top:16px;transition:.15s" style-hover="background:rgba(255,255,255,.12)">عرض كل الغوصات (48) ←</button>
+        </div>
+      </sc-if>
+
+      <!-- BADGES TAB -->
+      <sc-if value="{{ isBadges }}" hint-placeholder-val="{{ false }}">
+        <div>
+          <!-- Progress bar -->
+          <div class="glass" style="border-radius:18px;padding:22px;margin-bottom:18px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+              <h3 style="font-size:15px;font-weight:800;color:white">مسار التطور</h3>
+              <span style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;font-size:11px;font-weight:700;padding:4px 12px;border-radius:8px">Level 3 Diver</span>
+            </div>
+            <div style="background:rgba(255,255,255,.07);border-radius:8px;height:10px;overflow:hidden;margin-bottom:10px">
+              <div style="width:70%;height:100%;background:linear-gradient(90deg,#c9952a,#f5c218);border-radius:8px"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:11px;color:rgba(255,255,255,.4)">
+              <span>48 / 50 غوصة لـ Level 4</span>
+              <span>2 غوصات متبقية</span>
+            </div>
+          </div>
+
+          <div class="badges-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px">
+            <div class="glass" style="border-radius:16px;padding:18px;text-align:center;transition:.2s" style-hover="transform:translateY(-3px)">
+              <div style="font-size:36px;margin-bottom:8px;filter:drop-shadow(0 0 8px rgba(245,194,24,.5))">🏅</div>
+              <div style="font-size:11px;font-weight:700;color:#fde047;margin-bottom:3px">أول غوصة</div>
+              <div style="font-size:9px;color:rgba(255,255,255,.35)">مارس 2023</div>
+            </div>
+            <div class="glass" style="border-radius:16px;padding:18px;text-align:center;transition:.2s" style-hover="transform:translateY(-3px)">
+              <div style="font-size:36px;margin-bottom:8px;filter:drop-shadow(0 0 8px rgba(6,182,212,.5))">🤿</div>
+              <div style="font-size:11px;font-weight:700;color:#22d3ee;margin-bottom:3px">PADI OW</div>
+              <div style="font-size:9px;color:rgba(255,255,255,.35)">يونيو 2023</div>
+            </div>
+            <div class="glass" style="border-radius:16px;padding:18px;text-align:center;transition:.2s" style-hover="transform:translateY(-3px)">
+              <div style="font-size:36px;margin-bottom:8px;filter:drop-shadow(0 0 8px rgba(52,211,153,.5))">🪸</div>
+              <div style="font-size:11px;font-weight:700;color:#6ee7b7;margin-bottom:3px">صديق البيئة</div>
+              <div style="font-size:9px;color:rgba(255,255,255,.35)">أكتوبر 2023</div>
+            </div>
+            <div class="glass" style="border-radius:16px;padding:18px;text-align:center;transition:.2s" style-hover="transform:translateY(-3px)">
+              <div style="font-size:36px;margin-bottom:8px;filter:drop-shadow(0 0 8px rgba(168,85,247,.5))">⚓</div>
+              <div style="font-size:11px;font-weight:700;color:#c084fc;margin-bottom:3px">غوّاص الحطام</div>
+              <div style="font-size:9px;color:rgba(255,255,255,.35)">أكتوبر 2025</div>
+            </div>
+            <div class="glass" style="border-radius:16px;padding:18px;text-align:center;transition:.2s" style-hover="transform:translateY(-3px)">
+              <div style="font-size:36px;margin-bottom:8px;filter:drop-shadow(0 0 8px rgba(201,149,42,.5))">🌊</div>
+              <div style="font-size:11px;font-weight:700;color:#e8a830;margin-bottom:3px">10 غوصات</div>
+              <div style="font-size:9px;color:rgba(255,255,255,.35)">سبتمبر 2023</div>
+            </div>
+            <div class="glass" style="border-radius:16px;padding:18px;text-align:center;transition:.2s" style-hover="transform:translateY(-3px)">
+              <div style="font-size:36px;margin-bottom:8px;filter:drop-shadow(0 0 8px rgba(249,115,22,.5))">🐬</div>
+              <div style="font-size:11px;font-weight:700;color:#fb923c;margin-bottom:3px">رأيت دلفين</div>
+              <div style="font-size:9px;color:rgba(255,255,255,.35)">يناير 2024</div>
+            </div>
+            <div class="glass" style="border-radius:16px;padding:18px;text-align:center;transition:.2s" style-hover="transform:translateY(-3px)">
+              <div style="font-size:36px;margin-bottom:8px;filter:drop-shadow(0 0 8px rgba(236,72,153,.5))">🌏</div>
+              <div style="font-size:11px;font-weight:700;color:#f9a8d4;margin-bottom:3px">5 وجهات</div>
+              <div style="font-size:9px;color:rgba(255,255,255,.35)">مارس 2025</div>
+            </div>
+            <!-- Locked badge -->
+            <div style="background:rgba(255,255,255,.03);border:1px dashed rgba(255,255,255,.1);border-radius:16px;padding:18px;text-align:center;opacity:.5">
+              <div style="font-size:36px;margin-bottom:8px;filter:grayscale(1)">🦈</div>
+              <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.4);margin-bottom:3px">غوّاص القرش</div>
+              <div style="font-size:9px;color:rgba(255,255,255,.25)">50 غوصة مطلوبة</div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+      <!-- POSTS TAB -->
+      <sc-if value="{{ isPosts }}" hint-placeholder-val="{{ false }}">
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+          <div style="aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#0a2540,#0891b2);display:flex;align-items:center;justify-content:center;font-size:42px;cursor:pointer;transition:.2s" style-hover="transform:scale(1.03)">🤿</div>
+          <div style="aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#042015,#16a34a);display:flex;align-items:center;justify-content:center;font-size:42px;cursor:pointer;transition:.2s" style-hover="transform:scale(1.03)">🪸</div>
+          <div style="aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#130e2a,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:42px;cursor:pointer;transition:.2s" style-hover="transform:scale(1.03)">⚓</div>
+          <div style="aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#1a0c08,#d97706);display:flex;align-items:center;justify-content:center;font-size:42px;cursor:pointer;transition:.2s" style-hover="transform:scale(1.03)">🐠</div>
+          <div style="aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#1a0828,#a855f7);display:flex;align-items:center;justify-content:center;font-size:42px;cursor:pointer;transition:.2s" style-hover="transform:scale(1.03)">🏅</div>
+          <div style="aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#064e3b,#10b981);display:flex;align-items:center;justify-content:center;font-size:42px;cursor:pointer;transition:.2s" style-hover="transform:scale(1.03)">🌊</div>
+          <div style="aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#0a2540,#06b6d4);display:flex;align-items:center;justify-content:center;font-size:42px;cursor:pointer;transition:.2s" style-hover="transform:scale(1.03)">🐙</div>
+          <div style="aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#312e81,#7c3aed);display:flex;align-items:center;justify-content:center;font-size:42px;cursor:pointer;transition:.2s" style-hover="transform:scale(1.03)">🦈</div>
+          <div style="aspect-ratio:1;border-radius:14px;background:linear-gradient(135deg,#1a3a2a,#16a34a);display:flex;align-items:center;justify-content:center;font-size:42px;cursor:pointer;transition:.2s" style-hover="transform:scale(1.03)">🐬</div>
+        </div>
+      </sc-if>
+
+      <!-- CERTS TAB -->
+      <sc-if value="{{ isCerts }}" hint-placeholder-val="{{ false }}">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="glass" style="border-radius:18px;padding:20px;display:flex;align-items:center;gap:18px">
+            <div style="width:64px;height:64px;background:linear-gradient(135deg,#c9952a,#f5c218);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;box-shadow:0 0 18px rgba(201,149,42,.4)">🏅</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:800;color:white;margin-bottom:3px">PADI Open Water Diver</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:8px">رقم الشهادة: #2047683 · يونيو 2023</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <span style="background:rgba(52,211,153,.15);color:#6ee7b7;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(52,211,153,.2)">✅ فعّالة</span>
+                <span style="background:rgba(6,182,212,.15);color:#22d3ee;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(6,182,212,.2)">PADI معتمدة</span>
+              </div>
+            </div>
+            <button class="glass-light" style="color:white;border:none;padding:9px 16px;border-radius:9px;font-weight:600;font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0">تنزيل</button>
+          </div>
+          <div class="glass" style="border-radius:18px;padding:20px;display:flex;align-items:center;gap:18px">
+            <div style="width:64px;height:64px;background:linear-gradient(135deg,#0891b2,#06b6d4);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0;box-shadow:0 0 18px rgba(6,182,212,.35)">🌊</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:800;color:white;margin-bottom:3px">EFR - Emergency First Response</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:8px">رقم الشهادة: #3987234 · سبتمبر 2023</div>
+              <div style="display:flex;gap:6px;flex-wrap:wrap">
+                <span style="background:rgba(52,211,153,.15);color:#6ee7b7;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(52,211,153,.2)">✅ فعّالة</span>
+                <span style="background:rgba(6,182,212,.15);color:#22d3ee;font-size:10px;padding:2px 8px;border-radius:6px;border:1px solid rgba(6,182,212,.2)">إسعافات أولية</span>
+              </div>
+            </div>
+            <button class="glass-light" style="color:white;border:none;padding:9px 16px;border-radius:9px;font-weight:600;font-size:12px;cursor:pointer;font-family:inherit;flex-shrink:0">تنزيل</button>
+          </div>
+          <div class="glass" style="border-radius:18px;padding:20px;display:flex;align-items:center;gap:18px;opacity:.6">
+            <div style="width:64px;height:64px;background:rgba(255,255,255,.07);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;flex-shrink:0">🔒</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:800;color:white;margin-bottom:3px">PADI Advanced Open Water</div>
+              <div style="font-size:12px;color:rgba(255,255,255,.4);margin-bottom:8px">متطلب: 50 غوصة (متبقي 2)</div>
+              <div style="background:rgba(255,255,255,.07);border-radius:8px;height:6px;overflow:hidden">
+                <div style="width:96%;height:100%;background:linear-gradient(90deg,#c9952a,#f5c218);border-radius:8px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </sc-if>
+
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="profile-sidebar" style="position:sticky;top:80px;display:flex;flex-direction:column;gap:16px">
+
+      <!-- Quick stats card -->
+      <div class="glass" style="border-radius:18px;padding:18px">
+        <h4 style="font-size:13px;font-weight:800;color:white;margin-bottom:14px">📊 إحصائياتي</h4>
+        <div style="display:flex;flex-direction:column;gap:11px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:rgba(255,255,255,.5)">🤿 إجمالي الغوصات</span>
+            <span style="font-size:13px;font-weight:800;color:white">48</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:rgba(255,255,255,.5)">⏱️ وقت الغوص</span>
+            <span style="font-size:13px;font-weight:800;color:white">142h</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:rgba(255,255,255,.5)">📍 أعمق غوصة</span>
+            <span style="font-size:13px;font-weight:800;color:white">34م</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:rgba(255,255,255,.5)">🌍 دول زرتها</span>
+            <span style="font-size:13px;font-weight:800;color:white">3</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <span style="font-size:12px;color:rgba(255,255,255,.5)">🏅 الإنجازات</span>
+            <span style="font-size:13px;font-weight:800;color:white">7 / 24</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Following -->
+      <div class="glass" style="border-radius:18px;padding:18px">
+        <h4 style="font-size:13px;font-weight:800;color:white;margin-bottom:14px">👥 أتابع (12)</h4>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#9333ea);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:16px;box-shadow:0 0 10px rgba(124,58,237,.3)">ن</div>
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#06b6d4);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:16px;box-shadow:0 0 10px rgba(6,182,212,.3)">ه</div>
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#065f46,#10b981);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:16px;box-shadow:0 0 10px rgba(16,185,129,.3)">م</div>
+          <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#be185d,#ec4899);display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:16px;box-shadow:0 0 10px rgba(190,24,93,.3)">ر</div>
+          <div style="width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,.5);font-size:12px;font-weight:700">+8</div>
+        </div>
+        <a href="ArabDiving Community Dark.dc.html" class="glass-light" style="display:block;text-align:center;color:white;padding:9px;border-radius:10px;font-weight:700;font-size:12px;transition:.15s" style-hover="background:rgba(255,255,255,.12)">اكتشف غوّاصين ←</a>
+      </div>
+
+      <!-- Next trip CTA -->
+      <div style="background:linear-gradient(135deg,rgba(8,145,178,.3),rgba(6,14,36,.9));border:1px solid rgba(6,182,212,.2);border-radius:18px;padding:20px;text-align:center">
+        <div style="font-size:30px;margin-bottom:10px">🗓️</div>
+        <h4 style="color:white;font-size:14px;font-weight:800;margin-bottom:7px">غوصتك القادمة؟</h4>
+        <p style="color:rgba(255,255,255,.45);font-size:11px;line-height:1.7;margin-bottom:14px">احجز مع مركز معتمد الآن</p>
+        <a href="ArabDiving Booking Dark.dc.html" style="display:block;background:linear-gradient(135deg,#c9952a,#e8a830);color:white;padding:10px;border-radius:10px;font-weight:700;font-size:12px;box-shadow:0 4px 12px rgba(201,149,42,.35)">احجز الآن ←</a>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer style="background:rgba(4,8,18,.98);padding:22px 24px;border-top:1px solid rgba(255,255,255,.05)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <a href="ArabDiving Home Dark.dc.html" style="display:flex;align-items:center;gap:8px">
+      <div style="width:28px;height:28px;background:linear-gradient(135deg,#0891b2,#c9952a);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px">🤿</div>
+      <span style="color:white;font-size:14px;font-weight:800">ArabDiving</span>
+    </a>
+    <p style="font-size:12px;color:rgba(255,255,255,.25)">© 2025 ArabDiving</p>
+    <a href="ArabDiving Community Dark.dc.html" style="font-size:12px;color:rgba(255,255,255,.35)" style-hover="color:rgba(255,255,255,.7)">← عودة للمجتمع</a>
+  </div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { tab: 'logbook' };
+  renderVals() {
+    const { tab } = this.state;
+    const t = (k) => ({
+      background: tab===k ? 'rgba(201,149,42,0.2)':'rgba(255,255,255,0.06)',
+      color: tab===k ? '#e8a830':'rgba(255,255,255,0.5)',
+      border:`1px solid ${tab===k?'rgba(201,149,42,0.35)':'rgba(255,255,255,0.08)'}`,
+      padding:'8px 18px', borderRadius:'22px', fontSize:'13px', cursor:'pointer',
+      fontFamily:'inherit', fontWeight:tab===k?'700':'500', transition:'all .15s', whiteSpace:'nowrap', flexShrink:0,
+    });
+    return {
+      tabLogbook: t('logbook'), setTabLogbook: () => this.setState({ tab:'logbook' }),
+      tabBadges:  t('badges'),  setTabBadges:  () => this.setState({ tab:'badges'  }),
+      tabPosts:   t('posts'),   setTabPosts:   () => this.setState({ tab:'posts'   }),
+      tabCerts:   t('certs'),   setTabCerts:   () => this.setState({ tab:'certs'   }),
+      isLogbook: tab==='logbook',
+      isBadges:  tab==='badges',
+      isPosts:   tab==='posts',
+      isCerts:   tab==='certs',
+    };
+  }
+}
+</script>
+</body>
+</html>

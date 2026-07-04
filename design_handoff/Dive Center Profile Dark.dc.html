@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{direction:rtl;font-family:'Cairo',sans-serif;background:#040d1a;color:white;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}
+    @keyframes floatUp{0%{transform:translateY(0) scale(1);opacity:.4}100%{transform:translateY(-100px) scale(.7);opacity:0}}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulseGlow{0%,100%{opacity:.6}50%{opacity:1}}
+    .glass{background:rgba(8,20,48,.78);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08)}
+    .glass-light{background:rgba(255,255,255,.07);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.1)}
+    .bubble{position:absolute;border-radius:50%;background:rgba(6,182,212,.25);animation:floatUp ease-in infinite;pointer-events:none}
+    @media(max-width:767px){
+      .nav-links{display:none!important}
+      .main-layout{grid-template-columns:1fr!important}
+      .booking-sidebar{position:static!important;width:auto!important}
+      .gallery-grid{grid-template-columns:repeat(2,1fr)!important;grid-template-rows:auto!important}
+      .reviews-grid{grid-template-columns:1fr!important}
+      .steps-grid{grid-template-columns:repeat(2,1fr)!important}
+    }
+  </style>
+</helmet>
+
+<!-- NAVBAR -->
+<nav style="position:sticky;top:0;z-index:100;padding:0 24px;background:rgba(4,8,18,.94);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;gap:14px">
+    <a href="ArabDiving Home Dark.dc.html" style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,#0891b2,#c9952a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">🤿</div>
+      <span style="color:white;font-size:17px;font-weight:900">ArabDiving</span>
+    </a>
+    <div class="nav-links" style="display:flex;gap:2px;flex:1;justify-content:center">
+      <a href="ArabDiving Home Dark.dc.html"        style="color:rgba(255,255,255,.5);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,.07)">الرئيسية</a>
+      <a href="ArabDiving Booking Dark.dc.html"     style="color:white;font-size:13px;padding:7px 11px;border-radius:8px;background:rgba(201,149,42,.18);font-weight:700">احجز رحلة</a>
+      <a href="ArabDiving Community Dark.dc.html"   style="color:rgba(255,255,255,.5);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,.07)">المجتمع</a>
+      <a href="ArabDiving Marketplace Dark.dc.html" style="color:rgba(255,255,255,.5);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,.07)">المتجر</a>
+    </div>
+    <div style="display:flex;gap:10px;flex-shrink:0">
+      <a href="#" style="color:rgba(255,255,255,.4);font-size:13px;padding:7px 12px">دخول</a>
+      <a href="#" style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;padding:8px 18px;border-radius:9px;font-weight:700;font-size:13px;box-shadow:0 4px 14px rgba(201,149,42,.4)">انضم</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO GALLERY -->
+<section style="position:relative;height:480px;overflow:hidden">
+  <!-- Main bg -->
+  <div style="position:absolute;inset:0;background:linear-gradient(160deg,#060e1f,#0d2c54,#0891b2)"></div>
+  <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(4,13,26,.95) 0%,transparent 50%)"></div>
+  <div class="bubble" style="width:7px;height:7px;left:10%;bottom:20%;animation-duration:5.5s"></div>
+  <div class="bubble" style="width:4px;height:4px;left:25%;bottom:12%;animation-duration:4.8s;animation-delay:1.2s"></div>
+  <div class="bubble" style="width:6px;height:6px;right:18%;bottom:16%;animation-duration:6s;animation-delay:.7s"></div>
+
+  <!-- Gallery grid overlay -->
+  <div class="gallery-grid" style="position:absolute;inset:0;display:grid;grid-template-columns:2fr 1fr 1fr;grid-template-rows:1fr 1fr;gap:3px;opacity:.55">
+    <div style="grid-row:1/3;background:linear-gradient(135deg,#0a2540,#0891b2);display:flex;align-items:center;justify-content:center;font-size:80px">🤿</div>
+    <div style="background:linear-gradient(135deg,#0e4a2e,#16a34a);display:flex;align-items:center;justify-content:center;font-size:48px">🪸</div>
+    <div style="background:linear-gradient(135deg,#312e81,#4f46e5);display:flex;align-items:center;justify-content:center;font-size:48px">🐠</div>
+    <div style="background:linear-gradient(135deg,#1a0828,#6b21a8);display:flex;align-items:center;justify-content:center;font-size:48px">🦈</div>
+    <div style="background:linear-gradient(135deg,#064e3b,#10b981);display:flex;align-items:center;justify-content:center;font-size:48px;position:relative">
+      🐙
+      <div style="position:absolute;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;color:white;font-size:16px;font-weight:800">+12 صورة</div>
+    </div>
+  </div>
+
+  <!-- Center info overlay -->
+  <div style="position:absolute;bottom:0;left:0;right:0;padding:28px 40px;z-index:2">
+    <div style="max-width:1280px;margin:0 auto;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:20px">
+      <div>
+        <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+          <span style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;font-size:11px;font-weight:700;padding:5px 12px;border-radius:8px">💎 بلاتيني</span>
+          <span class="glass-light" style="color:white;font-size:11px;padding:5px 10px;border-radius:8px">⭐ 4.9 · 284 تقييم</span>
+          <span class="glass-light" style="color:white;font-size:11px;padding:5px 10px;border-radius:8px">📍 شرم الشيخ</span>
+        </div>
+        <h1 style="font-size:clamp(22px,4vw,42px);font-weight:900;color:white;margin-bottom:6px;text-shadow:0 2px 20px rgba(0,0,0,.6)">مركز شرم الغوص المتحد</h1>
+        <div style="display:flex;gap:12px;flex-wrap:wrap">
+          <span style="background:rgba(168,85,247,.25);color:#c084fc;border:1px solid rgba(168,85,247,.3);font-size:12px;padding:4px 11px;border-radius:8px;font-weight:600">🧕 طاقم نسائي</span>
+          <span style="background:rgba(6,182,212,.2);color:#22d3ee;border:1px solid rgba(6,182,212,.25);font-size:12px;padding:4px 11px;border-radius:8px;font-weight:600">👨‍👩‍👧‍👦 عائلات</span>
+          <span style="background:rgba(52,211,153,.18);color:#6ee7b7;border:1px solid rgba(52,211,153,.22);font-size:12px;padding:4px 11px;border-radius:8px;font-weight:600">🪸 بيئي</span>
+          <span style="background:rgba(236,72,153,.18);color:#f9a8d4;border:1px solid rgba(236,72,153,.22);font-size:12px;padding:4px 11px;border-radius:8px;font-weight:600">✨ معقّم</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;flex-shrink:0">
+        <button class="glass-light" style="color:white;border:none;padding:12px 20px;border-radius:11px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit">💾 حفظ</button>
+        <button class="glass-light" style="color:white;border:none;padding:12px 20px;border-radius:11px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit">↗️ مشاركة</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- MAIN LAYOUT -->
+<div style="padding:32px 24px 70px">
+  <div class="main-layout" style="max-width:1280px;margin:0 auto;display:grid;grid-template-columns:1fr 340px;gap:28px;align-items:start">
+
+    <!-- LEFT: Details -->
+    <div>
+
+      <!-- Quick stats -->
+      <div class="glass" style="border-radius:18px;padding:22px 28px;margin-bottom:22px;display:grid;grid-template-columns:repeat(4,1fr);gap:0">
+        <div style="text-align:center;padding:8px;border-inline-start:1px solid rgba(255,255,255,.06)">
+          <div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,#06b6d4,#22d3ee);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">284</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.4)">تقييم</div>
+        </div>
+        <div style="text-align:center;padding:8px;border-inline-start:1px solid rgba(255,255,255,.06)">
+          <div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,#c9952a,#f5c218);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">12</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.4)">سنة خبرة</div>
+        </div>
+        <div style="text-align:center;padding:8px;border-inline-start:1px solid rgba(255,255,255,.06)">
+          <div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,#a855f7,#c084fc);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">8</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.4)">مدرّب معتمد</div>
+        </div>
+        <div style="text-align:center;padding:8px">
+          <div style="font-size:28px;font-weight:900;background:linear-gradient(135deg,#34d399,#6ee7b7);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:4px">4.9</div>
+          <div style="font-size:11px;color:rgba(255,255,255,.4)">متوسط التقييم</div>
+        </div>
+      </div>
+
+      <!-- About -->
+      <div class="glass" style="border-radius:18px;padding:24px;margin-bottom:22px">
+        <h2 style="font-size:17px;font-weight:800;color:white;margin-bottom:14px">عن المركز</h2>
+        <p style="font-size:14px;color:rgba(255,255,255,.65);line-height:1.9;margin-bottom:16px">
+          مركز شرم الغوص المتحد هو أحد أبرز مراكز الغوص في شبه جزيرة سيناء — تأسس عام 2012 بهدف تقديم تجربة غوص آمنة ومريحة لجميع أفراد الأسرة. متخصصون في استقبال العائلات الخليجية مع توفير طاقم نسائي بالكامل للسيدات.
+        </p>
+        <p style="font-size:14px;color:rgba(255,255,255,.65);line-height:1.9">
+          نوفر مرافق مستقلة للسيدات، معدات معقّمة بعد كل استخدام، وفريق من أفضل المدربين المعتمدين من PADI وSSI. مناسب للمبتدئين تماماً وحتى المحترفين.
+        </p>
+      </div>
+
+      <!-- Features grid -->
+      <div class="glass" style="border-radius:18px;padding:24px;margin-bottom:22px">
+        <h2 style="font-size:17px;font-weight:800;color:white;margin-bottom:18px">المميزات والخدمات</h2>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:14px">
+          <div style="background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.2);border-radius:14px;padding:16px;text-align:center">
+            <div style="font-size:28px;margin-bottom:8px">🧕</div>
+            <div style="font-size:12px;font-weight:700;color:#c084fc;margin-bottom:3px">طاقم نسائي</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4)">مدرّبات معتمدات</div>
+          </div>
+          <div style="background:rgba(236,72,153,.1);border:1px solid rgba(236,72,153,.2);border-radius:14px;padding:16px;text-align:center">
+            <div style="font-size:28px;margin-bottom:8px">🚿</div>
+            <div style="font-size:12px;font-weight:700;color:#f9a8d4;margin-bottom:3px">مرافق مستقلة</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4)">غرف تغيير خاصة</div>
+          </div>
+          <div style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:14px;padding:16px;text-align:center">
+            <div style="font-size:28px;margin-bottom:8px">✨</div>
+            <div style="font-size:12px;font-weight:700;color:#6ee7b7;margin-bottom:3px">معدات معقّمة</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4)">بعد كل استخدام</div>
+          </div>
+          <div style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.2);border-radius:14px;padding:16px;text-align:center">
+            <div style="font-size:28px;margin-bottom:8px">🐠</div>
+            <div style="font-size:12px;font-weight:700;color:#22d3ee;margin-bottom:3px">برنامج الأطفال</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4)">من عمر 8 سنوات</div>
+          </div>
+          <div style="background:rgba(245,194,24,.1);border:1px solid rgba(245,194,24,.2);border-radius:14px;padding:16px;text-align:center">
+            <div style="font-size:28px;margin-bottom:8px">🎓</div>
+            <div style="font-size:12px;font-weight:700;color:#fde047;margin-bottom:3px">شهادات PADI</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4)">جميع المستويات</div>
+          </div>
+          <div style="background:rgba(249,115,22,.1);border:1px solid rgba(249,115,22,.2);border-radius:14px;padding:16px;text-align:center">
+            <div style="font-size:28px;margin-bottom:8px">🛥️</div>
+            <div style="font-size:12px;font-weight:700;color:#fb923c;margin-bottom:3px">رحلات خاصة</div>
+            <div style="font-size:10px;color:rgba(255,255,255,.4)">قارب خاص بالطلب</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Packages -->
+      <div class="glass" style="border-radius:18px;padding:24px;margin-bottom:22px">
+        <h2 style="font-size:17px;font-weight:800;color:white;margin-bottom:18px">الباقات المتاحة</h2>
+        <div style="display:flex;flex-direction:column;gap:14px">
+
+          <div style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.2);border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="width:48px;height:48px;background:rgba(6,182,212,.2);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🌊</div>
+              <div>
+                <div style="font-size:14px;font-weight:800;color:white;margin-bottom:3px">غوصة تجريبية</div>
+                <div style="font-size:12px;color:rgba(255,255,255,.5)">للمبتدئين · ساعتان · مع مدرّب</div>
+              </div>
+            </div>
+            <div style="text-align:end;flex-shrink:0">
+              <div style="font-size:22px;font-weight:900;color:white">180 <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,.4)">ريال/فرد</span></div>
+              <button onclick="{{ bookStep }}" style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;border:none;padding:8px 18px;border-radius:9px;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;margin-top:6px;box-shadow:0 4px 12px rgba(201,149,42,.35)">احجز ←</button>
+            </div>
+          </div>
+
+          <div style="background:rgba(168,85,247,.1);border:1px solid rgba(168,85,247,.2);border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px">
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="width:48px;height:48px;background:rgba(168,85,247,.2);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">🧕</div>
+              <div>
+                <div style="font-size:14px;font-weight:800;color:white;margin-bottom:3px">باقة السيدات</div>
+                <div style="font-size:12px;color:rgba(255,255,255,.5)">طاقم نسائي كامل · مرافق مستقلة</div>
+              </div>
+            </div>
+            <div style="text-align:end;flex-shrink:0">
+              <div style="font-size:22px;font-weight:900;color:white">220 <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,.4)">ريال/فرد</span></div>
+              <button onclick="{{ bookStep }}" style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;border:none;padding:8px 18px;border-radius:9px;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;margin-top:6px;box-shadow:0 4px 12px rgba(201,149,42,.35)">احجز ←</button>
+            </div>
+          </div>
+
+          <div style="background:rgba(52,211,153,.1);border:1px solid rgba(52,211,153,.2);border-radius:14px;padding:18px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:relative;overflow:hidden">
+            <div style="position:absolute;top:10px;left:12px;background:linear-gradient(135deg,#c9952a,#e8a830);color:white;font-size:9px;font-weight:700;padding:2px 8px;border-radius:6px">الأكثر طلباً</div>
+            <div style="display:flex;align-items:center;gap:14px">
+              <div style="width:48px;height:48px;background:rgba(52,211,153,.2);border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">👨‍👩‍👧‍👦</div>
+              <div>
+                <div style="font-size:14px;font-weight:800;color:white;margin-bottom:3px">باقة العائلة</div>
+                <div style="font-size:12px;color:rgba(255,255,255,.5)">4 أفراد · مدرّبان · يوم كامل</div>
+              </div>
+            </div>
+            <div style="text-align:end;flex-shrink:0">
+              <div style="font-size:22px;font-weight:900;color:white">650 <span style="font-size:12px;font-weight:400;color:rgba(255,255,255,.4)">ريال للعائلة</span></div>
+              <button onclick="{{ bookStep }}" style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;border:none;padding:8px 18px;border-radius:9px;font-weight:700;font-size:12px;cursor:pointer;font-family:inherit;margin-top:6px;box-shadow:0 4px 12px rgba(201,149,42,.35)">احجز ←</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="glass" style="border-radius:18px;padding:24px;margin-bottom:22px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+          <h2 style="font-size:17px;font-weight:800;color:white">تقييمات الأعضاء</h2>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="font-size:36px;font-weight:900;color:white;line-height:1">4.9</div>
+            <div>
+              <div style="color:#f5a623;font-size:16px;letter-spacing:1px">★★★★★</div>
+              <div style="font-size:11px;color:rgba(255,255,255,.4)">284 تقييم</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Rating bars -->
+        <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:22px">
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:11px;color:rgba(255,255,255,.5);width:18px;text-align:center">5</span>
+            <div style="flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div style="width:84%;height:100%;background:linear-gradient(90deg,#c9952a,#f5c218);border-radius:4px"></div></div>
+            <span style="font-size:11px;color:rgba(255,255,255,.4);width:30px">84%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:11px;color:rgba(255,255,255,.5);width:18px;text-align:center">4</span>
+            <div style="flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div style="width:12%;height:100%;background:linear-gradient(90deg,#06b6d4,#22d3ee);border-radius:4px"></div></div>
+            <span style="font-size:11px;color:rgba(255,255,255,.4);width:30px">12%</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:10px">
+            <span style="font-size:11px;color:rgba(255,255,255,.5);width:18px;text-align:center">3</span>
+            <div style="flex:1;height:5px;background:rgba(255,255,255,.08);border-radius:4px;overflow:hidden"><div style="width:3%;height:100%;background:rgba(100,116,139,.6);border-radius:4px"></div></div>
+            <span style="font-size:11px;color:rgba(255,255,255,.4);width:30px">3%</span>
+          </div>
+        </div>
+
+        <!-- Review cards -->
+        <div class="reviews-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px">
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#7c3aed,#9333ea);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:16px;flex-shrink:0;box-shadow:0 0 12px rgba(124,58,237,.35)">ن</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:white">نورة الزهراني</div>
+                <div style="color:#f5a623;font-size:11px">★★★★★ · منذ أسبوع</div>
+              </div>
+            </div>
+            <p style="font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.8">تجربة رائعة! الطاقم النسائي محترف جداً والمرافق نظيفة ومريحة. أنصح كل سيدة تجربه 🤿💙</p>
+          </div>
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#0891b2,#06b6d4);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:16px;flex-shrink:0;box-shadow:0 0 12px rgba(6,182,212,.35)">ه</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:white">هيا المطيري</div>
+                <div style="color:#f5a623;font-size:11px">★★★★★ · منذ شهر</div>
+              </div>
+            </div>
+            <p style="font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.8">أخذنا العائلة كاملة، الأطفال استمتعوا جداً! المدرّبات صبورات مع الأطفال وأهتمّوا بكل تفصيل. شكراً 🌟</p>
+          </div>
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#1e40af,#3b82f6);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:16px;flex-shrink:0;box-shadow:0 0 12px rgba(59,130,246,.35)">ف</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:white">فهد العتيبي</div>
+                <div style="color:#f5a623;font-size:11px">★★★★★ · منذ شهرين</div>
+              </div>
+            </div>
+            <p style="font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.8">حصلت على شهادة Open Water هنا — أفضل تجربة تعليمية. المدرّب محترف جداً وصبور 🎓</p>
+          </div>
+          <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:16px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+              <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#065f46,#10b981);display:flex;align-items:center;justify-content:center;color:white;font-weight:900;font-size:16px;flex-shrink:0;box-shadow:0 0 12px rgba(16,185,129,.35)">م</div>
+              <div>
+                <div style="font-size:13px;font-weight:700;color:white">محمد الغامدي</div>
+                <div style="color:#f5a623;font-size:11px">★★★★☆ · منذ شهرين</div>
+              </div>
+            </div>
+            <p style="font-size:12.5px;color:rgba(255,255,255,.6);line-height:1.8">مركز ممتاز، الموقع رائع والمعدات جديدة. قيمة ممتازة مقابل السعر. سأعود بالتأكيد 🤿</p>
+          </div>
+        </div>
+        <button class="glass-light" style="color:white;border:none;padding:11px;border-radius:11px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;width:100%;margin-top:14px;transition:.15s" style-hover="background:rgba(255,255,255,.12)">عرض كل التقييمات (284) ←</button>
+      </div>
+
+    </div>
+
+    <!-- RIGHT: Booking Sidebar -->
+    <div class="booking-sidebar" style="position:sticky;top:82px;display:flex;flex-direction:column;gap:16px">
+
+      <!-- Booking wizard card -->
+      <div class="glass" style="border-radius:20px;overflow:hidden">
+        <!-- Step indicator -->
+        <div style="background:rgba(4,8,18,.5);padding:18px 20px;border-bottom:1px solid rgba(255,255,255,.06)">
+          <div style="display:flex;align-items:center;justify-content:center;gap:0;margin-bottom:14px">
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+              <div style="width:32px;height:32px;border-radius:50%;background:{{ step1Bg }};border:2px solid {{ step1Border }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:{{ step1Color }};transition:.3s">{{ step1Num }}</div>
+              <div style="font-size:9px;color:{{ step1LabelColor }};font-weight:700;white-space:nowrap">الباقة</div>
+            </div>
+            <div style="flex:1;height:2px;background:{{ line12 }};margin-bottom:16px;transition:.3s"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+              <div style="width:32px;height:32px;border-radius:50%;background:{{ step2Bg }};border:2px solid {{ step2Border }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:{{ step2Color }};transition:.3s">{{ step2Num }}</div>
+              <div style="font-size:9px;color:{{ step2LabelColor }};font-weight:700;white-space:nowrap">التفاصيل</div>
+            </div>
+            <div style="flex:1;height:2px;background:{{ line23 }};margin-bottom:16px;transition:.3s"></div>
+            <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1">
+              <div style="width:32px;height:32px;border-radius:50%;background:{{ step3Bg }};border:2px solid {{ step3Border }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:{{ step3Color }};transition:.3s">{{ step3Num }}</div>
+              <div style="font-size:9px;color:{{ step3LabelColor }};font-weight:700;white-space:nowrap">التواصل</div>
+            </div>
+          </div>
+          <div style="text-align:center;font-size:13px;font-weight:700;color:white">{{ stepTitle }}</div>
+        </div>
+
+        <div style="padding:20px">
+
+          <!-- Step 1: Choose package -->
+          <sc-if value="{{ isStep1 }}" hint-placeholder-val="{{ true }}">
+            <div>
+              <p style="font-size:12px;color:rgba(255,255,255,.45);margin-bottom:14px">اختر الباقة المناسبة لك</p>
+              <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
+                <button onclick="{{ selectPkg1 }}" style="{{ pkg1Style }}">
+                  <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+                    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">🌊</span><div style="text-align:start"><div style="font-size:12px;font-weight:700">غوصة تجريبية</div><div style="font-size:10px;opacity:.6">للمبتدئين · ساعتان</div></div></div>
+                    <div style="font-weight:800;font-size:13px">180 ر</div>
+                  </div>
+                </button>
+                <button onclick="{{ selectPkg2 }}" style="{{ pkg2Style }}">
+                  <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+                    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">🧕</span><div style="text-align:start"><div style="font-size:12px;font-weight:700">باقة السيدات</div><div style="font-size:10px;opacity:.6">طاقم نسائي</div></div></div>
+                    <div style="font-weight:800;font-size:13px">220 ر</div>
+                  </div>
+                </button>
+                <button onclick="{{ selectPkg3 }}" style="{{ pkg3Style }}">
+                  <div style="display:flex;justify-content:space-between;align-items:center;width:100%">
+                    <div style="display:flex;align-items:center;gap:8px"><span style="font-size:16px">👨‍👩‍👧‍👦</span><div style="text-align:start"><div style="font-size:12px;font-weight:700">باقة العائلة</div><div style="font-size:10px;opacity:.6">4 أفراد · يوم كامل</div></div></div>
+                    <div style="font-weight:800;font-size:13px">650 ر</div>
+                  </div>
+                </button>
+              </div>
+              <button onclick="{{ nextStep }}" style="width:100%;background:linear-gradient(135deg,#c9952a,#e8a830);color:white;border:none;padding:13px;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px rgba(201,149,42,.4)">التالي ←</button>
+            </div>
+          </sc-if>
+
+          <!-- Step 2: Date & persons -->
+          <sc-if value="{{ isStep2 }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <p style="font-size:12px;color:rgba(255,255,255,.45);margin-bottom:14px">الباقة المختارة: <span style="color:#e8a830;font-weight:700">{{ selectedPkgName }}</span></p>
+              <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px">
+                <div>
+                  <label style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);display:block;margin-bottom:6px;letter-spacing:.3px">التاريخ</label>
+                  <input type="date" style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;color:white;font-family:inherit;font-size:13px;outline:none">
+                </div>
+                <div>
+                  <label style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);display:block;margin-bottom:6px;letter-spacing:.3px">عدد الأشخاص</label>
+                  <div style="display:flex;align-items:center;gap:10px">
+                    <button onclick="{{ decPersons }}" style="width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:white;font-size:18px;cursor:pointer;font-family:inherit;transition:.15s" style-hover="background:rgba(255,255,255,.14)">−</button>
+                    <div style="flex:1;text-align:center;font-size:20px;font-weight:800;color:white">{{ persons }}</div>
+                    <button onclick="{{ incPersons }}" style="width:36px;height:36px;border-radius:9px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);color:white;font-size:18px;cursor:pointer;font-family:inherit;transition:.15s" style-hover="background:rgba(255,255,255,.14)">+</button>
+                  </div>
+                </div>
+                <div>
+                  <label style="font-size:11px;font-weight:700;color:rgba(255,255,255,.5);display:block;margin-bottom:6px;letter-spacing:.3px">ملاحظات خاصة</label>
+                  <textarea style="width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:10px;padding:10px 14px;color:white;font-family:inherit;font-size:13px;outline:none;resize:none;height:72px;direction:rtl" placeholder="أي احتياجات خاصة..."></textarea>
+                </div>
+              </div>
+              <!-- Price summary -->
+              <div style="background:rgba(201,149,42,.08);border:1px solid rgba(201,149,42,.2);border-radius:12px;padding:14px;margin-bottom:16px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;color:rgba(255,255,255,.5)">{{ selectedPkgName }}</span><span style="font-size:12px;color:white;font-weight:600">{{ pkgPrice }} ريال</span></div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span style="font-size:12px;color:rgba(255,255,255,.5)">× {{ persons }} أشخاص</span><span style="font-size:12px;color:rgba(255,255,255,.5)"></span></div>
+                <div style="border-top:1px solid rgba(255,255,255,.08);margin:8px 0;padding-top:8px;display:flex;justify-content:space-between"><span style="font-size:13px;font-weight:700;color:white">الإجمالي</span><span style="font-size:16px;font-weight:900;color:#e8a830">{{ totalPrice }} ريال</span></div>
+              </div>
+              <div style="display:flex;gap:10px">
+                <button onclick="{{ prevStep }}" class="glass-light" style="color:white;border:none;padding:12px;border-radius:12px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;flex:1">→ رجوع</button>
+                <button onclick="{{ nextStep }}" style="flex:2;background:linear-gradient(135deg,#c9952a,#e8a830);color:white;border:none;padding:12px;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;font-family:inherit;box-shadow:0 4px 14px rgba(201,149,42,.35)">التالي ←</button>
+              </div>
+            </div>
+          </sc-if>
+
+          <!-- Step 3: Contact -->
+          <sc-if value="{{ isStep3 }}" hint-placeholder-val="{{ false }}">
+            <div>
+              <p style="font-size:12px;color:rgba(255,255,255,.45);margin-bottom:16px">اختر طريقة التواصل مع المركز</p>
+              <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);border-radius:12px;padding:14px;margin-bottom:16px">
+                <div style="font-size:11px;color:rgba(255,255,255,.4);margin-bottom:4px">ملخص حجزك</div>
+                <div style="font-size:13px;font-weight:700;color:white;margin-bottom:2px">{{ selectedPkgName }} · {{ persons }} أشخاص</div>
+                <div style="font-size:12px;color:#e8a830;font-weight:800">الإجمالي: {{ totalPrice }} ريال</div>
+              </div>
+              <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
+                <a href="https://wa.me/201234567890" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#25D366;color:white;padding:13px;border-radius:12px;font-weight:800;font-size:14px;transition:opacity .15s" style-hover="opacity:.88">
+                  <span style="font-size:20px">💬</span> واتساب — تواصل فوري
+                </a>
+                <a href="tel:+201234567890" class="glass-light" style="display:flex;align-items:center;justify-content:center;gap:8px;color:white;padding:12px;border-radius:12px;font-weight:700;font-size:13px;transition:.15s" style-hover="background:rgba(255,255,255,.12)">
+                  <span>📞</span> اتصل بنا مباشرة
+                </a>
+                <a href="mailto:info@sharmcenter.com" class="glass-light" style="display:flex;align-items:center;justify-content:center;gap:8px;color:white;padding:12px;border-radius:12px;font-weight:700;font-size:13px;transition:.15s" style-hover="background:rgba(255,255,255,.12)">
+                  <span>📧</span> البريد الإلكتروني
+                </a>
+              </div>
+              <button onclick="{{ prevStep }}" class="glass-light" style="color:white;border:none;padding:11px;border-radius:12px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;width:100%">→ رجوع</button>
+            </div>
+          </sc-if>
+
+        </div>
+      </div>
+
+      <!-- Contact info card -->
+      <div class="glass" style="border-radius:18px;padding:18px">
+        <h4 style="font-size:13px;font-weight:800;color:white;margin-bottom:14px">📍 معلومات الاتصال</h4>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,.55)">
+            <span style="font-size:16px;flex-shrink:0">📍</span>شارع الكورنيش، شرم الشيخ، مصر
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,.55)">
+            <span style="font-size:16px;flex-shrink:0">🕐</span>يعمل يومياً 7 صباحاً — 8 مساءً
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,.55)">
+            <span style="font-size:16px;flex-shrink:0">📞</span>+20 123 456 7890
+          </div>
+          <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:rgba(255,255,255,.55)">
+            <span style="font-size:16px;flex-shrink:0">💬</span>يرد على واتساب خلال ساعة
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<footer style="background:rgba(4,8,18,.98);padding:22px 24px;border-top:1px solid rgba(255,255,255,.05)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <a href="ArabDiving Home Dark.dc.html" style="display:flex;align-items:center;gap:8px">
+      <div style="width:28px;height:28px;background:linear-gradient(135deg,#0891b2,#c9952a);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px">🤿</div>
+      <span style="color:white;font-size:14px;font-weight:800">ArabDiving</span>
+    </a>
+    <p style="font-size:12px;color:rgba(255,255,255,.25)">© 2025 ArabDiving</p>
+    <a href="ArabDiving Booking Dark.dc.html" style="font-size:12px;color:rgba(255,255,255,.35);transition:.15s" style-hover="color:rgba(255,255,255,.7)">← عودة لكل المراكز</a>
+  </div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = {
+    step: 1,
+    pkg: 1,
+    persons: 2,
+  };
+
+  pkgs = [
+    { name: 'غوصة تجريبية', price: 180 },
+    { name: 'باقة السيدات',  price: 220 },
+    { name: 'باقة العائلة',  price: 650, fixed: true },
+  ];
+
+  renderVals() {
+    const { step, pkg, persons } = this.state;
+    const p = this.pkgs[pkg - 1];
+    const total = p.fixed ? p.price : p.price * persons;
+
+    // step styles
+    const done   = { bg:'rgba(201,149,42,0.3)',  border:'#c9952a',          color:'#e8a830',          lbl:'#e8a830' };
+    const active = { bg:'rgba(201,149,42,0.15)', border:'rgba(201,149,42,0.6)', color:'white',         lbl:'white' };
+    const idle   = { bg:'rgba(255,255,255,0.06)',border:'rgba(255,255,255,0.12)',color:'rgba(255,255,255,0.35)', lbl:'rgba(255,255,255,0.35)' };
+
+    const s1 = step > 1 ? done : step === 1 ? active : idle;
+    const s2 = step > 2 ? done : step === 2 ? active : idle;
+    const s3 = step === 3 ? active : idle;
+
+    const pkgBtn = (n) => ({
+      width:'100%', background: pkg===n ? 'rgba(201,149,42,0.15)' : 'rgba(255,255,255,0.05)',
+      border: `1px solid ${pkg===n ? 'rgba(201,149,42,0.4)' : 'rgba(255,255,255,0.09)'}`,
+      borderRadius: '12px', padding: '12px 14px', cursor: 'pointer',
+      fontFamily:'inherit', color:'white', transition:'all .18s', display:'flex', alignItems:'center',
+    });
+
+    const stepTitles = { 1:'اختر الباقة', 2:'التاريخ والتفاصيل', 3:'تواصل مع المركز' };
+
+    return {
+      isStep1: step === 1,
+      isStep2: step === 2,
+      isStep3: step === 3,
+      stepTitle: stepTitles[step],
+
+      step1Bg: s1.bg, step1Border: s1.border, step1Color: s1.color,
+      step1Num: step > 1 ? '✓' : '1', step1LabelColor: s1.lbl,
+
+      step2Bg: s2.bg, step2Border: s2.border, step2Color: s2.color,
+      step2Num: step > 2 ? '✓' : '2', step2LabelColor: s2.lbl,
+
+      step3Bg: s3.bg, step3Border: s3.border, step3Color: s3.color,
+      step3Num: '3', step3LabelColor: s3.lbl,
+
+      line12: step > 1 ? 'linear-gradient(90deg,#c9952a,rgba(201,149,42,0.4))' : 'rgba(255,255,255,0.08)',
+      line23: step > 2 ? 'linear-gradient(90deg,#c9952a,rgba(201,149,42,0.4))' : 'rgba(255,255,255,0.08)',
+
+      pkg1Style: pkgBtn(1),
+      pkg2Style: pkgBtn(2),
+      pkg3Style: pkgBtn(3),
+      selectPkg1: () => this.setState({ pkg: 1 }),
+      selectPkg2: () => this.setState({ pkg: 2 }),
+      selectPkg3: () => this.setState({ pkg: 3 }),
+
+      persons,
+      incPersons: () => this.setState(s => ({ persons: Math.min(s.persons + 1, 12) })),
+      decPersons: () => this.setState(s => ({ persons: Math.max(s.persons - 1, 1) })),
+
+      selectedPkgName: p.name,
+      pkgPrice:  p.price,
+      totalPrice: total,
+
+      nextStep:  () => this.setState(s => ({ step: Math.min(s.step + 1, 3) })),
+      prevStep:  () => this.setState(s => ({ step: Math.max(s.step - 1, 1) })),
+      bookStep:  () => this.setState({ step: 1 }),
+    };
+  }
+}
+</script>
+</body>
+</html>
