@@ -162,7 +162,7 @@ export default function Navbar() {
   );
 
   const modeClass = navStyle === "dropdown" ? "nav-dropdown-mode" : navStyle === "sidebar" ? "nav-sidebar-mode" : undefined;
-  const navBg = scrolled ? "rgba(6,14,36,0.97)" : "rgba(6,14,36,0.72)";
+  const navBg = scrolled ? "var(--nav-scrolled)" : "var(--nav-top)";
   const navShadow = scrolled ? "0 4px 28px rgba(0,0,0,0.35)" : "none";
   const navBorder = scrolled ? "1px solid rgba(255,255,255,0.07)" : "none";
 

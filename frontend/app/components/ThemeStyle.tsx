@@ -26,11 +26,11 @@ export const THEMES: Record<string, Record<string, string>> = {
     background: "#f1f5fb", surface: "#ffffff",
     text: "#0f172a", muted: "#64748b", border: "#e2e8f0", hero: "#060e24",
   },
-  // البحر العميق: داكن غامر بهوية العلامة (Dark Ocean)
+  // البحر العميق: Dark Ocean الرسمي (design_handoff/DARK_OCEAN_DESIGN_SYSTEM.md)
   ocean: {
-    navy: "#0d2c54", mid: "#4da3e8", gold: "#e8a830",
-    background: "#060e24", surface: "#101f3c",
-    text: "#eef4ff", muted: "#9fb1c9", border: "#1e3356", hero: "#041226",
+    navy: "#0d2c54", mid: "#22d3ee", gold: "#e8a830",
+    background: "#040d1a", surface: "#0d1e3d",
+    text: "#f2f7ff", muted: "#93a7c4", border: "#22365c", hero: "#041226",
   },
 };
 export const THEME_KEY = "ad_theme"; // "classic" | "ocean" | "" (اتباع إعدادات الأدمن)

@@ -7,9 +7,8 @@ export default function Hero() {
   const c = useContent("home").hero || {};
 
   return (
-    <section style={{
+    <section className="hero-section" style={{
       minHeight: "100vh",
-      background: "linear-gradient(175deg,#06101f 0%,#0d2c54 28%,#0e4a7a 58%,#0891b2 82%,#06b6d4 100%)",
       display: "flex",
       alignItems: "center",
       justifyContent: "center",
@@ -18,6 +17,9 @@ export default function Hero() {
       position: "relative",
       overflow: "hidden",
     }}>
+
+      {/* Nautical grid — يظهر في وضع البحر العميق فقط */}
+      <div className="hero-grid" />
 
       {/* Light cone */}
       <div style={{ position: "absolute", top: 0, left: "50%", transform: "translateX(-50%)", width: "900px", height: "100%", background: "radial-gradient(ellipse at 50% 0%,rgba(8,145,178,0.18) 0%,transparent 65%)", pointerEvents: "none" }} />
@@ -56,7 +58,7 @@ export default function Hero() {
           ) : (
             <>
               اكتشف عالم الغوص<br />
-              <span style={{ background: "linear-gradient(90deg,#c9952a 0%,#f5c218 50%,#e8a830 100%)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", backgroundClip: "text" }}>
+              <span className="hero-grad">
                 في البحر الأحمر
               </span>
             </>

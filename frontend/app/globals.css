@@ -27,6 +27,26 @@
 
   /* لون العناوين المضمون القراءة — يضبطه ThemeStyle حسب الوضع */
   --ink:        var(--navy);
+
+  /* Dark Ocean — قيم افتراضية (الوضع الفاتح) */
+  --glass-bg:           var(--surface);
+  --glass-border:       var(--border);
+  --glass-light-bg:     #f8fafc;
+  --glass-light-border: #e2e8f0;
+  --nav-top:            rgba(6, 14, 36, 0.72);
+  --nav-scrolled:       rgba(6, 14, 36, 0.97);
+  --cyan:               #06b6d4;
+  --cyan-light:         #22d3ee;
+}
+
+/* ═══ Dark Ocean: قيم وضع «البحر العميق» ═══ */
+html[data-theme="dark"] {
+  --glass-bg:           rgba(8, 20, 48, 0.78);
+  --glass-border:       rgba(255, 255, 255, 0.08);
+  --glass-light-bg:     rgba(255, 255, 255, 0.07);
+  --glass-light-border: rgba(255, 255, 255, 0.10);
+  --nav-top:            rgba(4, 8, 18, 0.85);
+  --nav-scrolled:       rgba(4, 8, 18, 0.97);
 }
 
 /* ══════════════════════════════════════════════
@@ -36,15 +56,20 @@
    دون الحاجة لتعديل كل ملف على حدة.
    ══════════════════════════════════════════════ */
 
-/* 1) البطاقات البيضاء/الفاتحة الثابتة → سطح الثيم (توحيد كامل للصفحات) */
+/* 1) البطاقات البيضاء/الفاتحة الثابتة → بطاقات زجاجية (Dark Ocean glass) */
 html[data-theme="dark"] [style*="background:white"],
 html[data-theme="dark"] [style*="background: white"],
 html[data-theme="dark"] [style*="background:#fff"],
 html[data-theme="dark"] [style*="background: #fff"],
-html[data-theme="dark"] [style*="background:#ffffff"] {
-  background: var(--surface) !important;
+html[data-theme="dark"] [style*="background:#ffffff"],
+html[data-theme="dark"] [style*="background:var(--surface)"],
+html[data-theme="dark"] [style*="background: var(--surface)"] {
+  background: var(--glass-bg) !important;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-color: var(--glass-border) !important;
 }
-/* خلفيات رمادية فاتحة محايدة (شرائح/تعليقات) → سطح مرتفع خفيف */
+/* خلفيات رمادية فاتحة محايدة (شرائح/تعليقات) → زجاج خفيف */
 html[data-theme="dark"] [style*="background:#f8fafc"],
 html[data-theme="dark"] [style*="background: #f8fafc"],
 html[data-theme="dark"] [style*="background:#f1f5f9"],
@@ -52,7 +77,8 @@ html[data-theme="dark"] [style*="background:#f1f5fb"],
 html[data-theme="dark"] [style*="background:#f3f6f9"],
 html[data-theme="dark"] [style*="background:#eef2f6"],
 html[data-theme="dark"] [style*="background:#f0f5ff"] {
-  background: rgba(255,255,255,0.07) !important;
+  background: var(--glass-light-bg) !important;
+  border-color: var(--glass-light-border) !important;
 }
 
 /* 2) نصوص navy → نسخة مقروءة (--ink) في كل مكان */
@@ -132,6 +158,75 @@ img { max-width: 100%; display: block; }
 @keyframes gradText {
   0%, 100% { background-position: 0% center; }
   50%       { background-position: 100% center; }
+}
+
+/* ═══ Dark Ocean keyframes ═══ */
+@keyframes floatUp {
+  0%   { transform: translateY(0) scale(1);       opacity: 0.4; }
+  100% { transform: translateY(-120px) scale(0.7); opacity: 0; }
+}
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+@keyframes waveShift {
+  0%   { background-position: 0% 50%; }
+  100% { background-position: 200% 50%; }
+}
+@keyframes pulseRing {
+  0%  { transform: scale(1);   opacity: 0.8; }
+  70% { transform: scale(2.4); opacity: 0; }
+}
+
+/* ═══ Dark Ocean utilities ═══ */
+.glass {
+  background: var(--glass-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+}
+.glass-light {
+  background: var(--glass-light-bg);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid var(--glass-light-border);
+}
+.bubble {
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(6, 182, 212, 0.28);
+  animation: floatUp ease-in infinite;
+  pointer-events: none;
+}
+.glow-dot { animation: pulseGlow 2s ease-in-out infinite; }
+
+/* ═══ Hero — خلفية حسب الثيم ═══ */
+.hero-section {
+  background: linear-gradient(175deg,#06101f 0%,#0d2c54 28%,#0e4a7a 58%,#0891b2 82%,#06b6d4 100%);
+}
+html[data-theme="dark"] .hero-section {
+  background: radial-gradient(ellipse at 50% 20%, #0a2a4a 0%, #040d1a 60%);
+}
+/* الشبكة الملاحية — تظهر في وضع المحيط فقط */
+.hero-grid { display: none; }
+html[data-theme="dark"] .hero-grid {
+  display: block;
+  position: absolute; inset: 0; opacity: 0.04;
+  background-image: linear-gradient(rgba(100,180,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(100,180,255,1) 1px, transparent 1px);
+  background-size: 55px 55px;
+  pointer-events: none;
+}
+/* عنوان الهيرو المتدرج */
+.hero-grad {
+  background-image: linear-gradient(90deg,#c9952a 0%,#f5c218 50%,#e8a830 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+html[data-theme="dark"] .hero-grad {
+  background-image: linear-gradient(90deg, #06b6d4, #c9952a, #a855f7);
+  background-size: 200%;
+  animation: waveShift 4s linear infinite;
 }
 
 /* ══════════════════════════════════════════════

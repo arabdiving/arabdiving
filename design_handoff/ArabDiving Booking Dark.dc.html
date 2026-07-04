@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    html,body{direction:rtl;font-family:'Cairo',sans-serif;background:#040d1a;color:white;overflow-x:hidden}
+    a{text-decoration:none;color:inherit}
+    @keyframes floatUp{0%{transform:translateY(0) scale(1);opacity:.4}100%{transform:translateY(-100px) scale(.7);opacity:0}}
+    @keyframes fadeInUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+    @keyframes pulseGlow{0%,100%{opacity:.6}50%{opacity:1}}
+    .glass{background:rgba(8,20,48,.78);backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.08)}
+    .glass-light{background:rgba(255,255,255,.07);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.1)}
+    .bubble{position:absolute;border-radius:50%;background:rgba(6,182,212,.28);animation:floatUp ease-in infinite;pointer-events:none}
+    @media(max-width:767px){
+      .nav-links{display:none!important}
+      .hero-search{flex-direction:column!important;border-radius:16px!important}
+      .hero-search .sep{display:none!important}
+      .filter-bar{overflow-x:auto;padding-bottom:8px}
+      .results-grid{grid-template-columns:1fr!important}
+      .how-grid{grid-template-columns:repeat(2,1fr)!important}
+    }
+  </style>
+</helmet>
+
+<nav style="position:sticky;top:0;z-index:100;padding:0 24px;background:rgba(4,8,18,.94);backdrop-filter:blur(24px);border-bottom:1px solid rgba(255,255,255,.06)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;height:64px;gap:14px">
+    <a href="ArabDiving Home Dark.dc.html" style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+      <div style="width:36px;height:36px;background:linear-gradient(135deg,#0891b2,#c9952a);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px">🤿</div>
+      <span style="color:white;font-size:17px;font-weight:900">ArabDiving</span>
+    </a>
+    <div class="nav-links" style="display:flex;gap:2px;flex:1;justify-content:center">
+      <a href="ArabDiving Home Dark.dc.html" style="color:rgba(255,255,255,.5);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,.07)">الرئيسية</a>
+      <a href="#" style="color:white;font-size:13px;padding:7px 11px;border-radius:8px;background:rgba(201,149,42,.18);font-weight:700">احجز رحلة</a>
+      <a href="ArabDiving Community Dark.dc.html" style="color:rgba(255,255,255,.5);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,.07)">المجتمع</a>
+      <a href="ArabDiving Marketplace Dark.dc.html" style="color:rgba(255,255,255,.5);font-size:13px;padding:7px 11px;border-radius:8px" style-hover="color:white;background:rgba(255,255,255,.07)">المتجر</a>
+    </div>
+    <div style="display:flex;gap:10px;flex-shrink:0">
+      <a href="#" style="color:rgba(255,255,255,.4);font-size:13px;padding:7px 12px">دخول</a>
+      <a href="#" style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;padding:8px 18px;border-radius:9px;font-weight:700;font-size:13px;box-shadow:0 4px 14px rgba(201,149,42,.4)">انضم</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section style="padding:72px 24px 100px;position:relative;overflow:hidden;text-align:center">
+  <div style="position:absolute;inset:0;background:radial-gradient(ellipse at 50% 20%,#0a2a4a,#040d1a 60%)"></div>
+  <div style="position:absolute;inset:0;opacity:.04;background-image:linear-gradient(rgba(100,180,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(100,180,255,1) 1px,transparent 1px);background-size:55px 55px"></div>
+  <div class="bubble" style="width:6px;height:6px;left:10%;bottom:18%;animation-duration:5.5s"></div>
+  <div class="bubble" style="width:4px;height:4px;left:28%;bottom:10%;animation-duration:4.8s;animation-delay:1.2s"></div>
+  <div class="bubble" style="width:8px;height:8px;right:15%;bottom:22%;animation-duration:6.2s;animation-delay:.6s"></div>
+  <div class="bubble" style="width:5px;height:5px;right:35%;bottom:8%;animation-duration:5s;animation-delay:2s"></div>
+
+  <div style="position:relative;z-index:2;max-width:820px;margin:0 auto">
+    <div style="display:inline-flex;align-items:center;gap:7px;background:rgba(201,149,42,.1);border:1px solid rgba(201,149,42,.25);padding:7px 18px;border-radius:40px;margin-bottom:22px">
+      <span style="width:6px;height:6px;border-radius:50%;background:#c9952a;animation:pulseGlow 2s infinite"></span>
+      <span style="color:rgba(255,255,255,.85);font-size:13px">65+ مركز معتمد في البحر الأحمر</span>
+    </div>
+    <h1 style="font-size:clamp(28px,5vw,58px);font-weight:900;color:white;line-height:1.2;margin-bottom:14px">
+      احجز رحلة غوص آمنة<br>
+      <span style="background:linear-gradient(90deg,#c9952a,#f5c218);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text">للعائلات والسيدات</span>
+    </h1>
+    <p style="font-size:clamp(13px,1.8vw,16px);color:rgba(255,255,255,.55);line-height:1.85;margin-bottom:36px">تواصل مباشر بدون دفع مسبق — طواقم نسائية ومعدات معقّمة</p>
+
+    <div class="hero-search glass" style="display:flex;align-items:center;max-width:760px;margin:0 auto;border-radius:18px;padding:5px;overflow:hidden">
+      <div style="flex:1;padding:12px 16px;cursor:pointer;border-radius:12px;transition:.15s;text-align:start" style-hover="background:rgba(255,255,255,.05)">
+        <div style="font-size:9px;font-weight:700;color:rgba(201,149,42,.8);margin-bottom:3px">الوجهة</div>
+        <div style="font-size:13px;font-weight:600;color:white">شرم الشيخ، دهب...</div>
+      </div>
+      <div class="sep" style="width:1px;height:34px;background:rgba(255,255,255,.07);flex-shrink:0"></div>
+      <div style="flex:1;padding:12px 16px;cursor:pointer;border-radius:12px;transition:.15s;text-align:start" style-hover="background:rgba(255,255,255,.05)">
+        <div style="font-size:9px;font-weight:700;color:rgba(201,149,42,.8);margin-bottom:3px">التاريخ</div>
+        <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.3)">اختر التاريخ</div>
+      </div>
+      <div class="sep" style="width:1px;height:34px;background:rgba(255,255,255,.07);flex-shrink:0"></div>
+      <div style="flex:1;padding:12px 16px;cursor:pointer;border-radius:12px;transition:.15s;text-align:start" style-hover="background:rgba(255,255,255,.05)">
+        <div style="font-size:9px;font-weight:700;color:rgba(201,149,42,.8);margin-bottom:3px">الأشخاص</div>
+        <div style="font-size:13px;font-weight:600;color:rgba(255,255,255,.3)">أضف أشخاصاً</div>
+      </div>
+      <button style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;border:none;padding:13px 20px;border-radius:13px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;margin:2px;box-shadow:0 4px 16px rgba(201,149,42,.5)">🔍 ابحث</button>
+    </div>
+  </div>
+  <div style="position:absolute;bottom:-1px;left:0;right:0;height:60px;overflow:hidden">
+    <svg viewBox="0 0 1440 60" preserveAspectRatio="none" style="width:100%;height:100%;display:block">
+      <path d="M0,35 C360,8 720,55 1440,22 L1440,60 L0,60 Z" fill="#040d1a"></path>
+    </svg>
+  </div>
+</section>
+
+<!-- FILTER BAR -->
+<section style="padding:0 24px 20px">
+  <div style="max-width:1280px;margin:0 auto">
+    <div class="glass filter-bar" style="border-radius:14px;padding:12px 16px;display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <span style="font-size:12px;color:rgba(255,255,255,.4);flex-shrink:0">فلاتر:</span>
+      <button style="{{ fAll }}"   onclick="{{ sAll }}">الكل</button>
+      <button style="{{ fWomen }}" onclick="{{ sWomen }}">🧕 طاقم نسائي</button>
+      <button style="{{ fFam }}"   onclick="{{ sFam }}">👨‍👩‍👧‍👦 عائلات</button>
+      <button style="{{ fEco }}"   onclick="{{ sEco }}">🪸 بيئي</button>
+      <button style="{{ fTech }}"  onclick="{{ sTech }}">⚙️ تقني</button>
+      <button style="{{ fPriv }}"  onclick="{{ sPriv }}">🛥️ رحلة خاصة</button>
+      <button style="{{ fSan }}"   onclick="{{ sSan }}">✨ معقّم</button>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section style="padding:0 24px 60px">
+  <div style="max-width:1280px;margin:0 auto">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:10px">
+      <div style="font-size:15px;font-weight:700;color:white">عرض <span style="color:#c9952a">{{ count }}</span> مركز</div>
+      <select style="background:rgba(8,20,48,.9);color:white;border:1px solid rgba(255,255,255,.1);border-radius:9px;padding:7px 12px;font-family:inherit;font-size:13px;cursor:pointer">
+        <option>الأعلى تقييماً</option><option>الأقل سعراً</option><option>الأحدث</option>
+      </select>
+    </div>
+
+    <div class="results-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:20px">
+
+      <div class="glass" style="border-radius:20px;overflow:hidden;transition:.22s" style-hover="transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 28px rgba(6,182,212,.15)">
+        <div style="height:190px;background:linear-gradient(135deg,#0a1f3a,#0d2c54,#0891b2);position:relative;display:flex;align-items:flex-end;padding:14px">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(4,13,26,.72) 0%,transparent 52%)"></div>
+          <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-end;width:100%">
+            <span style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;font-size:10px;font-weight:700;padding:4px 10px;border-radius:7px">💎 بلاتيني</span>
+            <span class="glass-light" style="color:white;font-size:11px;font-weight:700;padding:4px 9px;border-radius:7px">⭐ 4.9</span>
+          </div>
+          <div style="position:absolute;bottom:12px;right:14px;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);color:rgba(255,255,255,.8);font-size:10px;padding:3px 8px;border-radius:7px">📍 شرم الشيخ</div>
+        </div>
+        <div style="padding:18px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+            <div><h3 style="font-size:15px;font-weight:800;color:white;margin-bottom:3px">مركز شرم الغوص المتحد</h3><div style="font-size:11px;color:rgba(255,255,255,.35)">يرد خلال ساعة</div></div>
+            <div style="text-align:end;flex-shrink:0"><div style="font-size:10px;color:rgba(255,255,255,.3)">من</div><div style="font-size:22px;font-weight:900;color:white;line-height:1.1">180</div><div style="font-size:10px;color:rgba(255,255,255,.4)">ريال</div></div>
+          </div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px">
+            <span style="background:rgba(168,85,247,.18);color:#c084fc;border:1px solid rgba(168,85,247,.2);font-size:10px;padding:3px 8px;border-radius:7px">🧕 نسائي</span>
+            <span style="background:rgba(6,182,212,.15);color:#22d3ee;border:1px solid rgba(6,182,212,.2);font-size:10px;padding:3px 8px;border-radius:7px">👨‍👩‍👧‍👦 عائلات</span>
+            <span style="background:rgba(52,211,153,.15);color:#6ee7b7;border:1px solid rgba(52,211,153,.2);font-size:10px;padding:3px 8px;border-radius:7px">🪸 بيئي</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <a href="#" style="flex:1;background:linear-gradient(135deg,#c9952a,#e8a830);color:white;text-align:center;padding:11px;border-radius:11px;font-weight:700;font-size:13px;box-shadow:0 4px 12px rgba(201,149,42,.4);transition:.2s" style-hover="box-shadow:0 6px 20px rgba(201,149,42,.6)">احجز الآن ←</a>
+            <a href="#" class="glass-light" style="color:white;padding:11px 14px;border-radius:11px;font-weight:600;font-size:13px;transition:.15s" style-hover="background:rgba(255,255,255,.12)">التفاصيل</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass" style="border-radius:20px;overflow:hidden;transition:.22s" style-hover="transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 28px rgba(52,211,153,.12)">
+        <div style="height:190px;background:linear-gradient(135deg,#061a12,#0e4a2e,#16a34a);position:relative;display:flex;align-items:flex-end;padding:14px">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(4,13,26,.72) 0%,transparent 52%)"></div>
+          <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-end;width:100%">
+            <span style="background:linear-gradient(135deg,#d4a017,#f5c218);color:white;font-size:10px;font-weight:700;padding:4px 10px;border-radius:7px">🥇 ذهبي</span>
+            <span class="glass-light" style="color:white;font-size:11px;font-weight:700;padding:4px 9px;border-radius:7px">⭐ 4.7</span>
+          </div>
+          <div style="position:absolute;bottom:12px;right:14px;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);color:rgba(255,255,255,.8);font-size:10px;padding:3px 8px;border-radius:7px">📍 دهب</div>
+        </div>
+        <div style="padding:18px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+            <div><h3 style="font-size:15px;font-weight:800;color:white;margin-bottom:3px">أكاديمية الأعماق</h3><div style="font-size:11px;color:rgba(255,255,255,.35)">يرد خلال ساعتين</div></div>
+            <div style="text-align:end;flex-shrink:0"><div style="font-size:10px;color:rgba(255,255,255,.3)">من</div><div style="font-size:22px;font-weight:900;color:white;line-height:1.1">120</div><div style="font-size:10px;color:rgba(255,255,255,.4)">ريال</div></div>
+          </div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px">
+            <span style="background:rgba(249,115,22,.18);color:#fb923c;border:1px solid rgba(249,115,22,.2);font-size:10px;padding:3px 8px;border-radius:7px">⚙️ تقني</span>
+            <span style="background:rgba(52,211,153,.15);color:#6ee7b7;border:1px solid rgba(52,211,153,.2);font-size:10px;padding:3px 8px;border-radius:7px">🪸 بيئي</span>
+            <span style="background:rgba(245,194,24,.15);color:#fde047;border:1px solid rgba(245,194,24,.2);font-size:10px;padding:3px 8px;border-radius:7px">🎓 PADI</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <a href="#" style="flex:1;background:linear-gradient(135deg,#c9952a,#e8a830);color:white;text-align:center;padding:11px;border-radius:11px;font-weight:700;font-size:13px;box-shadow:0 4px 12px rgba(201,149,42,.4);transition:.2s" style-hover="box-shadow:0 6px 20px rgba(201,149,42,.6)">احجز الآن ←</a>
+            <a href="#" class="glass-light" style="color:white;padding:11px 14px;border-radius:11px;font-weight:600;font-size:13px;transition:.15s">التفاصيل</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass" style="border-radius:20px;overflow:hidden;transition:.22s" style-hover="transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 28px rgba(168,85,247,.12)">
+        <div style="height:190px;background:linear-gradient(135deg,#130e2a,#312e81,#6d28d9);position:relative;display:flex;align-items:flex-end;padding:14px">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(4,13,26,.72) 0%,transparent 52%)"></div>
+          <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-end;width:100%">
+            <span style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;font-size:10px;font-weight:700;padding:4px 10px;border-radius:7px">💎 بلاتيني</span>
+            <span class="glass-light" style="color:white;font-size:11px;font-weight:700;padding:4px 9px;border-radius:7px">⭐ 4.8</span>
+          </div>
+          <div style="position:absolute;bottom:12px;right:14px;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);color:rgba(255,255,255,.8);font-size:10px;padding:3px 8px;border-radius:7px">📍 الغردقة</div>
+        </div>
+        <div style="padding:18px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+            <div><h3 style="font-size:15px;font-weight:800;color:white;margin-bottom:3px">مركز سيدات البحر</h3><div style="font-size:11px;color:rgba(255,255,255,.35)">متاح 24/7</div></div>
+            <div style="text-align:end;flex-shrink:0"><div style="font-size:10px;color:rgba(255,255,255,.3)">من</div><div style="font-size:22px;font-weight:900;color:white;line-height:1.1">160</div><div style="font-size:10px;color:rgba(255,255,255,.4)">ريال</div></div>
+          </div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px">
+            <span style="background:rgba(168,85,247,.2);color:#c084fc;border:1px solid rgba(168,85,247,.25);font-size:10px;padding:3px 8px;border-radius:7px">🧕 نسائي 100%</span>
+            <span style="background:rgba(236,72,153,.15);color:#f9a8d4;border:1px solid rgba(236,72,153,.2);font-size:10px;padding:3px 8px;border-radius:7px">🚿 مرافق</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <a href="#" style="flex:1;background:linear-gradient(135deg,#c9952a,#e8a830);color:white;text-align:center;padding:11px;border-radius:11px;font-weight:700;font-size:13px;box-shadow:0 4px 12px rgba(201,149,42,.4);transition:.2s" style-hover="box-shadow:0 6px 20px rgba(201,149,42,.6)">احجز الآن ←</a>
+            <a href="#" class="glass-light" style="color:white;padding:11px 14px;border-radius:11px;font-weight:600;font-size:13px;transition:.15s">التفاصيل</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass" style="border-radius:20px;overflow:hidden;transition:.22s" style-hover="transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 28px rgba(249,115,22,.12)">
+        <div style="height:190px;background:linear-gradient(135deg,#1a0c08,#7c2d12,#c2410c);position:relative;display:flex;align-items:flex-end;padding:14px">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(4,13,26,.72) 0%,transparent 52%)"></div>
+          <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-end;width:100%">
+            <span style="background:rgba(148,163,184,.8);color:white;font-size:10px;font-weight:700;padding:4px 10px;border-radius:7px">🥈 فضي</span>
+            <span class="glass-light" style="color:white;font-size:11px;font-weight:700;padding:4px 9px;border-radius:7px">⭐ 4.6</span>
+          </div>
+          <div style="position:absolute;bottom:12px;right:14px;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);color:rgba(255,255,255,.8);font-size:10px;padding:3px 8px;border-radius:7px">📍 مرسى علم</div>
+        </div>
+        <div style="padding:18px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+            <div><h3 style="font-size:15px;font-weight:800;color:white;margin-bottom:3px">نادي البحر النجمي</h3><div style="font-size:11px;color:rgba(255,255,255,.35)">يرد خلال 3 ساعات</div></div>
+            <div style="text-align:end;flex-shrink:0"><div style="font-size:10px;color:rgba(255,255,255,.3)">من</div><div style="font-size:22px;font-weight:900;color:white;line-height:1.1">95</div><div style="font-size:10px;color:rgba(255,255,255,.4)">ريال</div></div>
+          </div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px">
+            <span style="background:rgba(52,211,153,.15);color:#6ee7b7;border:1px solid rgba(52,211,153,.2);font-size:10px;padding:3px 8px;border-radius:7px">🪸 بيئي</span>
+            <span style="background:rgba(6,182,212,.15);color:#22d3ee;border:1px solid rgba(6,182,212,.2);font-size:10px;padding:3px 8px;border-radius:7px">🛥️ خاصة</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <a href="#" style="flex:1;background:linear-gradient(135deg,#c9952a,#e8a830);color:white;text-align:center;padding:11px;border-radius:11px;font-weight:700;font-size:13px;box-shadow:0 4px 12px rgba(201,149,42,.4);transition:.2s" style-hover="box-shadow:0 6px 20px rgba(201,149,42,.6)">احجز الآن ←</a>
+            <a href="#" class="glass-light" style="color:white;padding:11px 14px;border-radius:11px;font-weight:600;font-size:13px;transition:.15s">التفاصيل</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass" style="border-radius:20px;overflow:hidden;transition:.22s" style-hover="transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 28px rgba(232,121,249,.12)">
+        <div style="height:190px;background:linear-gradient(135deg,#1a0828,#6b21a8,#a855f7);position:relative;display:flex;align-items:flex-end;padding:14px">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(4,13,26,.72) 0%,transparent 52%)"></div>
+          <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-end;width:100%">
+            <span style="background:linear-gradient(135deg,#c9952a,#e8a830);color:white;font-size:10px;font-weight:700;padding:4px 10px;border-radius:7px">💎 بلاتيني</span>
+            <span class="glass-light" style="color:white;font-size:11px;font-weight:700;padding:4px 9px;border-radius:7px">⭐ 4.8</span>
+          </div>
+          <div style="position:absolute;bottom:12px;right:14px;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);color:rgba(255,255,255,.8);font-size:10px;padding:3px 8px;border-radius:7px">📍 نويبع</div>
+        </div>
+        <div style="padding:18px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+            <div><h3 style="font-size:15px;font-weight:800;color:white;margin-bottom:3px">مركز الشعاب الملونة</h3><div style="font-size:11px;color:rgba(255,255,255,.35)">متاح للتواصل</div></div>
+            <div style="text-align:end;flex-shrink:0"><div style="font-size:10px;color:rgba(255,255,255,.3)">من</div><div style="font-size:22px;font-weight:900;color:white;line-height:1.1">145</div><div style="font-size:10px;color:rgba(255,255,255,.4)">ريال</div></div>
+          </div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px">
+            <span style="background:rgba(168,85,247,.18);color:#c084fc;border:1px solid rgba(168,85,247,.2);font-size:10px;padding:3px 8px;border-radius:7px">🧕 نسائي</span>
+            <span style="background:rgba(236,72,153,.15);color:#f9a8d4;border:1px solid rgba(236,72,153,.2);font-size:10px;padding:3px 8px;border-radius:7px">✨ معقّم</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <a href="#" style="flex:1;background:linear-gradient(135deg,#c9952a,#e8a830);color:white;text-align:center;padding:11px;border-radius:11px;font-weight:700;font-size:13px;box-shadow:0 4px 12px rgba(201,149,42,.4);transition:.2s" style-hover="box-shadow:0 6px 20px rgba(201,149,42,.6)">احجز الآن ←</a>
+            <a href="#" class="glass-light" style="color:white;padding:11px 14px;border-radius:11px;font-weight:600;font-size:13px;transition:.15s">التفاصيل</a>
+          </div>
+        </div>
+      </div>
+
+      <div class="glass" style="border-radius:20px;overflow:hidden;transition:.22s" style-hover="transform:translateY(-5px);box-shadow:0 20px 50px rgba(0,0,0,.5),0 0 28px rgba(245,194,24,.1)">
+        <div style="height:190px;background:linear-gradient(135deg,#1a1208,#78350f,#b45309);position:relative;display:flex;align-items:flex-end;padding:14px">
+          <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(4,13,26,.72) 0%,transparent 52%)"></div>
+          <div style="position:relative;display:flex;justify-content:space-between;align-items:flex-end;width:100%">
+            <span style="background:rgba(148,163,184,.8);color:white;font-size:10px;font-weight:700;padding:4px 10px;border-radius:7px">🥈 فضي</span>
+            <span class="glass-light" style="color:white;font-size:11px;font-weight:700;padding:4px 9px;border-radius:7px">⭐ 4.5</span>
+          </div>
+          <div style="position:absolute;bottom:12px;right:14px;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);color:rgba(255,255,255,.8);font-size:10px;padding:3px 8px;border-radius:7px">📍 الغردقة</div>
+        </div>
+        <div style="padding:18px">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+            <div><h3 style="font-size:15px;font-weight:800;color:white;margin-bottom:3px">نادي الأعماق للمبتدئين</h3><div style="font-size:11px;color:rgba(255,255,255,.35)">يرد خلال 4 ساعات</div></div>
+            <div style="text-align:end;flex-shrink:0"><div style="font-size:10px;color:rgba(255,255,255,.3)">من</div><div style="font-size:22px;font-weight:900;color:white;line-height:1.1">85</div><div style="font-size:10px;color:rgba(255,255,255,.4)">ريال</div></div>
+          </div>
+          <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px">
+            <span style="background:rgba(52,211,153,.15);color:#6ee7b7;border:1px solid rgba(52,211,153,.2);font-size:10px;padding:3px 8px;border-radius:7px">🪸 بيئي</span>
+            <span style="background:rgba(245,194,24,.15);color:#fde047;border:1px solid rgba(245,194,24,.2);font-size:10px;padding:3px 8px;border-radius:7px">🎓 مبتدئين</span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <a href="#" style="flex:1;background:linear-gradient(135deg,#c9952a,#e8a830);color:white;text-align:center;padding:11px;border-radius:11px;font-weight:700;font-size:13px;box-shadow:0 4px 12px rgba(201,149,42,.4);transition:.2s" style-hover="box-shadow:0 6px 20px rgba(201,149,42,.6)">احجز الآن ←</a>
+            <a href="#" class="glass-light" style="color:white;padding:11px 14px;border-radius:11px;font-weight:600;font-size:13px;transition:.15s">التفاصيل</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section style="padding:0 24px 70px">
+  <div style="max-width:1100px;margin:0 auto">
+    <div class="glass" style="border-radius:24px;padding:44px 36px">
+      <h2 style="font-size:clamp(20px,3vw,32px);font-weight:900;color:white;margin-bottom:8px;text-align:center">كيف يعمل الحجز؟</h2>
+      <p style="font-size:14px;color:rgba(255,255,255,.4);text-align:center;margin-bottom:36px">بدون دفع مسبق — تواصل مباشر</p>
+      <div class="how-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:20px">
+        <div style="text-align:center;padding:20px 14px">
+          <div style="width:60px;height:60px;background:rgba(6,182,212,.18);border:1px solid rgba(6,182,212,.25);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px;box-shadow:0 0 20px rgba(6,182,212,.2)">🔍</div>
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.3);margin-bottom:7px">الخطوة 1</div>
+          <h4 style="font-size:14px;font-weight:700;color:white;margin-bottom:5px">ابحث واختر</h4>
+          <p style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.7">استخدم الفلاتر لإيجاد المركز المناسب</p>
+        </div>
+        <div style="text-align:center;padding:20px 14px">
+          <div style="width:60px;height:60px;background:rgba(201,149,42,.18);border:1px solid rgba(201,149,42,.25);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px;box-shadow:0 0 20px rgba(201,149,42,.2)">📋</div>
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.3);margin-bottom:7px">الخطوة 2</div>
+          <h4 style="font-size:14px;font-weight:700;color:white;margin-bottom:5px">أدخل التفاصيل</h4>
+          <p style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.7">التاريخ والأشخاص والاحتياجات</p>
+        </div>
+        <div style="text-align:center;padding:20px 14px">
+          <div style="width:60px;height:60px;background:rgba(37,211,102,.18);border:1px solid rgba(37,211,102,.25);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px;box-shadow:0 0 20px rgba(37,211,102,.2)">💬</div>
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.3);margin-bottom:7px">الخطوة 3</div>
+          <h4 style="font-size:14px;font-weight:700;color:white;margin-bottom:5px">تواصل مباشر</h4>
+          <p style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.7">واتساب · هاتف · بريد إلكتروني</p>
+        </div>
+        <div style="text-align:center;padding:20px 14px">
+          <div style="width:60px;height:60px;background:rgba(52,211,153,.18);border:1px solid rgba(52,211,153,.25);border-radius:18px;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 14px;box-shadow:0 0 20px rgba(52,211,153,.2)">✅</div>
+          <div style="font-size:11px;font-weight:700;color:rgba(255,255,255,.3);margin-bottom:7px">الخطوة 4</div>
+          <h4 style="font-size:14px;font-weight:700;color:white;margin-bottom:5px">تأكيد الحجز</h4>
+          <p style="font-size:12px;color:rgba(255,255,255,.4);line-height:1.7">رقم حجز وتواصل مع المركز</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer style="background:rgba(4,8,18,.98);padding:24px;border-top:1px solid rgba(255,255,255,.05)">
+  <div style="max-width:1280px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+    <a href="ArabDiving Home Dark.dc.html" style="display:flex;align-items:center;gap:8px">
+      <div style="width:30px;height:30px;background:linear-gradient(135deg,#0891b2,#c9952a);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:15px">🤿</div>
+      <span style="color:white;font-size:15px;font-weight:800">ArabDiving</span>
+    </a>
+    <p style="font-size:12px;color:rgba(255,255,255,.25)">© 2025 ArabDiving</p>
+    <div style="display:flex;gap:16px">
+      <a href="#" style="font-size:12px;color:rgba(255,255,255,.25)" style-hover="color:rgba(255,255,255,.6)">الخصوصية</a>
+      <a href="#" style="font-size:12px;color:rgba(255,255,255,.25)" style-hover="color:rgba(255,255,255,.6)">الشروط</a>
+    </div>
+  </div>
+</footer>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440,&quot;height&quot;:900}}">
+class Component extends DCLogic {
+  state = { f: 'all' };
+  renderVals() {
+    const { f } = this.state;
+    const counts = { all:6, women:3, family:2, eco:4, tech:1, priv:2, san:3 };
+    const chip = (k) => ({
+      background: f===k ? 'rgba(201,149,42,0.22)' : 'rgba(255,255,255,0.06)',
+      color: f===k ? '#e8a830' : 'rgba(255,255,255,0.55)',
+      border: f===k ? '1px solid rgba(201,149,42,0.4)' : '1px solid rgba(255,255,255,0.08)',
+      padding:'7px 14px', borderRadius:'20px', fontSize:'12px', cursor:'pointer',
+      fontFamily:'inherit', fontWeight: f===k ? '700' : '500', transition:'all .15s', whiteSpace:'nowrap', flexShrink:0
+    });
+    return {
+      count: counts[f]||6,
+      fAll:chip('all'),   sAll:()=>this.setState({f:'all'}),
+      fWomen:chip('women'), sWomen:()=>this.setState({f:'women'}),
+      fFam:chip('family'),  sFam:()=>this.setState({f:'family'}),
+      fEco:chip('eco'),     sEco:()=>this.setState({f:'eco'}),
+      fTech:chip('tech'),   sTech:()=>this.setState({f:'tech'}),
+      fPriv:chip('priv'),   sPriv:()=>this.setState({f:'priv'}),
+      fSan:chip('san'),     sSan:()=>this.setState({f:'san'}),
+    };
+  }
+}
+</script>
+</body>
+</html>
