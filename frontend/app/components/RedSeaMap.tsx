@@ -249,7 +249,7 @@ export default function RedSeaMap({ embedded = false }: { embedded?: boolean }) 
       )}
 
       {embedded && (
-        <div style={{ position: "relative", zIndex: 20, textAlign: "center", padding: "34px 20px 0" }}>
+        <div style={{ position: "relative", zIndex: 20, textAlign: "center", padding: "34px 20px 4px", pointerEvents: "none" }}>
           <h2 style={{ color: "#fff", fontSize: "clamp(24px,4vw,38px)", fontWeight: 900 }}>خريطة <span className="hero-grad">الموقع</span></h2>
           <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "15px", marginTop: "8px" }}>كل صفحات المنصة حول البحر — مرّر على أي نقطة واضغط للانتقال</p>
         </div>
@@ -272,7 +272,9 @@ export default function RedSeaMap({ embedded = false }: { embedded?: boolean }) 
       ) : (
         <>
           {/* حاوية الخريطة — النقاط أبناؤها وتتموضع بإحداثيات الساحل */}
-          <div style={{ position: "absolute", top: "54%", left: "50%", transform: "translate(-50%,-50%)", width: "360px", maxWidth: "82vw", zIndex: 5 }}>
+          <div style={embedded
+            ? { position: "relative", margin: "10px auto 40px", width: "360px", maxWidth: "82vw", zIndex: 5 }
+            : { position: "absolute", top: "54%", left: "50%", transform: "translate(-50%,-50%)", width: "360px", maxWidth: "82vw", zIndex: 5 }}>
             <div style={{ position: "relative", width: "100%", aspectRatio: "360 / 680" }}>
               <div style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 0 40px rgba(8,145,178,0.3))" }} dangerouslySetInnerHTML={{ __html: MAP_SVG }} />
 
