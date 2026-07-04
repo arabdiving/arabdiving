@@ -18,6 +18,23 @@ const VARS: Record<string, string> = {
   surface: "--surface", text: "--text", muted: "--muted", border: "--border", hero: "--hero",
 };
 
+/* ── الثيمان الرسميان — يبدّل بينهما الزائر من زر الهيدر ── */
+export const THEMES: Record<string, Record<string, string>> = {
+  // الكلاسيك: المظهر الأصلي الفاتح
+  classic: {
+    navy: "#0d2c54", mid: "#2e75b6", gold: "#c9952a",
+    background: "#f1f5fb", surface: "#ffffff",
+    text: "#0f172a", muted: "#64748b", border: "#e2e8f0", hero: "#060e24",
+  },
+  // البحر العميق: داكن غامر بهوية العلامة (Dark Ocean)
+  ocean: {
+    navy: "#0d2c54", mid: "#4da3e8", gold: "#e8a830",
+    background: "#060e24", surface: "#101f3c",
+    text: "#eef4ff", muted: "#9fb1c9", border: "#1e3356", hero: "#041226",
+  },
+};
+export const THEME_KEY = "ad_theme"; // "classic" | "ocean" | "" (اتباع إعدادات الأدمن)
+
 /* ── أدوات الألوان ───────────────────────────────── */
 function hexToRgb(hex: string): [number, number, number] | null {
   if (!hex) return null;
@@ -104,6 +121,16 @@ function apply(palette: Record<string, string>) {
 
 export default function ThemeStyle() {
   useEffect(() => {
+    let adminPalette: Record<string, string> = {};
+
+    const resolveAndApply = () => {
+      // اختيار الزائر (زر 🌊/☀️ في الهيدر) يتقدم على إعدادات الأدمن
+      let choice = "";
+      try { choice = localStorage.getItem(THEME_KEY) || ""; } catch {}
+      if (choice && THEMES[choice]) { apply(THEMES[choice]); return; }
+      apply(adminPalette);
+    };
+
     fetch(`${API_BASE}/api/settings`).then((r) => r.json()).then((d) => {
       const set = d.settings || {};
       let palette: Record<string, string> = { ...(set.theme || {}) };
@@ -114,8 +141,13 @@ export default function ThemeStyle() {
         const chosen = isDay ? dn.day : dn.night;
         if (chosen && Object.keys(chosen).length) palette = { ...palette, ...chosen };
       }
-      apply(palette);
-    }).catch(() => { apply({}); });
+      adminPalette = palette;
+      resolveAndApply();
+    }).catch(() => { resolveAndApply(); });
+
+    // تطبيق فوري عند الضغط على مبدّل الثيم دون إعادة تحميل
+    window.addEventListener("ad-theme-change", resolveAndApply);
+    return () => window.removeEventListener("ad-theme-change", resolveAndApply);
   }, []);
   return null;
 }

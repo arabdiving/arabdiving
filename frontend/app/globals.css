@@ -36,13 +36,32 @@
    دون الحاجة لتعديل كل ملف على حدة.
    ══════════════════════════════════════════════ */
 
-/* 1) نصوص navy على الأسطح الداكنة → نسخة فاتحة مقروءة (--ink) */
+/* 1) البطاقات البيضاء/الفاتحة الثابتة → سطح الثيم (توحيد كامل للصفحات) */
+html[data-theme="dark"] [style*="background:white"],
+html[data-theme="dark"] [style*="background: white"],
+html[data-theme="dark"] [style*="background:#fff"],
+html[data-theme="dark"] [style*="background: #fff"],
+html[data-theme="dark"] [style*="background:#ffffff"] {
+  background: var(--surface) !important;
+}
+/* خلفيات رمادية فاتحة محايدة (شرائح/تعليقات) → سطح مرتفع خفيف */
+html[data-theme="dark"] [style*="background:#f8fafc"],
+html[data-theme="dark"] [style*="background: #f8fafc"],
+html[data-theme="dark"] [style*="background:#f1f5f9"],
+html[data-theme="dark"] [style*="background:#f1f5fb"],
+html[data-theme="dark"] [style*="background:#f3f6f9"],
+html[data-theme="dark"] [style*="background:#eef2f6"],
+html[data-theme="dark"] [style*="background:#f0f5ff"] {
+  background: rgba(255,255,255,0.07) !important;
+}
+
+/* 2) نصوص navy → نسخة مقروءة (--ink) في كل مكان */
 html[data-theme="dark"] [style*="color:var(--navy)"],
 html[data-theme="dark"] [style*="color: var(--navy)"] {
   color: var(--ink) !important;
 }
 
-/* 2) رماديات داكنة ثابتة على الخلفيات الداكنة → نص الثيم */
+/* 3) رماديات داكنة ثابتة → نص الثيم */
 html[data-theme="dark"] [style*="color:#0f172a"],
 html[data-theme="dark"] [style*="color: #0f172a"],
 html[data-theme="dark"] [style*="color:#1e293b"],
@@ -51,39 +70,20 @@ html[data-theme="dark"] [style*="color:#444"],
 html[data-theme="dark"] [style*="color:#475569"],
 html[data-theme="dark"] [style*="color:#555"],
 html[data-theme="dark"] [style*="color: #444"],
-html[data-theme="dark"] [style*="color: #555"] {
+html[data-theme="dark"] [style*="color: #555"],
+html[data-theme="dark"] [style*="color:#06324f"] {
   color: var(--text) !important;
 }
+/* رماديات متوسطة → النص الثانوي */
 html[data-theme="dark"] [style*="color:#666"],
-html[data-theme="dark"] [style*="color: #666"] {
+html[data-theme="dark"] [style*="color: #666"],
+html[data-theme="dark"] [style*="color:#888"],
+html[data-theme="dark"] [style*="color: #888"] {
   color: var(--muted) !important;
 }
 
-/* 3) استثناء: داخل البطاقات البيضاء الثابتة تبقى النصوص داكنة كما صُممت */
-html[data-theme="dark"] [style*="background:white"] [style*="color:var(--navy)"],
-html[data-theme="dark"] [style*="background: white"] [style*="color:var(--navy)"],
-html[data-theme="dark"] [style*="background:#fff"] [style*="color:var(--navy)"],
-html[data-theme="dark"] [style*="background:white"][style*="color:var(--navy)"],
-html[data-theme="dark"] [style*="background: white"][style*="color:var(--navy)"],
-html[data-theme="dark"] [style*="background:#fff"][style*="color:var(--navy)"] {
-  color: var(--navy) !important;
-}
-html[data-theme="dark"] [style*="background:white"] [style*="color:#334155"],
-html[data-theme="dark"] [style*="background: white"] [style*="color:#334155"] { color: #334155 !important; }
-html[data-theme="dark"] [style*="background:white"] [style*="color:#444"],
-html[data-theme="dark"] [style*="background: white"] [style*="color:#444"] { color: #444 !important; }
-html[data-theme="dark"] [style*="background:white"] [style*="color:#555"],
-html[data-theme="dark"] [style*="background: white"] [style*="color:#555"] { color: #555 !important; }
-html[data-theme="dark"] [style*="background:white"] [style*="color:#666"],
-html[data-theme="dark"] [style*="background: white"] [style*="color:#666"] { color: #666 !important; }
-html[data-theme="dark"] [style*="background:white"] [style*="color:#0f172a"],
-html[data-theme="dark"] [style*="background: white"] [style*="color:#0f172a"] { color: #0f172a !important; }
-html[data-theme="dark"] [style*="background:white"] [style*="color:#1e293b"],
-html[data-theme="dark"] [style*="background: white"] [style*="color:#1e293b"] { color: #1e293b !important; }
-html[data-theme="dark"] [style*="background:white"] [style*="color:#475569"],
-html[data-theme="dark"] [style*="background: white"] [style*="color:#475569"] { color: #475569 !important; }
-
-/* 4) الشرائح الفاتحة الثابتة (chips) تحتفظ بنصوصها الداكنة — تباينها الداخلي سليم أصلًا */
+/* 4) الشرائح الملوّنة الفاتحة (تينت أزرق/أخضر/أصفر...) تبقى كما هي —
+   نصوصها ملوّنة داكنة ثابتة وتباينها الداخلي سليم، وتعمل كجزر لونية جميلة على الداكن */
 
 /* ══════════════════════════════════════════════
    BASE RESET

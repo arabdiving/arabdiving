@@ -74,9 +74,18 @@ export default function Navbar() {
   const [navStyle, setNavStyle] = useState("buttons");
   const [navGroups, setNavGroups] = useState<any[]>([]);
   const [brand, setBrand] = useState(BRAND_DEFAULT);
+  const [themeChoice, setThemeChoice] = useState("");
   const [openIdx, setOpenIdx] = useState<number | null>(null);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+
+  // تبديل الثيم: كلاسيك ↔ بحر عميق (يُحفظ للزائر ويطبَّق فورًا)
+  const toggleTheme = () => {
+    const next = themeChoice === "ocean" ? "classic" : "ocean";
+    setThemeChoice(next);
+    try { localStorage.setItem("ad_theme", next); } catch {}
+    window.dispatchEvent(new Event("ad-theme-change"));
+  };
 
   const isActive = (href: string) => href === "/" ? pathname === "/" : pathname.startsWith(href);
   const activeStyle = (href: string): React.CSSProperties =>
@@ -87,6 +96,8 @@ export default function Navbar() {
       const stored = localStorage.getItem("user");
       if (stored) setUser(JSON.parse(stored));
     } catch { setUser(null); }
+
+    try { setThemeChoice(localStorage.getItem("ad_theme") || ""); } catch {}
 
     fetch(API_BASE + "/api/settings")
       .then((r) => r.json())
@@ -206,6 +217,16 @@ export default function Navbar() {
         <div className="nav-desktop" style={{ alignItems: "center", gap: "10px", flexShrink: 0 }}>
           {authButtons}
         </div>
+
+        {/* مبدّل الثيم: الكلاسيك ☀️ / البحر العميق 🌊 — يظهر على كل الصفحات */}
+        <button
+          onClick={toggleTheme}
+          aria-label="تبديل المظهر"
+          title={themeChoice === "ocean" ? "الوضع الكلاسيكي" : "وضع البحر العميق"}
+          style={{ background: "rgba(255,255,255,0.1)", border: "1px solid rgba(255,255,255,0.2)", color: "white", borderRadius: "10px", width: "38px", height: "38px", cursor: "pointer", fontSize: "18px", lineHeight: 1, flexShrink: 0 }}
+        >
+          {themeChoice === "ocean" ? "☀️" : "🌊"}
+        </button>
 
         <button className="nav-burger" onClick={() => setOpen((o) => !o)} aria-label="القائمة" style={{ background: "transparent", border: "none", color: "white", fontSize: "28px", cursor: "pointer", lineHeight: 1 }}>
           {open ? "✕" : "☰"}
