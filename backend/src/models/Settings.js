@@ -77,6 +77,22 @@ const SettingsSchema = new mongoose.Schema(
         { key: "community_survey",  label: "community_survey",  visible: false, order: 8 },
       ],
     },
+    mapPoints: {
+      type: [
+        {
+          n:        { type: Number },
+          x:        { type: Number },
+          y:        { type: Number },
+          label:    { type: String },
+          href:     { type: String },
+          color:    { type: String },
+          icon:     { type: String },
+          subtitle: { type: String },
+          desc:     { type: String },
+        },
+      ],
+      default: [],
+    },
   },
   { timestamps: true }
 );

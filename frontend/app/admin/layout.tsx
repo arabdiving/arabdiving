@@ -20,6 +20,7 @@ const links = [
   { href: "/admin/comments", label: "التعليقات والمنشورات", icon: "💬" },
   { href: "/admin/users", label: "المستخدمون", icon: "👥" },
   { href: "/admin/homepage", label: "بلوكات الهوم", icon: "🏠" },
+  { href: "/admin/map", label: "خريطة الموقع", icon: "🗺️" },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
