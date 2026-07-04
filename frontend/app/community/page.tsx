@@ -9,6 +9,8 @@ import LinkPreviewCard, { LinkPreview } from "../components/LinkPreviewCard";
 
 const API = API_BASE;
 
+const STORY_RINGS = ["linear-gradient(135deg,#e11d48,#f43f5e)","linear-gradient(135deg,#a855f7,#c084fc)","linear-gradient(135deg,#059669,#34d399)","linear-gradient(135deg,#0891b2,#22d3ee)","linear-gradient(135deg,#2563eb,#60a5fa)","linear-gradient(135deg,#7c3aed,#a855f7)","linear-gradient(135deg,#c9952a,#e8a830)","linear-gradient(135deg,#db2777,#f472b6)"];
+
 interface User { _id: string; name: string; role?: string; }
 interface Comment { _id: string; content: string; user?: User; }
 interface Post {
@@ -23,6 +25,7 @@ function extractUrl(text: string): string {
 
 export default function CommunityPage() {
   const [posts, setPosts] = useState<Post[]>([]);
+  const [filter, setFilter] = useState<"all" | "images" | "videos">("all");
   const [content, setContent] = useState("");
   const [postImage, setPostImage] = useState("");
   const [uploading, setUploading] = useState(false);
@@ -209,17 +212,67 @@ export default function CommunityPage() {
     );
   };
 
+  const myPosts = posts.filter((p) => p.user?._id === currentUser?._id);
+  const authors = Array.from(new Map(posts.filter((p) => p.user).map((p) => [p.user!._id, p.user!] as [string, User])).values()).slice(0, 8);
+  const shownPosts = posts.filter((p) => (filter === "images" ? !!p.image : filter === "videos" ? !!p.video : true));
+
   return (
-    <div style={{ maxWidth: "900px", margin: "0 auto", padding: "40px 20px" }}>
-      <div style={{ background: "linear-gradient(135deg, #0d2c54 0%, #2e75b6 100%)", color: "white", borderRadius: "20px", padding: "26px 24px", marginBottom: "28px", display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap", boxShadow: "0 12px 30px rgba(13,44,84,0.25)" }}>
-        <div style={{ fontSize: "46px" }}>🤿</div>
-        <div>
-          <h1 style={{ margin: 0, fontSize: "clamp(23px, 5vw, 32px)" }}>مجتمع الغوّاصين العرب</h1>
-          <p style={{ margin: "6px 0 0", opacity: 0.92, lineHeight: 1.7 }}>شارك تجاربك وصورك وفيديوهاتك، وتواصل مع غوّاصي الخليج وكوّن صداقات بحرية</p>
-        </div>
+    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "28px 18px 60px" }}>
+      <div style={{ position: "relative", overflow: "hidden", background: "radial-gradient(ellipse at 80% 0%, #1a2f5e 0%, #0a1428 62%)", color: "white", borderRadius: "24px", padding: "44px 32px", marginBottom: "24px", border: "1px solid rgba(255,255,255,0.06)" }}>
+        <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(168,85,247,0.15)", border: "1px solid rgba(168,85,247,0.35)", color: "#c084fc", fontSize: "13px", fontWeight: 700, padding: "7px 16px", borderRadius: "30px", marginBottom: "16px" }}>● 12,000+ غوّاص من 18 دولة</span>
+        <h1 style={{ margin: 0, fontSize: "clamp(28px,6vw,46px)", fontWeight: 900, letterSpacing: "-1px" }}>مجتمع الغوّاصين العرب</h1>
+        <p style={{ margin: "12px 0 22px", color: "rgba(255,255,255,0.65)", fontSize: "clamp(15px,3vw,18px)", maxWidth: "520px", lineHeight: 1.8 }}>شارك تجاربك، تواصل مع غوّاصين، اكتشف مواقع جديدة.</p>
+        <a href="#composer" style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "#04121f", padding: "13px 28px", borderRadius: "12px", fontWeight: 800, fontSize: "15px", boxShadow: "0 8px 24px rgba(201,149,42,0.4)" }}>📸 شارك تجربتك</a>
       </div>
 
-      <form onSubmit={createPost} style={{ background: "#fff", padding: "20px", borderRadius: "16px", border: "1px solid #eef2f6", marginBottom: "30px", boxShadow: "0 8px 24px rgba(0,0,0,0.05)" }}>
+      <div className="community-grid" style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: "22px", alignItems: "start" }}>
+        <aside style={{ position: "sticky", top: "90px", display: "grid", gap: "16px" }}>
+          {currentUser ? (
+            <div style={{ background: "var(--glass-bg,rgba(8,20,48,0.78))", border: "1px solid var(--glass-border,rgba(255,255,255,0.08))", borderRadius: "18px", padding: "20px", backdropFilter: "blur(14px)" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "18px" }}>
+                <div style={{ width: "54px", height: "54px", borderRadius: "50%", background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "#04121f", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: "22px", flexShrink: 0 }}>{(currentUser.name || "؟").trim().charAt(0)}</div>
+                <div style={{ minWidth: 0 }}>
+                  <div style={{ color: "#fff", fontWeight: 800, fontSize: "17px" }}>أهلًا، {currentUser.name}!</div>
+                  <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "13px" }}>عضو مجتمع الغوص</div>
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px", textAlign: "center", marginBottom: "16px" }}>
+                <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: "12px", padding: "12px 6px" }}><div style={{ color: "#22d3ee", fontWeight: 900, fontSize: "20px" }}>{myPosts.length}</div><div style={{ color: "rgba(255,255,255,0.5)", fontSize: "11.5px" }}>منشوراتي</div></div>
+                <div style={{ background: "rgba(255,255,255,0.04)", borderRadius: "12px", padding: "12px 6px" }}><div style={{ color: "#34d399", fontWeight: 900, fontSize: "20px" }}>{posts.length}</div><div style={{ color: "rgba(255,255,255,0.5)", fontSize: "11.5px" }}>منشورات المجتمع</div></div>
+              </div>
+              <a href="/profile" style={{ display: "block", textAlign: "center", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", padding: "11px", borderRadius: "11px", fontWeight: 700, fontSize: "14px" }}>عرض ملفي الشخصي</a>
+            </div>
+          ) : (
+            <div style={{ background: "var(--glass-bg,rgba(8,20,48,0.78))", border: "1px solid var(--glass-border,rgba(255,255,255,0.08))", borderRadius: "18px", padding: "22px", textAlign: "center", backdropFilter: "blur(14px)" }}>
+              <div style={{ fontSize: "38px", marginBottom: "8px" }}>🤿</div>
+              <p style={{ color: "#fff", fontWeight: 700, marginBottom: "12px" }}>انضم لمجتمع الغوّاصين</p>
+              <a href="/register" style={{ display: "block", background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "#04121f", padding: "11px", borderRadius: "11px", fontWeight: 800, marginBottom: "8px" }}>أنشئ حساب</a>
+              <a href="/login" style={{ display: "block", color: "#22d3ee", fontWeight: 700, fontSize: "14px" }}>تسجيل الدخول</a>
+            </div>
+          )}
+        </aside>
+
+        <div style={{ minWidth: 0 }}>
+          {authors.length > 0 && (
+            <div style={{ display: "flex", gap: "14px", overflowX: "auto", padding: "4px 2px 16px" }}>
+              {authors.map((a, i) => (
+                <div key={a._id} style={{ textAlign: "center", flexShrink: 0 }}>
+                  <div style={{ width: "58px", height: "58px", borderRadius: "50%", padding: "2px", background: STORY_RINGS[i % STORY_RINGS.length] }}>
+                    <div style={{ width: "100%", height: "100%", borderRadius: "50%", background: "#0a1428", color: "#fff", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "20px" }}>{(a.name || "؟").trim().charAt(0)}</div>
+                  </div>
+                  <div style={{ color: "rgba(255,255,255,0.6)", fontSize: "12px", marginTop: "5px", maxWidth: "62px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{a.name}</div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "18px" }}>
+            {([["all", "🌊 كل المنشورات"], ["images", "📷 صور"], ["videos", "🎬 فيديو"]] as const).map(([k, l]) => (
+              <button key={k} onClick={() => setFilter(k)} style={{ background: filter === k ? "var(--mid)" : "rgba(255,255,255,0.05)", color: filter === k ? "#04121f" : "#fff", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "22px", padding: "8px 16px", cursor: "pointer", fontFamily: "inherit", fontSize: "14px", fontWeight: 700 }}>{l}</button>
+            ))}
+          </div>
+
+      <form id="composer" onSubmit={createPost} style={{ background: "#fff", padding: "20px", borderRadius: "16px", border: "1px solid #eef2f6", marginBottom: "30px", boxShadow: "0 8px 24px rgba(0,0,0,0.05)" }}>
         <textarea rows={3} placeholder="شارك تجربتك في الغوص... أو الصق رابطًا" value={content}
           onChange={(e) => handleContentChange(e.target.value)}
           style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid #ddd", fontFamily: "inherit" }} />
@@ -249,7 +302,7 @@ export default function CommunityPage() {
         </div>
       </form>
 
-      {posts.map((post) => {
+      {shownPosts.map((post) => {
         const canManage = currentUser?.role === "admin" || currentUser?._id === post.user?._id;
         const isEditing = editingPost === post._id;
         return (
@@ -348,6 +401,8 @@ export default function CommunityPage() {
           </div>
         );
       })}
+        </div>
+      </div>
     </div>
   );
 }
