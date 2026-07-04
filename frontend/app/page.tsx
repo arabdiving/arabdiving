@@ -9,6 +9,7 @@ import WeightCalculator from "./components/home/WeightCalculator";
 import CommunitySurvey from "./components/home/CommunitySurvey";
 import HomePageCards from "./components/home/HomePageCards";
 import HomePromoSection from "./components/home/HomePromoSection";
+import HomeMarketplace from "./components/home/HomeMarketplace";
 import { API_BASE } from "./lib/api";
 
 interface HomeBlock {
@@ -20,14 +21,15 @@ interface HomeBlock {
 const DEFAULT_BLOCKS: HomeBlock[] = [
   { key: "hero",              visible: true,  order: 0 },
   { key: "community_feed",    visible: true,  order: 1 },
-  { key: "gulf_focus",        visible: true,  order: 2 },
-  { key: "stats",             visible: true,  order: 3 },
-  { key: "segments",          visible: true,  order: 4 },
-  { key: "dive_centers",      visible: true,  order: 5 },
-  { key: "featured_sites",    visible: true,  order: 6 },
-  { key: "weight_calculator", visible: false, order: 7 },
-  { key: "community_survey",  visible: false, order: 8 },
-  { key: "page_cards",        visible: true,  order: 9 },
+  { key: "segments",          visible: true,  order: 2 },
+  { key: "dive_centers",      visible: true,  order: 3 },
+  { key: "marketplace_grid",  visible: true,  order: 4 },
+  { key: "gulf_focus",        visible: true,  order: 5 },
+  { key: "stats",             visible: true,  order: 6 },
+  { key: "featured_sites",    visible: true,  order: 7 },
+  { key: "weight_calculator", visible: false, order: 8 },
+  { key: "community_survey",  visible: false, order: 9 },
+  { key: "page_cards",        visible: true,  order: 10 },
 ];
 
 async function getHomeBlocks(): Promise<HomeBlock[]> {
@@ -65,6 +67,7 @@ function renderBlock(key: string) {
     case "featured_sites":    return <FeaturedDiveSites key="featured_sites" />;
     case "weight_calculator": return <WeightCalculator key="weight_calculator" />;
     case "community_survey":  return <CommunitySurvey key="community_survey" />;
+    case "marketplace_grid":  return <HomeMarketplace key="marketplace_grid" />;
     case "page_cards":        return <HomePageCards key="page_cards" />;
     // ─── بروموشن الصفحات المنفردة ────────────────────────────────
     case "survey_promo":       return <HomePromoSection key="survey_promo"       pageKey="survey" />;
