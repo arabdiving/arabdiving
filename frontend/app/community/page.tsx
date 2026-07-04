@@ -207,7 +207,7 @@ export default function CommunityPage() {
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     return text.split(urlRegex).map((part, i) =>
       part.match(urlRegex)
-        ? <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: "#2e75b6", textDecoration: "underline", fontWeight: "bold", wordBreak: "break-all" }}>{part}</a>
+        ? <a key={i} href={part} target="_blank" rel="noopener noreferrer" style={{ color: "#22d3ee", textDecoration: "underline", fontWeight: "bold", wordBreak: "break-all" }}>{part}</a>
         : part
     );
   };
@@ -272,10 +272,10 @@ export default function CommunityPage() {
             ))}
           </div>
 
-      <form id="composer" onSubmit={createPost} style={{ background: "#fff", padding: "20px", borderRadius: "16px", border: "1px solid #eef2f6", marginBottom: "30px", boxShadow: "0 8px 24px rgba(0,0,0,0.05)" }}>
+      <form id="composer" onSubmit={createPost} style={{ background: "var(--glass-bg,rgba(8,20,48,0.78))", padding: "20px", borderRadius: "18px", border: "1px solid var(--glass-border,rgba(255,255,255,0.08))", marginBottom: "26px", backdropFilter: "blur(14px)" }}>
         <textarea rows={3} placeholder="شارك تجربتك في الغوص... أو الصق رابطًا" value={content}
           onChange={(e) => handleContentChange(e.target.value)}
-          style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid #ddd", fontFamily: "inherit" }} />
+          style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "var(--text)", fontFamily: "inherit" }} />
 
         {previewLoading && <p style={{ color: "#888", fontSize: "13px", marginTop: "8px" }}>جارٍ جلب معاينة الرابط...</p>}
         {linkPreview && !previewDismissed && !previewLoading && (
@@ -285,7 +285,7 @@ export default function CommunityPage() {
         {postImage && <img src={postImage} alt="" style={{ maxHeight: "180px", borderRadius: "10px", marginTop: "10px" }} />}
         <div style={{ marginTop: "10px", display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
           <input value={postVideo} onChange={(e) => setPostVideo(e.target.value)} placeholder="رابط فيديو (YouTube/Vimeo) أو ارفع ملفًا"
-            style={{ flex: "1 1 220px", padding: "10px", borderRadius: "10px", border: "1px solid #ddd", fontFamily: "inherit" }} />
+            style={{ flex: "1 1 220px", padding: "10px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "var(--text)", fontFamily: "inherit" }} />
           <label style={{ ...btn("#64748b"), display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px" }}>
             رفع فيديو <input type="file" accept="video/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setPostVideo)} />
           </label>
@@ -306,22 +306,22 @@ export default function CommunityPage() {
         const canManage = currentUser?.role === "admin" || currentUser?._id === post.user?._id;
         const isEditing = editingPost === post._id;
         return (
-          <div key={post._id} style={{ background: "#fff", border: "1px solid #eef2f6", borderRadius: "16px", padding: "20px", marginBottom: "20px", boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}>
+          <div key={post._id} style={{ background: "var(--glass-bg,rgba(8,20,48,0.78))", border: "1px solid var(--glass-border,rgba(255,255,255,0.08))", borderRadius: "18px", padding: "20px", marginBottom: "18px", backdropFilter: "blur(14px)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "4px" }}>
               <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "linear-gradient(135deg,#2e75b6,#0d2c54)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "18px", flexShrink: 0 }}>
                 {(post.user?.name || "؟").trim().charAt(0)}
               </div>
-              <h3 style={{ color: "var(--navy)", margin: 0 }}>{post.user?.name || "عضو غير معروف"}</h3>
+              <h3 style={{ color: "#fff", margin: 0, fontSize: "16px" }}>{post.user?.name || "عضو غير معروف"}</h3>
             </div>
 
             {isEditing ? (
               <div style={{ marginTop: "10px" }}>
                 <textarea rows={3} value={editPostText} onChange={(e) => setEditPostText(e.target.value)}
-                  style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "1px solid #ddd", fontFamily: "inherit" }} />
+                  style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "var(--text)", fontFamily: "inherit" }} />
                 {editPostImage && <img src={editPostImage} alt="" style={{ maxHeight: "160px", borderRadius: "10px", marginTop: "8px" }} />}
                 <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap", alignItems: "center" }}>
                   <input value={editPostVideo} onChange={(e) => setEditPostVideo(e.target.value)} placeholder="رابط فيديو"
-                    style={{ flex: "1 1 200px", padding: "8px", borderRadius: "8px", border: "1px solid #ddd", fontFamily: "inherit" }} />
+                    style={{ flex: "1 1 200px", padding: "8px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "var(--text)", fontFamily: "inherit" }} />
                   <label style={{ ...btn("#64748b"), padding: "6px 12px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
                     رفع فيديو <input type="file" accept="video/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setEditPostVideo)} />
                   </label>
@@ -339,7 +339,7 @@ export default function CommunityPage() {
               </div>
             ) : (
               <>
-                <p style={{ marginTop: "10px", marginBottom: "12px", whiteSpace: "pre-wrap" }}>{renderTextWithLinks(post.content)}</p>
+                <p style={{ marginTop: "10px", marginBottom: "12px", whiteSpace: "pre-wrap", color: "rgba(255,255,255,0.88)", lineHeight: 1.8 }}>{renderTextWithLinks(post.content)}</p>
                 {post.image && <img src={post.image} alt="" style={{ width: "100%", maxHeight: "420px", objectFit: "cover", borderRadius: "12px", marginBottom: "12px" }} />}
                 {post.video && <div style={{ marginBottom: "12px" }}><VideoEmbed src={post.video} /></div>}
                 {post.linkPreview?.url && <LinkPreviewCard preview={post.linkPreview} />}
@@ -360,12 +360,12 @@ export default function CommunityPage() {
             </div>
 
             <div style={{ marginTop: "20px" }}>
-              <h4>التعليقات</h4>
+              <h4 style={{ color: "#fff", fontSize: "15px" }}>التعليقات</h4>
               {commentsEnabled ? (
                 <>
                   <input type="text" placeholder="اكتب تعليقًا..." value={commentInputs[post._id] || ""}
                     onChange={(e) => setCommentInputs((prev) => ({ ...prev, [post._id]: e.target.value }))}
-                    style={{ width: "100%", padding: "10px", marginTop: "10px", marginBottom: "10px", borderRadius: "8px", border: "1px solid #ddd", fontFamily: "inherit" }} />
+                    style={{ width: "100%", padding: "10px", marginTop: "10px", marginBottom: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "var(--text)", fontFamily: "inherit" }} />
                   <button onClick={() => createComment(post._id)} style={btn("#0f3d75")}>اضف تعليقًا</button>
                 </>
               ) : <p style={{ color: "#9a6f1f", marginTop: "10px" }}>التعليقات معطّلة حاليًا.</p>}
@@ -374,12 +374,12 @@ export default function CommunityPage() {
                   const canEdit = currentUser?.role === "admin" || currentUser?._id === c.user?._id;
                   const editing = editingComment === c._id;
                   return (
-                    <div key={c._id} style={{ borderTop: "1px solid #eee", padding: "10px 0" }}>
-                      <strong>{c.user?.name || "عضو"}</strong>
+                    <div key={c._id} style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: "10px 0" }}>
+                      <strong style={{ color: "#fff" }}>{c.user?.name || "عضو"}</strong>
                       {editing ? (
                         <div style={{ marginTop: "6px" }}>
                           <input value={editingCommentText} onChange={(e) => setEditingCommentText(e.target.value)}
-                            style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid #ddd", fontFamily: "inherit", marginBottom: "8px" }} />
+                            style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "var(--text)", fontFamily: "inherit", marginBottom: "8px" }} />
                           <div style={{ display: "flex", gap: "8px" }}>
                             <button onClick={() => saveCommentEdit(post._id, c._id)} style={{ ...btn("#1e7e34"), padding: "6px 14px", fontSize: "13px" }}>حفظ</button>
                             <button onClick={() => { setEditingComment(null); setEditingCommentText(""); }} style={{ ...btn("#64748b"), padding: "6px 14px", fontSize: "13px" }}>الغاء</button>
@@ -387,17 +387,17 @@ export default function CommunityPage() {
                         </div>
                       ) : (
                         <>
-                          <p style={{ whiteSpace: "pre-wrap" }}>{renderTextWithLinks(c.content)}</p>
+                          <p style={{ whiteSpace: "pre-wrap", color: "rgba(255,255,255,0.82)", marginTop: "4px" }}>{renderTextWithLinks(c.content)}</p>
                           {canEdit && <button onClick={() => { setEditingComment(c._id); setEditingCommentText(c.content); }} style={{ background: "transparent", color: "var(--mid)", border: "none", cursor: "pointer", fontFamily: "inherit", fontSize: "13px", padding: 0 }}>تعديل</button>}
                         </>
                       )}
                     </div>
                   );
-                }) : <p style={{ color: "#666" }}>كن اول غوّاص يعلّق.</p>}
+                }) : <p style={{ color: "rgba(255,255,255,0.45)" }}>كن اول غوّاص يعلّق.</p>}
               </div>
             </div>
             <br />
-            <small style={{ color: "#888" }}>{new Date(post.createdAt).toLocaleString("ar-EG")}</small>
+            <small style={{ color: "rgba(255,255,255,0.4)" }}>{new Date(post.createdAt).toLocaleString("ar-EG")}</small>
           </div>
         );
       })}
