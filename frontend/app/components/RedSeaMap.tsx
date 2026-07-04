@@ -4,11 +4,12 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-/* الخريطة التفاعلية للبحر الأحمر — كل صفحات المنصة حول البحر يمينًا ويسارًا.
+/* خريطة الموقع — كل صفحات المنصة كنقاط على ساحل البحر الأحمر (يمينًا ويسارًا).
    المرجع: design_handoff/ArabDiving Map Home.dc.html + MAP_HOME_HANDOFF.md
-   embedded=true عند استخدامها كبلوك داخل الرئيسية (يُخفى الشريط العلوي). */
+   الإحداثيات x,y بمقياس الـSVG (360×680) لتقع النقاط على حدود البحر تمامًا.
+   embedded=true عند الاستخدام كبلوك داخل الرئيسية (يُخفى الشريط العلوي). */
 
-const MAP_SVG = `<svg width="360" height="680" viewBox="0 0 360 680" fill="none" xmlns="http://www.w3.org/2000/svg">
+const MAP_SVG = `<svg width="100%" height="100%" viewBox="0 0 360 680" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <linearGradient id="seaGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%"   stop-color="#06b6d4" stop-opacity="0.95"/>
@@ -185,26 +186,27 @@ const MAP_SVG = `<svg width="360" height="680" viewBox="0 0 360 680" fill="none"
     </svg>`;
 
 type Pt = {
-  key: string; side: "right" | "left"; top: string; color: string; icon: string;
+  key: string; side: "right" | "left"; x: number; y: number; color: string; icon: string;
   label: string; title: string; subtitle: string; desc: string; features: string[]; cta: string; href: string;
 };
 
+// x,y على ساحل البحر (يمين = الساحل الشرقي، يسار = الساحل الغربي)
 const DATA: Pt[] = [
-  { key: "booking",  side: "right", top: "18%", color: "#c9952a", icon: "🗓️", label: "احجز رحلة", title: "احجز رحلة غوص", subtitle: "65+ مركز معتمد في البحر الأحمر", desc: "ابحث عن مركز غوص معتمد وتواصل مباشرة بدون دفع مسبق.", features: ["فلاتر بحث متقدمة", "تواصل مباشر عبر واتساب", "مراكز بطاقم نسائي"], cta: "احجز الآن", href: "/family-booking" },
-  { key: "sites",    side: "right", top: "29%", color: "#06b6d4", icon: "🪸", label: "مواقع الغوص", title: "مواقع الغوص", subtitle: "180+ موقع موثّق", desc: "دليل شامل لأجمل مواقع الغوص — من البحيرة الزرقاء إلى ثيستلجورم.", features: ["الحرارة الموسمية", "مستوى الصعوبة", "خرائط تفصيلية"], cta: "استكشف المواقع", href: "/dive-sites" },
-  { key: "courses",  side: "right", top: "40%", color: "#f5c218", icon: "🎓", label: "الدورات", title: "الدورات والشهادات", subtitle: "PADI · SSI · CMAS بالعربي", desc: "تعلّم الغوص من الصفر مع معلمين معتمدين.", features: ["شهادات دولية", "دورات بالعربية", "للمبتدئين والمحترفين"], cta: "ابدأ التعلم", href: "/courses" },
-  { key: "women",    side: "right", top: "51%", color: "#a855f7", icon: "🧕", label: "السيدات", title: "قسم السيدات", subtitle: "تجربة آمنة ومريحة للمرأة", desc: "طاقم نسائي بالكامل، مرافق مستقلة، ومعدات معقّمة.", features: ["طاقم نسائي 100%", "مرافق مستقلة", "مناسب للمحجبات"], cta: "اكتشفي", href: "/women" },
-  { key: "youth",    side: "right", top: "62%", color: "#22d3ee", icon: "⚡", label: "الشباب", title: "برامج الشباب", subtitle: "مغامرات ومسابقات للشباب", desc: "برامج غوص ومغامرة مصمّمة لطاقة الشباب وحبّ الاكتشاف.", features: ["تحديات ومسابقات", "مجموعات شبابية", "أسعار خاصة"], cta: "انضم", href: "/youth" },
-  { key: "kids",     side: "right", top: "73%", color: "#34d399", icon: "👧", label: "الأطفال", title: "غوص الأطفال", subtitle: "برامج آمنة وممتعة للصغار", desc: "أنشطة سنوركل وغوص للأطفال بإشراف مدرّبين متخصصين.", features: ["إشراف متخصص", "معدات بمقاسات الأطفال", "لعبة تعليمية"], cta: "اكتشف", href: "/kids" },
-  { key: "trips",    side: "right", top: "84%", color: "#38bdf8", icon: "🚢", label: "الرحلات", title: "جميع الرحلات", subtitle: "رحلات جماعية وسفاري", desc: "تصفّح كل الرحلات المتاحة — يومية، سفاري، ونهاية الأسبوع.", features: ["رحلات سفاري", "برامج متعددة الأيام", "مجموعات عربية"], cta: "تصفّح الرحلات", href: "/trips" },
+  { key: "booking",  side: "right", x: 250, y: 108, color: "#c9952a", icon: "🗓️", label: "احجز رحلة", title: "احجز رحلة غوص", subtitle: "65+ مركز معتمد", desc: "ابحث عن مركز غوص معتمد وتواصل مباشرة بدون دفع مسبق.", features: ["فلاتر بحث متقدمة", "تواصل عبر واتساب", "مراكز بطاقم نسائي"], cta: "احجز الآن", href: "/family-booking" },
+  { key: "sites",    side: "right", x: 258, y: 198, color: "#06b6d4", icon: "🪸", label: "مواقع الغوص", title: "مواقع الغوص", subtitle: "180+ موقع موثّق", desc: "دليل شامل لأجمل مواقع الغوص — من البحيرة الزرقاء إلى ثيستلجورم.", features: ["الحرارة الموسمية", "مستوى الصعوبة", "خرائط تفصيلية"], cta: "استكشف", href: "/dive-sites" },
+  { key: "courses",  side: "right", x: 266, y: 272, color: "#f5c218", icon: "🎓", label: "الدورات", title: "الدورات والشهادات", subtitle: "PADI · SSI · CMAS بالعربي", desc: "تعلّم الغوص من الصفر مع معلمين معتمدين.", features: ["شهادات دولية", "دورات بالعربية", "للمبتدئين والمحترفين"], cta: "ابدأ التعلم", href: "/courses" },
+  { key: "women",    side: "right", x: 264, y: 332, color: "#a855f7", icon: "🧕", label: "السيدات", title: "قسم السيدات", subtitle: "تجربة آمنة للمرأة", desc: "طاقم نسائي بالكامل، مرافق مستقلة، ومعدات معقّمة.", features: ["طاقم نسائي 100%", "مرافق مستقلة", "مناسب للمحجبات"], cta: "اكتشفي", href: "/women" },
+  { key: "youth",    side: "right", x: 254, y: 402, color: "#22d3ee", icon: "⚡", label: "الشباب", title: "برامج الشباب", subtitle: "مغامرات ومسابقات", desc: "برامج غوص ومغامرة مصمّمة لطاقة الشباب وحبّ الاكتشاف.", features: ["تحديات ومسابقات", "مجموعات شبابية", "أسعار خاصة"], cta: "انضم", href: "/youth" },
+  { key: "kids",     side: "right", x: 246, y: 462, color: "#34d399", icon: "👧", label: "الأطفال", title: "غوص الأطفال", subtitle: "برامج آمنة للصغار", desc: "أنشطة سنوركل وغوص للأطفال بإشراف مدرّبين متخصصين.", features: ["إشراف متخصص", "معدات بمقاسات الأطفال", "لعبة تعليمية"], cta: "اكتشف", href: "/kids" },
+  { key: "trips",    side: "right", x: 228, y: 520, color: "#38bdf8", icon: "🚢", label: "الرحلات", title: "جميع الرحلات", subtitle: "رحلات جماعية وسفاري", desc: "تصفّح كل الرحلات المتاحة — يومية، سفاري، ونهاية الأسبوع.", features: ["رحلات سفاري", "برامج متعددة الأيام", "مجموعات عربية"], cta: "تصفّح", href: "/trips" },
 
-  { key: "community",side: "left",  top: "23%", color: "#22d3ee", icon: "👥", label: "المجتمع", title: "مجتمع الغوّاصين", subtitle: "12,000+ عضو من 18 دولة", desc: "شارك تجاربك، تابع غوّاصين آخرين، واكتشف أجمل اللحظات.", features: ["منشورات وصور وفيديو", "قصص يومية", "تابع ومتابعين"], cta: "انضم للمجتمع", href: "/community" },
-  { key: "market",   side: "left",  top: "34%", color: "#34d399", icon: "🛒", label: "المتجر", title: "سوق المعدات", subtitle: "127+ منتج", desc: "معدات من مراكز معتمدة — تواصل مباشر مع البائع.", features: ["Cressi · Mares · ScubaPro", "بدلات للسيدات", "توصيل للخليج"], cta: "تصفّح المتجر", href: "/marketplace" },
-  { key: "centers",  side: "left",  top: "45%", color: "#f97316", icon: "🏢", label: "مراكز الغوص", title: "مراكز الغوص", subtitle: "65 مركز · بلاتيني/ذهبي/فضي", desc: "دليل المراكز المعتمدة مع تقييمات حقيقية.", features: ["تقييمات حقيقية", "تصنيف ثلاثي", "المرافق والخدمات"], cta: "استعرض المراكز", href: "/family-booking" },
-  { key: "guide",    side: "left",  top: "56%", color: "#e879f9", icon: "📖", label: "الدليل", title: "دليل الغوص", subtitle: "كل ما تحتاجه للغوص", desc: "معلومات طبية، نصائح للمبتدئين، دليل الأسماك والشعاب.", features: ["نصائح السلامة", "دليل الأسماك", "التقويم الموسمي"], cta: "اقرأ الدليل", href: "/guide" },
-  { key: "stories",  side: "left",  top: "67%", color: "#f5c218", icon: "📝", label: "القصص", title: "قصص الغوّاصين", subtitle: "تجارب حقيقية ومسابقات", desc: "اقرأ قصص أعضاء المجتمع وشارك قصتك للفوز بالمسابقة.", features: ["قصص ملهمة", "مسابقة شهرية", "شارك تجربتك"], cta: "اقرأ القصص", href: "/stories" },
-  { key: "members",  side: "left",  top: "78%", color: "#06b6d4", icon: "🤝", label: "الأعضاء", title: "دليل الأعضاء", subtitle: "تعرّف على غوّاصي المجتمع", desc: "تصفّح الأعضاء، أضِف أصدقاء، وتواصل مع غوّاصين قريبين منك.", features: ["ملفات الأعضاء", "أضف أصدقاء", "رسائل خاصة"], cta: "تصفّح الأعضاء", href: "/members" },
-  { key: "retreats", side: "left",  top: "88%", color: "#c9952a", icon: "✨", label: "الباقات الفاخرة", title: "الباقات الخاصة", subtitle: "تجارب غوص فاخرة", desc: "باقات إقامة وغوص فاخرة على البحر الأحمر لتجربة استثنائية.", features: ["منتجعات مختارة", "خدمة راقية", "تجارب حصرية"], cta: "اكتشف الباقات", href: "/retreats" },
+  { key: "community",side: "left",  x: 106, y: 112, color: "#e879f9", icon: "👥", label: "المجتمع", title: "مجتمع الغوّاصين", subtitle: "12,000+ عضو من 18 دولة", desc: "شارك تجاربك، تابع غوّاصين آخرين، واكتشف أجمل اللحظات.", features: ["منشورات وصور وفيديو", "قصص يومية", "تابع ومتابعين"], cta: "انضم", href: "/community" },
+  { key: "market",   side: "left",  x: 100, y: 200, color: "#34d399", icon: "🛒", label: "المتجر", title: "سوق المعدات", subtitle: "127+ منتج", desc: "معدات من مراكز معتمدة — تواصل مباشر مع البائع.", features: ["Cressi · Mares · ScubaPro", "بدلات للسيدات", "توصيل للخليج"], cta: "تصفّح المتجر", href: "/marketplace" },
+  { key: "centers",  side: "left",  x: 96,  y: 275, color: "#f97316", icon: "🏢", label: "مراكز الغوص", title: "مراكز الغوص", subtitle: "65 مركز معتمد", desc: "دليل المراكز المعتمدة مع تقييمات حقيقية.", features: ["تقييمات حقيقية", "تصنيف ثلاثي", "المرافق والخدمات"], cta: "استعرض", href: "/family-booking" },
+  { key: "guide",    side: "left",  x: 100, y: 335, color: "#22d3ee", icon: "📖", label: "الدليل", title: "دليل الغوص", subtitle: "كل ما تحتاجه للغوص", desc: "معلومات طبية، نصائح للمبتدئين، دليل الأسماك والشعاب.", features: ["نصائح السلامة", "دليل الأسماك", "التقويم الموسمي"], cta: "اقرأ الدليل", href: "/guide" },
+  { key: "stories",  side: "left",  x: 110, y: 405, color: "#f5c218", icon: "📝", label: "القصص", title: "قصص الغوّاصين", subtitle: "تجارب حقيقية ومسابقات", desc: "اقرأ قصص أعضاء المجتمع وشارك قصتك للفوز بالمسابقة.", features: ["قصص ملهمة", "مسابقة شهرية", "شارك تجربتك"], cta: "اقرأ القصص", href: "/stories" },
+  { key: "members",  side: "left",  x: 114, y: 465, color: "#06b6d4", icon: "🤝", label: "الأعضاء", title: "دليل الأعضاء", subtitle: "تعرّف على الغوّاصين", desc: "تصفّح الأعضاء، أضِف أصدقاء، وتواصل مع غوّاصين قريبين منك.", features: ["ملفات الأعضاء", "أضف أصدقاء", "رسائل خاصة"], cta: "تصفّح", href: "/members" },
+  { key: "retreats", side: "left",  x: 134, y: 522, color: "#c9952a", icon: "✨", label: "الباقات الفاخرة", title: "الباقات الخاصة", subtitle: "تجارب غوص فاخرة", desc: "باقات إقامة وغوص فاخرة على البحر الأحمر لتجربة استثنائية.", features: ["منتجعات مختارة", "خدمة راقية", "تجارب حصرية"], cta: "اكتشف", href: "/retreats" },
 ];
 
 const BUBBLES = [
@@ -241,21 +243,21 @@ export default function RedSeaMap({ embedded = false }: { embedded?: boolean }) 
           </div>
           <div style={{ textAlign: "end" }}>
             <div style={{ color: "#fff", fontWeight: 900, fontSize: "20px" }}>ArabDiving</div>
-            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px" }}>اكتشف البحر الأحمر</div>
+            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px" }}>خريطة الموقع</div>
           </div>
         </div>
       )}
 
       {embedded && (
         <div style={{ position: "relative", zIndex: 20, textAlign: "center", padding: "34px 20px 0" }}>
-          <h2 style={{ color: "#fff", fontSize: "clamp(24px,4vw,38px)", fontWeight: 900 }}>استكشف المنصة عبر <span className="hero-grad">خريطة البحر الأحمر</span></h2>
-          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "15px", marginTop: "8px" }}>مرّر على أي نقطة حول البحر · اضغط للانتقال</p>
+          <h2 style={{ color: "#fff", fontSize: "clamp(24px,4vw,38px)", fontWeight: 900 }}>خريطة <span className="hero-grad">الموقع</span></h2>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "15px", marginTop: "8px" }}>كل صفحات المنصة حول البحر — مرّر على أي نقطة واضغط للانتقال</p>
         </div>
       )}
 
       {mobile ? (
-        <div style={{ position: "relative", zIndex: 10, padding: "6px 18px 60px", display: "grid", gap: "12px" }}>
-          {!embedded && <h1 style={{ color: "#fff", textAlign: "center", fontSize: "25px", fontWeight: 900, margin: "8px 0 10px" }}>اكتشف عالم الغوص في <span className="hero-grad">البحر الأحمر</span></h1>}
+        <div style={{ position: "relative", zIndex: 10, padding: "14px 18px 60px", display: "grid", gap: "12px" }}>
+          {!embedded && <h1 style={{ color: "#fff", textAlign: "center", fontSize: "25px", fontWeight: 900, margin: "8px 0 10px" }}>خريطة <span className="hero-grad">الموقع</span></h1>}
           {DATA.map((d) => (
             <Link key={d.key} href={d.href} style={{ display: "flex", gap: "14px", alignItems: "center", background: "rgba(6,14,36,0.9)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", padding: "14px", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}>
               <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: d.color + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "23px", flexShrink: 0 }}>{d.icon}</div>
@@ -269,18 +271,23 @@ export default function RedSeaMap({ embedded = false }: { embedded?: boolean }) 
         </div>
       ) : (
         <>
-          <div style={{ position: "absolute", top: "52%", left: "50%", transform: "translate(-50%,-50%)", width: "330px", maxWidth: "78vw", zIndex: 5, filter: "drop-shadow(0 0 40px rgba(8,145,178,0.3))" }} dangerouslySetInnerHTML={{ __html: MAP_SVG }} />
+          {/* حاوية الخريطة — النقاط أبناؤها وتتموضع بإحداثيات الساحل */}
+          <div style={{ position: "absolute", top: "54%", left: "50%", transform: "translate(-50%,-50%)", width: "360px", maxWidth: "82vw", zIndex: 5 }}>
+            <div style={{ position: "relative", width: "100%", aspectRatio: "360 / 680" }}>
+              <div style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 0 40px rgba(8,145,178,0.3))" }} dangerouslySetInnerHTML={{ __html: MAP_SVG }} />
 
-          {DATA.map((d) => (
-            <div key={d.key}
-              onMouseEnter={() => setHovered(d.key)} onMouseLeave={() => setHovered(null)} onClick={() => router.push(d.href)}
-              style={{ position: "absolute", top: d.top, left: d.side === "right" ? "71vw" : "29vw", transform: "translate(-50%,-50%)", width: "14px", height: "14px", zIndex: 15, cursor: "pointer" }}>
-              <div style={{ width: "14px", height: "14px", borderRadius: "50%", background: d.color, color: d.color, animation: "dotGlow 2s infinite" }} />
-              <span style={{ position: "absolute", inset: 0, borderRadius: "50%", border: `2px solid ${d.color}`, animation: "pulseRing 2s infinite" }} />
-              <span style={{ position: "absolute", inset: 0, borderRadius: "50%", border: `2px solid ${d.color}`, animation: "pulseRing2 2s 0.4s infinite" }} />
-              <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", whiteSpace: "nowrap", color: hovered === d.key ? "#fff" : "rgba(255,255,255,0.85)", fontWeight: 700, fontSize: "14.5px", textShadow: "0 2px 8px rgba(0,0,0,0.6)", ...(d.side === "right" ? { right: "26px" } : { left: "26px" }) }}>{d.label}</span>
+              {DATA.map((d) => (
+                <div key={d.key}
+                  onMouseEnter={() => setHovered(d.key)} onMouseLeave={() => setHovered(null)} onClick={() => router.push(d.href)}
+                  style={{ position: "absolute", left: `${(d.x / 360) * 100}%`, top: `${(d.y / 680) * 100}%`, transform: "translate(-50%,-50%)", width: "13px", height: "13px", zIndex: 15, cursor: "pointer" }}>
+                  <div style={{ width: "13px", height: "13px", borderRadius: "50%", background: d.color, color: d.color, animation: "dotGlow 2s infinite" }} />
+                  <span style={{ position: "absolute", inset: 0, borderRadius: "50%", border: `2px solid ${d.color}`, animation: "pulseRing 2s infinite" }} />
+                  <span style={{ position: "absolute", inset: 0, borderRadius: "50%", border: `2px solid ${d.color}`, animation: "pulseRing2 2s 0.4s infinite" }} />
+                  <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", whiteSpace: "nowrap", color: hovered === d.key ? "#fff" : "rgba(255,255,255,0.9)", fontWeight: 700, fontSize: "13.5px", textShadow: "0 2px 8px rgba(0,0,0,0.7)", ...(d.side === "right" ? { left: "20px" } : { right: "20px" }) }}>{d.label}</span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
 
           {active ? (
             <div style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", [active.side === "right" ? "right" : "left"]: "4vw", width: "300px", maxWidth: "90vw", zIndex: 30, background: "rgba(6,14,36,0.97)", backdropFilter: "blur(24px)", WebkitBackdropFilter: "blur(24px)", borderRadius: "20px", overflow: "hidden", boxShadow: "0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.08)", animation: "fadeInCard 0.22s ease", pointerEvents: "none" }}>
@@ -304,9 +311,9 @@ export default function RedSeaMap({ embedded = false }: { embedded?: boolean }) 
               </div>
             </div>
           ) : (!embedded && (
-            <div style={{ position: "absolute", bottom: "5%", left: "50%", transform: "translateX(-50%)", textAlign: "center", zIndex: 10, width: "90%" }}>
-              <h1 style={{ color: "#fff", fontSize: "clamp(26px,4vw,40px)", fontWeight: 900, marginBottom: "10px" }}>اكتشف عالم الغوص في <span className="hero-grad">البحر الأحمر</span></h1>
-              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "15px" }}>مرّر مؤشرك على النقاط لاستكشاف المنصة</p>
+            <div style={{ position: "absolute", bottom: "4%", left: "50%", transform: "translateX(-50%)", textAlign: "center", zIndex: 10, width: "90%" }}>
+              <h1 style={{ color: "#fff", fontSize: "clamp(24px,4vw,38px)", fontWeight: 900, marginBottom: "8px" }}>خريطة <span className="hero-grad">الموقع</span></h1>
+              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "15px" }}>مرّر على أي نقطة حول البحر لاستكشاف المنصة</p>
             </div>
           ))}
         </>
