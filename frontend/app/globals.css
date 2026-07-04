@@ -279,3 +279,9 @@ html[data-theme="dark"] .hero-grad {
 .nav-dropdown-mode .nav-mobile-panel { display: flex !important; }
 .nav-sidebar-mode .nav-desktop  { display: none !important; }
 .nav-sidebar-mode .nav-burger   { display: inline-block !important; }
+
+/* ---- Red Sea interactive map (Map Home) ---- */
+@keyframes dotGlow { 0%,100% { box-shadow: 0 0 8px 2px currentColor; } 50% { box-shadow: 0 0 18px 6px currentColor; } }
+@keyframes pulseRing2 { 0% { transform: scale(1); opacity: 0.5; } 70% { transform: scale(3.2); opacity: 0; } }
+@keyframes fadeInCard { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes mapBubble { 0% { transform: translateY(0) scale(1); opacity: 0.4; } 50% { opacity: 0.15; } 100% { transform: translateY(-70px) scale(0.8); opacity: 0; } }

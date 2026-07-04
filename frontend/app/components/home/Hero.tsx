@@ -53,7 +53,7 @@ export default function Hero() {
         <h1 style={{ fontSize: "clamp(40px,6.5vw,80px)", fontWeight: 900, color: "white", lineHeight: 1.15, marginBottom: "22px", letterSpacing: "-1.5px", animation: "fadeInUp 0.8s 0.25s ease both" }}>
           {c.title ? (
             String(c.title).split("\n").map((line: string, i: number, arr: string[]) => (
-              <span key={i}>{line}{i < arr.length - 1 && <br />}</span>
+              <span key={i} className={i === arr.length - 1 ? "hero-grad" : undefined}>{line}{i < arr.length - 1 && <br />}</span>
             ))
           ) : (
             <>
@@ -95,6 +95,9 @@ export default function Hero() {
 
         {/* Quick action buttons */}
         <div style={{ display: "flex", justifyContent: "center", gap: "12px", flexWrap: "wrap", animation: "fadeInUp 0.8s 0.7s ease both" }}>
+          <Link href="/explore" style={{ background: "linear-gradient(135deg,#0891b2,#06b6d4)", border: "1px solid rgba(255,255,255,0.25)", color: "white", padding: "11px 22px", borderRadius: "12px", fontWeight: 700, fontSize: "15px", transition: "all .2s", boxShadow: "0 6px 18px rgba(8,145,178,0.35)" }}>
+            🗺️ استكشف عبر الخريطة
+          </Link>
           <Link href="/family-booking" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", color: "white", padding: "11px 22px", borderRadius: "12px", fontWeight: 600, fontSize: "15px", transition: "all .2s" }}>
             👨‍👩‍👧‍👦 احجز رحلة عائلية
           </Link>
