@@ -14,6 +14,7 @@ interface Block {
 const BLOCK_REGISTRY: Record<string, { label: string; icon: string; desc: string }> = {
   // ─── بلوكات أساسية ───────────────────────────────────────────
   hero:              { label: "الهيرو الرئيسي",          icon: "🏠", desc: "الصورة الكبيرة والعنوان الرئيسي" },
+  sea_map:           { label: "خريطة البحر التفاعلية",   icon: "🗺️", desc: "خريطة البحر الأحمر مع كل الصفحات حولها (يمينًا ويسارًا)" },
   community_feed:    { label: "فيد المجتمع",              icon: "💬", desc: "آخر منشورات الغوّاصين" },
   gulf_focus:        { label: "لماذا الخليج؟",            icon: "🌊", desc: "مزايا الغوص في المنطقة العربية" },
   stats:             { label: "إحصائيات الموقع",          icon: "📊", desc: "أعداد الأعضاء والمواقع والتقييمات" },

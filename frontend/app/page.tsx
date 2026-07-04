@@ -10,6 +10,7 @@ import CommunitySurvey from "./components/home/CommunitySurvey";
 import HomePageCards from "./components/home/HomePageCards";
 import HomePromoSection from "./components/home/HomePromoSection";
 import HomeMarketplace from "./components/home/HomeMarketplace";
+import RedSeaMap from "./components/RedSeaMap";
 import { API_BASE } from "./lib/api";
 
 interface HomeBlock {
@@ -20,16 +21,17 @@ interface HomeBlock {
 
 const DEFAULT_BLOCKS: HomeBlock[] = [
   { key: "hero",              visible: true,  order: 0 },
-  { key: "community_feed",    visible: true,  order: 1 },
-  { key: "segments",          visible: true,  order: 2 },
-  { key: "dive_centers",      visible: true,  order: 3 },
-  { key: "marketplace_grid",  visible: true,  order: 4 },
-  { key: "gulf_focus",        visible: true,  order: 5 },
-  { key: "stats",             visible: true,  order: 6 },
-  { key: "featured_sites",    visible: true,  order: 7 },
-  { key: "weight_calculator", visible: false, order: 8 },
-  { key: "community_survey",  visible: false, order: 9 },
-  { key: "page_cards",        visible: true,  order: 10 },
+  { key: "sea_map",           visible: true,  order: 1 },
+  { key: "community_feed",    visible: true,  order: 2 },
+  { key: "segments",          visible: true,  order: 3 },
+  { key: "dive_centers",      visible: true,  order: 4 },
+  { key: "marketplace_grid",  visible: true,  order: 5 },
+  { key: "gulf_focus",        visible: true,  order: 6 },
+  { key: "stats",             visible: true,  order: 7 },
+  { key: "featured_sites",    visible: true,  order: 8 },
+  { key: "weight_calculator", visible: false, order: 9 },
+  { key: "community_survey",  visible: false, order: 10 },
+  { key: "page_cards",        visible: true,  order: 11 },
 ];
 
 async function getHomeBlocks(): Promise<HomeBlock[]> {
@@ -47,7 +49,7 @@ async function getHomeBlocks(): Promise<HomeBlock[]> {
         ...hb,
         ...DEFAULT_BLOCKS
           .filter((d) => !dbKeys.has(d.key))
-          .map((d) => ({ ...d, order: hb.length + d.order })),
+          .map((d) => ({ ...d, order: d.key === "sea_map" ? 0.5 : hb.length + d.order })),
       ];
       return merged.sort((a, b) => a.order - b.order);
     }
@@ -59,6 +61,7 @@ function renderBlock(key: string) {
   switch (key) {
     // ─── بلوكات أساسية ───────────────────────────────────────────
     case "hero":               return <Hero key="hero" />;
+    case "sea_map":           return <RedSeaMap key="sea_map" embedded />;
     case "community_feed":    return <HomeCommunityFeed key="community_feed" />;
     case "gulf_focus":        return <GulfFocus key="gulf_focus" />;
     case "stats":             return <Stats key="stats" />;

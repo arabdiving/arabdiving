@@ -4,8 +4,9 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 
-/* الخريطة التفاعلية للبحر الأحمر — صفحة رئيسية بديلة (Map Home).
-   المرجع: design_handoff/ArabDiving Map Home.dc.html + MAP_HOME_HANDOFF.md */
+/* الخريطة التفاعلية للبحر الأحمر — كل صفحات المنصة حول البحر يمينًا ويسارًا.
+   المرجع: design_handoff/ArabDiving Map Home.dc.html + MAP_HOME_HANDOFF.md
+   embedded=true عند استخدامها كبلوك داخل الرئيسية (يُخفى الشريط العلوي). */
 
 const MAP_SVG = `<svg width="360" height="680" viewBox="0 0 360 680" fill="none" xmlns="http://www.w3.org/2000/svg">
       <defs>
@@ -189,14 +190,21 @@ type Pt = {
 };
 
 const DATA: Pt[] = [
-  { key: "booking", side: "right", top: "24%", color: "#c9952a", icon: "🗓️", label: "احجز رحلة", title: "احجز رحلة غوص", subtitle: "65+ مركز معتمد في البحر الأحمر", desc: "ابحث عن مركز غوص معتمد وتواصل مباشرة بدون دفع مسبق — مراكز للعائلات والسيدات والمبتدئين.", features: ["فلاتر بحث متقدمة", "تواصل مباشر عبر واتساب", "مراكز بطاقم نسائي 100%"], cta: "احجز الآن", href: "/family-booking" },
-  { key: "sites", side: "right", top: "40%", color: "#06b6d4", icon: "🪸", label: "مواقع الغوص", title: "مواقع الغوص", subtitle: "180+ موقع موثّق في البحر الأحمر", desc: "دليل شامل لأجمل مواقع الغوص — من البحيرة الزرقاء في دهب إلى حطام ثيستلجورم.", features: ["درجات الحرارة الموسمية", "مستوى الصعوبة لكل موقع", "خرائط تفصيلية"], cta: "استكشف المواقع", href: "/dive-sites" },
-  { key: "courses", side: "right", top: "58%", color: "#f5c218", icon: "🎓", label: "الدورات", title: "الدورات والشهادات", subtitle: "PADI · SSI · CMAS بالعربي", desc: "تعلّم الغوص من الصفر مع معلمين معتمدين.", features: ["شهادات معترف بها دولياً", "دورات باللغة العربية", "للمبتدئين والمحترفين"], cta: "ابدأ التعلم", href: "/courses" },
-  { key: "women", side: "right", top: "74%", color: "#a855f7", icon: "🧕", label: "للسيدات", title: "قسم السيدات", subtitle: "تجربة غوص آمنة ومريحة للمرأة", desc: "طاقم نسائي بالكامل، مرافق مستقلة، ومعدات معقّمة.", features: ["طاقم نسائي 100%", "مرافق مستقلة", "مناسب للمحجبات"], cta: "اكتشفي", href: "/women" },
-  { key: "community", side: "left", top: "30%", color: "#22d3ee", icon: "👥", label: "المجتمع", title: "مجتمع الغوّاصين", subtitle: "12,000+ عضو من 18 دولة عربية", desc: "شارك تجاربك، تابع غوّاصين آخرين، واكتشف أجمل اللحظات.", features: ["منشورات وصور وفيديوهات", "قصص Stories يومية", "تابع واحصل على متابعين"], cta: "انضم للمجتمع", href: "/community" },
-  { key: "market", side: "left", top: "46%", color: "#34d399", icon: "🛒", label: "المتجر", title: "سوق المعدات", subtitle: "127+ منتج — جديد ومستعمل", desc: "تواصل مباشر مع البائع بدون عمولة.", features: ["Cressi · Mares · ScubaPro", "بدلات للسيدات", "توصيل للخليج"], cta: "تصفّح المتجر", href: "/marketplace" },
-  { key: "centers", side: "left", top: "60%", color: "#f97316", icon: "🏢", label: "مراكز الغوص", title: "مراكز الغوص", subtitle: "65 مركز · بلاتيني/ذهبي/فضي", desc: "دليل المراكز المعتمدة مع تقييمات حقيقية.", features: ["تقييمات حقيقية", "نظام تصنيف ثلاثي", "عرض المرافق والخدمات"], cta: "استعرض المراكز", href: "/family-booking" },
-  { key: "guide", side: "left", top: "75%", color: "#e879f9", icon: "📖", label: "الدليل", title: "دليل الغوص", subtitle: "كل ما تحتاجه قبل وأثناء الغوص", desc: "معلومات طبية، نصائح للمبتدئين، دليل الأسماك والشعاب.", features: ["نصائح السلامة", "دليل الأسماك والشعاب", "التقويم الموسمي"], cta: "اقرأ الدليل", href: "/guide" },
+  { key: "booking",  side: "right", top: "18%", color: "#c9952a", icon: "🗓️", label: "احجز رحلة", title: "احجز رحلة غوص", subtitle: "65+ مركز معتمد في البحر الأحمر", desc: "ابحث عن مركز غوص معتمد وتواصل مباشرة بدون دفع مسبق.", features: ["فلاتر بحث متقدمة", "تواصل مباشر عبر واتساب", "مراكز بطاقم نسائي"], cta: "احجز الآن", href: "/family-booking" },
+  { key: "sites",    side: "right", top: "29%", color: "#06b6d4", icon: "🪸", label: "مواقع الغوص", title: "مواقع الغوص", subtitle: "180+ موقع موثّق", desc: "دليل شامل لأجمل مواقع الغوص — من البحيرة الزرقاء إلى ثيستلجورم.", features: ["الحرارة الموسمية", "مستوى الصعوبة", "خرائط تفصيلية"], cta: "استكشف المواقع", href: "/dive-sites" },
+  { key: "courses",  side: "right", top: "40%", color: "#f5c218", icon: "🎓", label: "الدورات", title: "الدورات والشهادات", subtitle: "PADI · SSI · CMAS بالعربي", desc: "تعلّم الغوص من الصفر مع معلمين معتمدين.", features: ["شهادات دولية", "دورات بالعربية", "للمبتدئين والمحترفين"], cta: "ابدأ التعلم", href: "/courses" },
+  { key: "women",    side: "right", top: "51%", color: "#a855f7", icon: "🧕", label: "السيدات", title: "قسم السيدات", subtitle: "تجربة آمنة ومريحة للمرأة", desc: "طاقم نسائي بالكامل، مرافق مستقلة، ومعدات معقّمة.", features: ["طاقم نسائي 100%", "مرافق مستقلة", "مناسب للمحجبات"], cta: "اكتشفي", href: "/women" },
+  { key: "youth",    side: "right", top: "62%", color: "#22d3ee", icon: "⚡", label: "الشباب", title: "برامج الشباب", subtitle: "مغامرات ومسابقات للشباب", desc: "برامج غوص ومغامرة مصمّمة لطاقة الشباب وحبّ الاكتشاف.", features: ["تحديات ومسابقات", "مجموعات شبابية", "أسعار خاصة"], cta: "انضم", href: "/youth" },
+  { key: "kids",     side: "right", top: "73%", color: "#34d399", icon: "👧", label: "الأطفال", title: "غوص الأطفال", subtitle: "برامج آمنة وممتعة للصغار", desc: "أنشطة سنوركل وغوص للأطفال بإشراف مدرّبين متخصصين.", features: ["إشراف متخصص", "معدات بمقاسات الأطفال", "لعبة تعليمية"], cta: "اكتشف", href: "/kids" },
+  { key: "trips",    side: "right", top: "84%", color: "#38bdf8", icon: "🚢", label: "الرحلات", title: "جميع الرحلات", subtitle: "رحلات جماعية وسفاري", desc: "تصفّح كل الرحلات المتاحة — يومية، سفاري، ونهاية الأسبوع.", features: ["رحلات سفاري", "برامج متعددة الأيام", "مجموعات عربية"], cta: "تصفّح الرحلات", href: "/trips" },
+
+  { key: "community",side: "left",  top: "23%", color: "#22d3ee", icon: "👥", label: "المجتمع", title: "مجتمع الغوّاصين", subtitle: "12,000+ عضو من 18 دولة", desc: "شارك تجاربك، تابع غوّاصين آخرين، واكتشف أجمل اللحظات.", features: ["منشورات وصور وفيديو", "قصص يومية", "تابع ومتابعين"], cta: "انضم للمجتمع", href: "/community" },
+  { key: "market",   side: "left",  top: "34%", color: "#34d399", icon: "🛒", label: "المتجر", title: "سوق المعدات", subtitle: "127+ منتج", desc: "معدات من مراكز معتمدة — تواصل مباشر مع البائع.", features: ["Cressi · Mares · ScubaPro", "بدلات للسيدات", "توصيل للخليج"], cta: "تصفّح المتجر", href: "/marketplace" },
+  { key: "centers",  side: "left",  top: "45%", color: "#f97316", icon: "🏢", label: "مراكز الغوص", title: "مراكز الغوص", subtitle: "65 مركز · بلاتيني/ذهبي/فضي", desc: "دليل المراكز المعتمدة مع تقييمات حقيقية.", features: ["تقييمات حقيقية", "تصنيف ثلاثي", "المرافق والخدمات"], cta: "استعرض المراكز", href: "/family-booking" },
+  { key: "guide",    side: "left",  top: "56%", color: "#e879f9", icon: "📖", label: "الدليل", title: "دليل الغوص", subtitle: "كل ما تحتاجه للغوص", desc: "معلومات طبية، نصائح للمبتدئين، دليل الأسماك والشعاب.", features: ["نصائح السلامة", "دليل الأسماك", "التقويم الموسمي"], cta: "اقرأ الدليل", href: "/guide" },
+  { key: "stories",  side: "left",  top: "67%", color: "#f5c218", icon: "📝", label: "القصص", title: "قصص الغوّاصين", subtitle: "تجارب حقيقية ومسابقات", desc: "اقرأ قصص أعضاء المجتمع وشارك قصتك للفوز بالمسابقة.", features: ["قصص ملهمة", "مسابقة شهرية", "شارك تجربتك"], cta: "اقرأ القصص", href: "/stories" },
+  { key: "members",  side: "left",  top: "78%", color: "#06b6d4", icon: "🤝", label: "الأعضاء", title: "دليل الأعضاء", subtitle: "تعرّف على غوّاصي المجتمع", desc: "تصفّح الأعضاء، أضِف أصدقاء، وتواصل مع غوّاصين قريبين منك.", features: ["ملفات الأعضاء", "أضف أصدقاء", "رسائل خاصة"], cta: "تصفّح الأعضاء", href: "/members" },
+  { key: "retreats", side: "left",  top: "88%", color: "#c9952a", icon: "✨", label: "الباقات الفاخرة", title: "الباقات الخاصة", subtitle: "تجارب غوص فاخرة", desc: "باقات إقامة وغوص فاخرة على البحر الأحمر لتجربة استثنائية.", features: ["منتجعات مختارة", "خدمة راقية", "تجارب حصرية"], cta: "اكتشف الباقات", href: "/retreats" },
 ];
 
 const BUBBLES = [
@@ -204,7 +212,7 @@ const BUBBLES = [
   { l: "58%", b: "14%", s: 6, d: 0.7 }, { l: "72%", b: "22%", s: 7, d: 1.5 }, { l: "85%", b: "16%", s: 5, d: 2.4 }, { l: "48%", b: "30%", s: 6, d: 1.1 },
 ];
 
-export default function RedSeaMap() {
+export default function RedSeaMap({ embedded = false }: { embedded?: boolean }) {
   const [hovered, setHovered] = useState<string | null>(null);
   const [mobile, setMobile] = useState(false);
   const router = useRouter();
@@ -225,26 +233,35 @@ export default function RedSeaMap() {
         <span key={i} style={{ position: "absolute", left: b.l, bottom: b.b, width: b.s, height: b.s, borderRadius: "50%", background: "rgba(6,182,212,0.35)", animation: `mapBubble ${4 + b.d}s ${b.d}s ease-in infinite`, pointerEvents: "none" }} />
       ))}
 
-      <div style={{ position: "relative", zIndex: 20, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 26px" }}>
-        <div style={{ display: "flex", gap: "10px" }}>
-          <Link href="/register" style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "#fff", padding: "10px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "14px", boxShadow: "0 4px 14px rgba(201,149,42,0.4)" }}>انضم الآن</Link>
-          <Link href="/" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.14)", color: "#fff", padding: "10px 20px", borderRadius: "12px", fontWeight: 700, fontSize: "14px" }}>الصفحة الكلاسيكية</Link>
+      {!embedded && (
+        <div style={{ position: "relative", zIndex: 20, display: "flex", justifyContent: "space-between", alignItems: "center", padding: "18px 26px" }}>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Link href="/register" style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "#fff", padding: "10px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "14px", boxShadow: "0 4px 14px rgba(201,149,42,0.4)" }}>انضم الآن</Link>
+            <Link href="/" style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.14)", color: "#fff", padding: "10px 20px", borderRadius: "12px", fontWeight: 700, fontSize: "14px" }}>الصفحة الكلاسيكية</Link>
+          </div>
+          <div style={{ textAlign: "end" }}>
+            <div style={{ color: "#fff", fontWeight: 900, fontSize: "20px" }}>ArabDiving</div>
+            <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px" }}>اكتشف البحر الأحمر</div>
+          </div>
         </div>
-        <div style={{ textAlign: "end" }}>
-          <div style={{ color: "#fff", fontWeight: 900, fontSize: "20px" }}>ArabDiving</div>
-          <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "12px" }}>اكتشف البحر الأحمر</div>
+      )}
+
+      {embedded && (
+        <div style={{ position: "relative", zIndex: 20, textAlign: "center", padding: "34px 20px 0" }}>
+          <h2 style={{ color: "#fff", fontSize: "clamp(24px,4vw,38px)", fontWeight: 900 }}>استكشف المنصة عبر <span className="hero-grad">خريطة البحر الأحمر</span></h2>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "15px", marginTop: "8px" }}>مرّر على أي نقطة حول البحر · اضغط للانتقال</p>
         </div>
-      </div>
+      )}
 
       {mobile ? (
-        <div style={{ position: "relative", zIndex: 10, padding: "6px 18px 60px", display: "grid", gap: "13px" }}>
-          <h1 style={{ color: "#fff", textAlign: "center", fontSize: "25px", fontWeight: 900, margin: "8px 0 10px" }}>اكتشف عالم الغوص في <span className="hero-grad">البحر الأحمر</span></h1>
+        <div style={{ position: "relative", zIndex: 10, padding: "6px 18px 60px", display: "grid", gap: "12px" }}>
+          {!embedded && <h1 style={{ color: "#fff", textAlign: "center", fontSize: "25px", fontWeight: 900, margin: "8px 0 10px" }}>اكتشف عالم الغوص في <span className="hero-grad">البحر الأحمر</span></h1>}
           {DATA.map((d) => (
-            <Link key={d.key} href={d.href} style={{ display: "flex", gap: "14px", alignItems: "center", background: "rgba(6,14,36,0.9)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", padding: "15px", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}>
-              <div style={{ width: "46px", height: "46px", borderRadius: "12px", background: d.color + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "24px", flexShrink: 0 }}>{d.icon}</div>
+            <Link key={d.key} href={d.href} style={{ display: "flex", gap: "14px", alignItems: "center", background: "rgba(6,14,36,0.9)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", padding: "14px", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}>
+              <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: d.color + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "23px", flexShrink: 0 }}>{d.icon}</div>
               <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ color: "#fff", fontWeight: 800, fontSize: "16px" }}>{d.title}</div>
-                <div style={{ color: "rgba(255,255,255,0.55)", fontSize: "12.5px" }}>{d.subtitle}</div>
+                <div style={{ color: "#fff", fontWeight: 800, fontSize: "15.5px" }}>{d.title}</div>
+                <div style={{ color: "rgba(255,255,255,0.55)", fontSize: "12px" }}>{d.subtitle}</div>
               </div>
               <span style={{ color: d.color, fontSize: "20px" }}>←</span>
             </Link>
@@ -252,16 +269,16 @@ export default function RedSeaMap() {
         </div>
       ) : (
         <>
-          <div style={{ position: "absolute", top: "52%", left: "50%", transform: "translate(-50%,-50%)", width: "340px", maxWidth: "80vw", zIndex: 5, filter: "drop-shadow(0 0 40px rgba(8,145,178,0.3))" }} dangerouslySetInnerHTML={{ __html: MAP_SVG }} />
+          <div style={{ position: "absolute", top: "52%", left: "50%", transform: "translate(-50%,-50%)", width: "330px", maxWidth: "78vw", zIndex: 5, filter: "drop-shadow(0 0 40px rgba(8,145,178,0.3))" }} dangerouslySetInnerHTML={{ __html: MAP_SVG }} />
 
           {DATA.map((d) => (
             <div key={d.key}
               onMouseEnter={() => setHovered(d.key)} onMouseLeave={() => setHovered(null)} onClick={() => router.push(d.href)}
-              style={{ position: "absolute", top: d.top, left: d.side === "right" ? "70vw" : "30vw", transform: "translate(-50%,-50%)", width: "14px", height: "14px", zIndex: 15, cursor: "pointer" }}>
+              style={{ position: "absolute", top: d.top, left: d.side === "right" ? "71vw" : "29vw", transform: "translate(-50%,-50%)", width: "14px", height: "14px", zIndex: 15, cursor: "pointer" }}>
               <div style={{ width: "14px", height: "14px", borderRadius: "50%", background: d.color, color: d.color, animation: "dotGlow 2s infinite" }} />
               <span style={{ position: "absolute", inset: 0, borderRadius: "50%", border: `2px solid ${d.color}`, animation: "pulseRing 2s infinite" }} />
               <span style={{ position: "absolute", inset: 0, borderRadius: "50%", border: `2px solid ${d.color}`, animation: "pulseRing2 2s 0.4s infinite" }} />
-              <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", whiteSpace: "nowrap", color: hovered === d.key ? "#fff" : "rgba(255,255,255,0.85)", fontWeight: 700, fontSize: "15px", textShadow: "0 2px 8px rgba(0,0,0,0.6)", ...(d.side === "right" ? { right: "26px" } : { left: "26px" }) }}>{d.label}</span>
+              <span style={{ position: "absolute", top: "50%", transform: "translateY(-50%)", whiteSpace: "nowrap", color: hovered === d.key ? "#fff" : "rgba(255,255,255,0.85)", fontWeight: 700, fontSize: "14.5px", textShadow: "0 2px 8px rgba(0,0,0,0.6)", ...(d.side === "right" ? { right: "26px" } : { left: "26px" }) }}>{d.label}</span>
             </div>
           ))}
 
@@ -286,12 +303,12 @@ export default function RedSeaMap() {
                 </div>
               </div>
             </div>
-          ) : (
-            <div style={{ position: "absolute", bottom: "6%", left: "50%", transform: "translateX(-50%)", textAlign: "center", zIndex: 10, width: "90%" }}>
+          ) : (!embedded && (
+            <div style={{ position: "absolute", bottom: "5%", left: "50%", transform: "translateX(-50%)", textAlign: "center", zIndex: 10, width: "90%" }}>
               <h1 style={{ color: "#fff", fontSize: "clamp(26px,4vw,40px)", fontWeight: 900, marginBottom: "10px" }}>اكتشف عالم الغوص في <span className="hero-grad">البحر الأحمر</span></h1>
               <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "15px" }}>مرّر مؤشرك على النقاط لاستكشاف المنصة</p>
             </div>
-          )}
+          ))}
         </>
       )}
     </div>
