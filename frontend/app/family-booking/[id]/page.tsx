@@ -176,7 +176,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
       {/* Stepper */}
       <div style={{ display: "flex", gap: "6px", margin: "18px 0 26px", flexWrap: "wrap" }}>
         {STEPS.map((s, i) => (
-          <div key={s} style={{ flex: 1, minWidth: "70px", textAlign: "center", padding: "8px 4px", borderRadius: "10px", fontSize: "13px", fontWeight: 700, background: i === step ? "var(--mid)" : i < step ? "#d1ece0" : "#f1f5f9", color: i === step ? "white" : i < step ? "#1e7e34" : "#94a3b8" }}>
+          <div key={s} style={{ flex: 1, minWidth: "70px", textAlign: "center", padding: "8px 4px", borderRadius: "10px", fontSize: "13px", fontWeight: 700, background: i === step ? "var(--mid)" : i < step ? "rgba(52,211,153,0.18)" : "rgba(255,255,255,0.06)", color: i === step ? "#04121f" : i < step ? "#34d399" : "rgba(255,255,255,0.5)" }}>
             {i < step ? "✓ " : `${i + 1}. `}{s}
           </div>
         ))}
@@ -351,5 +351,5 @@ function Nav({ onBack, onNext, nextOk, nextLabel, nextHint }: { onBack?: () => v
   );
 }
 
-const inp: React.CSSProperties = { width: "100%", padding: "11px", borderRadius: "10px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "15px", color: "#06324f", boxSizing: "border-box" };
+const inp: React.CSSProperties = { width: "100%", padding: "11px", borderRadius: "10px", border: "1px solid var(--glass-border,rgba(255,255,255,0.12))", fontFamily: "inherit", fontSize: "15px", color: "var(--text)", boxSizing: "border-box" };
 const grid2: React.CSSProperties = { display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "14px" };
