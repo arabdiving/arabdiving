@@ -67,7 +67,7 @@ export default function AdminBookings() {
             <div key={b._id} style={{ background: "white", borderRadius: "12px", padding: "16px", boxShadow: "0 6px 18px rgba(0,0,0,0.05)" }}>
               <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "8px" }}>
                 <div>
-                  <strong style={{ color: "var(--navy)" }}>{b.ticketCode}</strong> · {b.centerName}
+                  <strong style={{ color: "var(--navy)" }}>{b.ticketCode}</strong> · {b.centerName}{b.type === "course" && <span style={{ background: "#7e22ce", color: "white", fontSize: "11px", fontWeight: 700, padding: "2px 8px", borderRadius: "20px", marginInlineStart: "6px" }}>🎓 تسجيل دورة</span>}
                   <div style={{ color: "#666", fontSize: "13px", marginTop: "4px" }}>📅 {b.date || "—"} · 👥 {b.peopleCount} · 💰 {b.total}{b.currency}</div>
                   <div style={{ color: "#666", fontSize: "13px" }}>👤 {b.contact?.name} · 📞 {b.contact?.phone}</div>
                 </div>

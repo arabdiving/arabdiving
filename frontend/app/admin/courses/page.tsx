@@ -36,7 +36,7 @@ export default function AdminCourses() {
     if (d.success) { setMsg(editingId ? "تم التحديث ✅" : "تمت الإضافة ✅"); reset(); load(); } else setMsg(d.message || "تعذّر الحفظ");
   };
   const remove = async (id?: string) => { if (!id || !confirm("حذف الدورة؟")) return; await fetch(`${API_BASE}/api/courses/${id}`, { method: "DELETE", headers: authHeaders() }); load(); };
-  const seed = async () => { if (!confirm("استيراد سلّم الدورات القياسي؟")) return; const res = await fetch(`${API_BASE}/api/courses/seed-defaults`, { method: "POST", headers: authHeaders() }); const d = await res.json(); if (d.success) { setMsg(`تم ✅ (${d.created} جديد، ${d.skipped} موجود)`); load(); } else setMsg(d.message || "تعذّر"); };
+  const seed = async () => { if (!confirm("استيراد دورات PADI + SDI الافتراضية؟ (الموجود مسبقًا لن يتكرر)")) return; const res = await fetch(`${API_BASE}/api/courses/seed-defaults`, { method: "POST", headers: authHeaders() }); const d = await res.json(); if (d.success) { setMsg(`تم ✅ (${d.created} جديد، ${d.skipped} موجود)`); load(); } else setMsg(d.message || "تعذّر"); };
 
   return (
     <div style={{ maxWidth: "900px" }}>
@@ -66,7 +66,7 @@ export default function AdminCourses() {
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "14px", flexWrap: "wrap", gap: "10px" }}>
         <h2 style={{ color: "var(--navy)", fontSize: "20px" }}>كل الدورات ({items.length})</h2>
-        {items.length === 0 && <button onClick={seed} style={{ background: "#1e7e34", color: "white", border: "none", padding: "10px 18px", borderRadius: "9px", cursor: "pointer", fontFamily: "inherit" }}>استيراد سلّم الدورات القياسي</button>}
+        <button onClick={seed} style={{ background: "#1e7e34", color: "white", border: "none", padding: "10px 18px", borderRadius: "9px", cursor: "pointer", fontFamily: "inherit" }}>استيراد دورات PADI + SDI</button>
       </div>
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px,1fr))", gap: "14px" }}>
         {items.map((c: any) => (

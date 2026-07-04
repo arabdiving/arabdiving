@@ -53,6 +53,9 @@ const BookingSchema = new mongoose.Schema(
     status: { type: String, enum: ["pending_confirmation", "pending_payment", "confirmed", "cancelled"], default: "pending_confirmation" },
     ticketCode: { type: String, unique: true, default: makeCode },
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    type: { type: String, enum: ["trip", "course"], default: "trip" },
+    courseTitle: { type: String, default: "" },
+    courseId: { type: mongoose.Schema.Types.ObjectId, ref: "Course" },
   },
   { timestamps: true }
 );

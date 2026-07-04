@@ -67,18 +67,34 @@ export default function RedSeaMap({ embedded = false }: { embedded?: boolean }) 
       )}
 
       {mobile ? (
-        <div style={{ position: "relative", zIndex: 10, padding: "14px 18px 60px", display: "grid", gap: "12px" }}>
-          {!embedded && <h1 style={{ color: "#fff", textAlign: "center", fontSize: "25px", fontWeight: 900, margin: "8px 0 10px" }}>خريطة <span className="hero-grad">الموقع</span></h1>}
-          {points.map((d) => (
-            <Link key={keyOf(d)} href={d.href} style={{ display: "flex", gap: "14px", alignItems: "center", background: "rgba(6,14,36,0.9)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", padding: "14px", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}>
-              <div style={{ width: "44px", height: "44px", borderRadius: "12px", background: (d.color || "#06b6d4") + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "23px", flexShrink: 0 }}>{d.icon || "📍"}</div>
-              <div style={{ minWidth: 0, flex: 1 }}>
-                <div style={{ color: "#fff", fontWeight: 800, fontSize: "15.5px" }}>{d.label}</div>
-                {d.subtitle && <div style={{ color: "rgba(255,255,255,0.55)", fontSize: "12px" }}>{d.subtitle}</div>}
-              </div>
-              <span style={{ color: d.color || "#06b6d4", fontSize: "20px" }}>←</span>
-            </Link>
-          ))}
+        <div style={{ position: "relative", zIndex: 10, padding: "8px 16px 55px" }}>
+          {!embedded && <h1 style={{ color: "#fff", textAlign: "center", fontSize: "25px", fontWeight: 900, margin: "8px 0 6px" }}>خريطة <span className="hero-grad">الموقع</span></h1>}
+
+          {/* الخريطة على الموبايل — النقاط باللمس تنقل مباشرة */}
+          <div style={{ position: "relative", width: "100%", maxWidth: "330px", margin: "6px auto 26px", aspectRatio: "360 / 680" }}>
+            <div style={{ position: "absolute", inset: 0, filter: "drop-shadow(0 0 26px rgba(8,145,178,0.3))" }} dangerouslySetInnerHTML={{ __html: MAP_SVG }} />
+            {points.map((d) => (
+              <button key={keyOf(d)} onClick={() => router.push(d.href)} aria-label={d.label}
+                style={{ position: "absolute", left: `${(d.x / 360) * 100}%`, top: `${(d.y / 680) * 100}%`, transform: "translate(-50%,-50%)", width: "26px", height: "26px", borderRadius: "50%", background: d.color || "#06b6d4", border: "2px solid rgba(255,255,255,0.85)", boxShadow: "0 0 10px rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "13px", padding: 0, cursor: "pointer", zIndex: 10 }}>
+                {d.icon || "📍"}
+              </button>
+            ))}
+          </div>
+
+          <p style={{ color: "rgba(255,255,255,0.5)", textAlign: "center", fontSize: "13px", marginBottom: "14px" }}>المسها على الخريطة أو اختر من القائمة</p>
+
+          <div style={{ display: "grid", gap: "10px" }}>
+            {points.map((d) => (
+              <Link key={keyOf(d)} href={d.href} style={{ display: "flex", gap: "14px", alignItems: "center", background: "rgba(6,14,36,0.9)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "16px", padding: "13px", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" }}>
+                <div style={{ width: "42px", height: "42px", borderRadius: "12px", background: (d.color || "#06b6d4") + "22", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "22px", flexShrink: 0 }}>{d.icon || "📍"}</div>
+                <div style={{ minWidth: 0, flex: 1 }}>
+                  <div style={{ color: "#fff", fontWeight: 800, fontSize: "15.5px" }}>{d.label}</div>
+                  {d.subtitle && <div style={{ color: "rgba(255,255,255,0.55)", fontSize: "12px" }}>{d.subtitle}</div>}
+                </div>
+                <span style={{ color: d.color || "#06b6d4", fontSize: "20px" }}>←</span>
+              </Link>
+            ))}
+          </div>
         </div>
       ) : (
         <>

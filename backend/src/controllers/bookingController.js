@@ -5,7 +5,7 @@ const ChildProfile = require("../models/ChildProfile");
 const createBooking = async (req, res) => {
   try {
     const b = req.body || {};
-    if (!b.center && !b.centerName) {
+    if (b.type !== "course" && !b.center && !b.centerName) {
       return res.status(400).json({ success: false, message: "بيانات المركز ناقصة." });
     }
     if (!b.contact || !b.contact.name || !b.contact.phone) {
@@ -13,7 +13,10 @@ const createBooking = async (req, res) => {
     }
     const booking = await Booking.create({
       center: b.center || undefined,
-      centerName: b.centerName || "",
+      centerName: b.centerName || b.courseTitle || "",
+      type: b.type === "course" ? "course" : "trip",
+      courseTitle: b.courseTitle || "",
+      courseId: b.courseId || undefined,
       date: b.date || "",
       peopleCount: Number(b.peopleCount) || 1,
       contact: b.contact,
