@@ -291,3 +291,27 @@ html[data-theme="dark"] .hero-grad {
   .community-grid { grid-template-columns: 1fr !important; }
   .community-grid aside { position: static !important; }
 }
+
+/* ============================================================
+   الوضع الداكن: عناصر النماذج الأصلية (select/option/date...)
+   color-scheme يجعل المتصفح يرسم القوائم المنسدلة والمنتقيات داكنة،
+   ويصحّح مشكلة القائمة البيضاء في <select>.
+   ============================================================ */
+html[data-theme="dark"] { color-scheme: dark; }
+html[data-theme="dark"] select,
+html[data-theme="dark"] option,
+html[data-theme="dark"] optgroup {
+  background-color: #0b1f3a !important;
+  color: #f1f5f9 !important;
+}
+html[data-theme="dark"] select:focus { outline: 1px solid var(--cyan, #06b6d4); }
+/* أي حقل إدخال بخلفية بيضاء ثابتة → داكن مقروء */
+html[data-theme="dark"] input[style*="background:#fff"],
+html[data-theme="dark"] input[style*="background: #fff"],
+html[data-theme="dark"] input[style*="background:white"],
+html[data-theme="dark"] input[style*="background: white"],
+html[data-theme="dark"] textarea[style*="background:#fff"],
+html[data-theme="dark"] textarea[style*="background: white"] {
+  background: rgba(255,255,255,0.05) !important;
+  color: var(--text) !important;
+}
