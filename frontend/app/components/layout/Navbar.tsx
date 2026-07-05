@@ -20,6 +20,7 @@ const NAV_MAIN: MItem[] = [
 ];
 
 const NAV_MORE: MItem[] = [
+  { href: "/standards", label: "معايير اعتماد المراكز" },
   { href: "/retreats", label: "باقات خاصة" },
   { href: "/trips", label: "الرحلات" },
   { href: "/try-diving", label: "جرّب الغوص" },
