@@ -36,7 +36,7 @@ export default function AdminCourses() {
     if (d.success) { setMsg(editingId ? "تم التحديث ✅" : "تمت الإضافة ✅"); reset(); load(); } else setMsg(d.message || "تعذّر الحفظ");
   };
   const remove = async (id?: string) => { if (!id || !confirm("حذف الدورة؟")) return; await fetch(`${API_BASE}/api/courses/${id}`, { method: "DELETE", headers: authHeaders() }); load(); };
-  const seed = async () => { if (!confirm("استيراد دورات PADI + SDI الافتراضية؟ (الموجود مسبقًا لن يتكرر)")) return; const res = await fetch(`${API_BASE}/api/courses/seed-defaults`, { method: "POST", headers: authHeaders() }); const d = await res.json(); if (d.success) { setMsg(`تم ✅ (${d.created} جديد، ${d.skipped} موجود)`); load(); } else setMsg(d.message || "تعذّر"); };
+  const seed = async () => { if (!confirm("استيراد دورات PADI + SDI الافتراضية؟ (الموجود مسبقًا لن يتكرر)")) return; const res = await fetch(`${API_BASE}/api/courses/seed-defaults`, { method: "POST", headers: authHeaders() }); const d = await res.json(); if (d.success) { setMsg(`تم ✅ (${d.created} جديد، ${d.updated} محدّث)`); load(); } else setMsg(d.message || "تعذّر"); };
 
   return (
     <div style={{ maxWidth: "900px" }}>
