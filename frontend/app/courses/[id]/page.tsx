@@ -8,7 +8,7 @@ import { symbolOf } from "@/app/lib/currency";
 
 const LEVELS: Record<string, string> = {
   try: "جرّب الغوص", open_water: "مبتدئ", advanced: "متقدّم", rescue: "إنقاذ",
-  divemaster: "احترافي", specialty: "تخصص", freediving: "غوص حر", kids: "أطفال",
+  divemaster: "احترافي", specialty: "تخصص", freediving: "غوص حر", kids: "أطفال", scubility: "غوص تكيّفي (ذوي الهمم)",
 };
 
 const TIER_LABEL: Record<string, string> = { silver: "🥈 معتمد", gold: "🥇 موصى به", platinum: "💎 سفير العرب" };
@@ -55,6 +55,7 @@ export default function CourseDetailPage({ params }: { params: Promise<{ id: str
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", margin: "14px 0 10px" }}>
             <span style={{ background: "rgba(255,255,255,0.16)", borderRadius: "20px", padding: "4px 14px", fontSize: "13px", fontWeight: 700 }}>{course.agency}</span>
             <span style={{ background: "rgba(255,255,255,0.16)", borderRadius: "20px", padding: "4px 14px", fontSize: "13px" }}>{LEVELS[course.level] || course.level}</span>
+            {(course.exclusive || course.tag) && <span style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "#04121f", borderRadius: "20px", padding: "4px 14px", fontSize: "13px", fontWeight: 800 }}>⭐ {course.tag || "حصري"}</span>}
             {course.duration && <span style={{ background: "rgba(255,255,255,0.16)", borderRadius: "20px", padding: "4px 14px", fontSize: "13px" }}>⏱ {course.duration}</span>}
           </div>
           <h1 style={{ fontSize: "clamp(24px,5vw,38px)", lineHeight: 1.4, marginBottom: "10px" }}>{course.title}</h1>

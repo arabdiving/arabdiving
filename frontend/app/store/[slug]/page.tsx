@@ -18,7 +18,7 @@ const BADGES: { key: string; label: string; emoji: string }[] = [
 
 const LEVELS: Record<string, string> = {
   try: "جرّب الغوص", open_water: "مبتدئ", advanced: "متقدّم", rescue: "إنقاذ",
-  divemaster: "احترافي", specialty: "تخصص", freediving: "غوص حر", kids: "أطفال",
+  divemaster: "احترافي", specialty: "تخصص", freediving: "غوص حر", kids: "أطفال", scubility: "غوص تكيّفي (ذوي الهمم)",
 };
 
 const TIER: Record<string, { label: string; color: string }> = {

@@ -13,6 +13,8 @@ const CourseSchema = new mongoose.Schema(
     images: { type: [String], default: [] },
     order: { type: Number, default: 0 },
     active: { type: Boolean, default: true },
+    exclusive: { type: Boolean, default: false },
+    tag: { type: String, default: "" },
     // الكورس المرتبط بمركز شريك (null = قالب من كتالوج المنصة)
     center: { type: mongoose.Schema.Types.ObjectId, ref: "PartnerCenter", default: null },
     // القالب الأصلي الذي نُسخ منه كورس الشريك

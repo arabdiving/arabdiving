@@ -8,7 +8,7 @@ import { siteImageSrc } from "@/app/lib/image";
 
 const LEVELS: Record<string, string> = {
   try: "جرّب الغوص", open_water: "مبتدئ", advanced: "متقدّم", rescue: "إنقاذ",
-  divemaster: "احترافي", specialty: "تخصص", freediving: "غوص حر", kids: "أطفال",
+  divemaster: "احترافي", specialty: "تخصص", freediving: "غوص حر", kids: "أطفال", scubility: "غوص تكيّفي (ذوي الهمم)",
 };
 
 export default function CoursesPage() {
@@ -88,6 +88,7 @@ export default function CoursesPage() {
                     <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", marginBottom: "8px" }}>
                       <span style={{ background: "var(--navy)", color: "white", fontSize: "11px", padding: "3px 10px", borderRadius: "20px" }}>{c.agency}</span>
                       <span style={{ background: "rgba(46,117,182,0.12)", color: "var(--mid)", fontSize: "11px", padding: "3px 10px", borderRadius: "20px" }}>{LEVELS[c.level] || c.level}</span>
+                      {(c.exclusive || c.tag) && <span style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "#04121f", fontSize: "11px", fontWeight: 800, padding: "3px 10px", borderRadius: "20px" }}>⭐ {c.tag || "حصري"}</span>}
                       {c.duration && <span style={{ color: "var(--muted)", fontSize: "12px", alignSelf: "center" }}>⏱ {c.duration}</span>}
                     </div>
                     <Link href={`/courses/${c._id}`}><h3 style={{ color: "var(--text)", fontSize: "19px", marginBottom: "6px" }}>{c.title}</h3></Link>
