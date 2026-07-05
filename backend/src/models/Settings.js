@@ -78,6 +78,10 @@ const SettingsSchema = new mongoose.Schema(
       ],
     },
     promoImages: { type: mongoose.Schema.Types.Mixed, default: {} },
+    sections: {
+      type: [{ slug: String, name: String, icon: String, color: String, pages: [String] }],
+      default: [],
+    },
     mapPoints: {
       type: [
         {

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { API_BASE } from "@/app/lib/api";
 import { usePathname } from "next/navigation";
+import { DEFAULT_SECTIONS, Section, pageMeta } from "@/app/lib/sections";
 
 interface CurrentUser { name?: string; role?: string; }
 interface MItem { href: string; label: string; }
@@ -105,7 +106,24 @@ export default function Navbar() {
       .then((d) => {
         setHidden(d.settings?.hiddenPages || []);
         setNavStyle(d.settings?.navStyle || "buttons");
-        setNavGroups(d.settings?.navGroups || []);
+        const dbGroups = d.settings?.navGroups || [];
+        if (dbGroups.length) {
+          setNavGroups(dbGroups);
+        } else {
+          const secs: Section[] = (Array.isArray(d.settings?.sections) && d.settings.sections.length) ? d.settings.sections : DEFAULT_SECTIONS;
+          const built = [
+            { label: "الرئيسية", items: [{ href: "/", label: "الرئيسية" }] },
+            { label: "احجز رحلة", items: [{ href: "/family-booking", label: "احجز رحلة" }] },
+            ...secs.map((sec) => ({
+              label: `${sec.icon} ${sec.name}`,
+              items: [
+                { href: `/section/${sec.slug}`, label: `✨ عرض «${sec.name}» كامل` },
+                ...(sec.pages || []).map((h) => ({ href: h, label: pageMeta(h).label })),
+              ],
+            })),
+          ];
+          setNavGroups(built);
+        }
         if (d.settings?.branding) setBrand({ ...BRAND_DEFAULT, ...d.settings.branding });
       })
       .catch(() => {});

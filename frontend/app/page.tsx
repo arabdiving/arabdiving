@@ -11,6 +11,7 @@ import HomePageCards from "./components/home/HomePageCards";
 import HomePromoSection from "./components/home/HomePromoSection";
 import HomeMarketplace from "./components/home/HomeMarketplace";
 import RedSeaMap from "./components/RedSeaMap";
+import HomeSections from "./components/home/HomeSections";
 import { API_BASE } from "./lib/api";
 import { ReactNode } from "react";
 
@@ -23,6 +24,7 @@ interface HomeBlock {
 const DEFAULT_BLOCKS: HomeBlock[] = [
   { key: "hero",              visible: true,  order: 0 },
   { key: "sea_map",           visible: true,  order: 1 },
+  { key: "sections_hub",      visible: true,  order: 2 },
   { key: "community_feed",    visible: true,  order: 2 },
   { key: "segments",          visible: true,  order: 3 },
   { key: "dive_centers",      visible: true,  order: 4 },
@@ -48,7 +50,7 @@ async function getHomeData(): Promise<{ blocks: HomeBlock[]; promoImages: Record
         ...hb,
         ...DEFAULT_BLOCKS
           .filter((d) => !dbKeys.has(d.key))
-          .map((d) => ({ ...d, order: d.key === "sea_map" ? 0.5 : hb.length + d.order })),
+          .map((d) => ({ ...d, order: d.key === "sea_map" ? 0.5 : d.key === "sections_hub" ? 0.6 : hb.length + d.order })),
       ];
       return { blocks: merged.sort((a, b) => a.order - b.order), promoImages };
     }
@@ -62,6 +64,7 @@ function renderBlock(key: string, promoImages: Record<string, string> = {}) {
     // ─── بلوكات أساسية ───────────────────────────────────────────
     case "hero":               return <Hero key="hero" />;
     case "sea_map":           return <RedSeaMap key="sea_map" embedded />;
+    case "sections_hub":      return <HomeSections key="sections_hub" />;
     case "community_feed":    return <HomeCommunityFeed key="community_feed" />;
     case "gulf_focus":        return <GulfFocus key="gulf_focus" />;
     case "stats":             return <Stats key="stats" />;
