@@ -6,7 +6,8 @@ const BADGE_KEYS = ["womenStaff", "privateTrip", "family", "separateFacilities",
 // Query: city, q (name search), and badge flags (e.g. womenStaff=true).
 const getPartnerCenters = async (req, res) => {
   try {
-    const query = { active: true };
+    const query = {};
+    if (req.query.all !== "true") query.active = true;
     if (req.query.city) query.city = req.query.city;
     if (req.query.q) query.name = { $regex: String(req.query.q).trim(), $options: "i" };
     if (req.query.featured === "true") query.featuredOnHome = true;
@@ -62,7 +63,20 @@ const toggleFeaturedPartnerCenter = async (req, res) => {
   }
 };
 
+const toggleActivePartnerCenter = async (req, res) => {
+  try {
+    const center = await PartnerCenter.findById(req.params.id);
+    if (!center) return res.status(404).json({ success: false, message: "المركز غير موجود" });
+    center.active = (center.active === false);
+    await center.save();
+    res.json({ success: true, active: center.active });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
+  toggleActivePartnerCenter,
   getPartnerCenters,
   getPartnerCenterById,
   updatePartnerCenter,

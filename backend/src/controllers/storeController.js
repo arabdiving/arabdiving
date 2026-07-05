@@ -10,11 +10,15 @@ const getStoreBySlug = async (req, res) => {
   try {
     const center = await PartnerCenter.findOne({ slug: req.params.slug, active: true });
     if (!center) return res.status(404).json({ success: false, message: "المتجر غير موجود" });
-    const [products, courses] = await Promise.all([
+    const [ownProducts, ownCourses, featProducts, featCourses] = await Promise.all([
       Product.find({ center: center._id, active: true }).sort({ createdAt: -1 }),
       Course.find({ center: center._id, active: true }).sort({ order: 1, createdAt: -1 }),
+      (center.featuredProducts && center.featuredProducts.length) ? Product.find({ _id: { $in: center.featuredProducts }, active: true }) : [],
+      (center.featuredCourses && center.featuredCourses.length) ? Course.find({ _id: { $in: center.featuredCourses }, active: true }) : [],
     ]);
-    res.json({ success: true, center, products, courses });
+    const pMap = new Map(); [...ownProducts, ...featProducts].forEach((p) => pMap.set(String(p._id), p));
+    const cMap = new Map(); [...ownCourses, ...featCourses].forEach((c) => cMap.set(String(c._id), c));
+    res.json({ success: true, center, products: [...pMap.values()], courses: [...cMap.values()] });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
@@ -138,7 +142,20 @@ const deleteMyProduct = async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
+const setMyFeatured = async (req, res) => {
+  try {
+    const center = await findMyCenter(req.user._id);
+    if (!center) return res.status(403).json({ success: false, message: "لا تملك صفحة مركز. تواصل مع الإدارة." });
+    if (!["gold", "platinum"].includes(center.tier)) return res.status(403).json({ success: false, message: "الانتقاء المميّز متاح للشركاء من الفئة الذهبية والبلاتينية فقط." });
+    if (Array.isArray(req.body.featuredProducts)) center.featuredProducts = req.body.featuredProducts.slice(0, 50);
+    if (Array.isArray(req.body.featuredCourses)) center.featuredCourses = req.body.featuredCourses.slice(0, 50);
+    await center.save();
+    res.json({ success: true, featuredProducts: center.featuredProducts, featuredCourses: center.featuredCourses });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
 module.exports = {
+  setMyFeatured,
   getStoreBySlug, getMyCenter, getMyOrders, getMyProducts, createMyProduct, updateMyProduct, deleteMyProduct,
   getCourseTemplates, getMyCourses, addMyCourseFromTemplate, updateMyCourse, deleteMyCourse,
 };

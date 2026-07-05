@@ -15,6 +15,7 @@ interface Center {
   rating: number; reviewsCount: number;
   priceFrom: number; currency: string;
   whatsapp: string; tier: string; active: boolean; slug: string; ownerEmail: string;
+  featuredProducts?: string[]; featuredCourses?: string[];
   badges: Badges;
 }
 
@@ -29,19 +30,25 @@ const BADGE_LABELS: { key: keyof Badges; label: string; emoji: string }[] = [
 ];
 
 const emptyBadges: Badges = { womenStaff: false, privateTrip: false, family: false, separateFacilities: false, sanitizedGear: false, technical: false, ecoFriendly: false };
-const empty: Center = { name: "", country: "مصر", city: "", description: "", image: "", images: [], rating: 0, reviewsCount: 0, priceFrom: 0, currency: "$", whatsapp: "", tier: "silver", active: true, slug: "", ownerEmail: "", badges: { ...emptyBadges } };
+const empty: Center = { name: "", country: "مصر", city: "", description: "", image: "", images: [], rating: 0, reviewsCount: 0, priceFrom: 0, currency: "$", whatsapp: "", tier: "silver", active: true, slug: "", ownerEmail: "", featuredProducts: [], featuredCourses: [], badges: { ...emptyBadges } };
 
 const resolve = (u: string) => (u ? (/^https?:\/\//.test(u) ? u : `/images/${u}`) : "");
 
 export default function AdminPartnerCenters() {
   const [centers, setCenters] = useState<Center[]>([]);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [allCourses, setAllCourses] = useState<any[]>([]);
+  useEffect(() => {
+    fetch(`${API_BASE}/api/products?all=true`).then((r) => r.json()).then((d) => setAllProducts(d.data || [])).catch(() => {});
+    fetch(`${API_BASE}/api/courses`).then((r) => r.json()).then((d) => setAllCourses(d.data || [])).catch(() => {});
+  }, []);
   const [form, setForm] = useState<Center>(empty);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
 
   const load = () => {
-    fetch(`${API_BASE}/api/partner-centers`)
+    fetch(`${API_BASE}/api/partner-centers?all=true`)
       .then((r) => r.json())
       .then((d) => setCenters(d.data || []))
       .catch(() => setMsg("تعذّر تحميل المراكز"));
@@ -55,7 +62,7 @@ export default function AdminPartnerCenters() {
       name: c.name, country: c.country || "مصر", city: c.city || "", description: c.description || "",
       image: imgs[0] || "", images: imgs, rating: c.rating || 0, reviewsCount: c.reviewsCount || 0,
       priceFrom: c.priceFrom || 0, currency: c.currency || "$", whatsapp: c.whatsapp || "", slug: c.slug || "", ownerEmail: "",
-      tier: c.tier || "silver", active: c.active !== false, badges: { ...emptyBadges, ...(c.badges || {}) },
+      tier: c.tier || "silver", active: c.active !== false, featuredProducts: (c.featuredProducts || []).map((x: any) => String(x)), featuredCourses: (c.featuredCourses || []).map((x: any) => String(x)), badges: { ...emptyBadges, ...(c.badges || {}) },
     });
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
@@ -80,6 +87,7 @@ export default function AdminPartnerCenters() {
   const removeImage = (i: number) => setForm((f) => ({ ...f, images: f.images.filter((_, j) => j !== i) }));
   const moveFirst = (i: number) => setForm((f) => { const arr = [...f.images]; const [x] = arr.splice(i, 1); arr.unshift(x); return { ...f, images: arr }; });
   const toggleBadge = (k: keyof Badges) => setForm((f) => ({ ...f, badges: { ...f.badges, [k]: !f.badges[k] } }));
+  const featChip = (on: boolean): React.CSSProperties => ({ background: on ? "#c9952a" : "#fff", color: on ? "#fff" : "#92400e", border: "1px solid #fcd34d", borderRadius: "18px", padding: "5px 12px", cursor: "pointer", fontFamily: "inherit", fontSize: "12.5px", fontWeight: on ? 700 : 500 });
 
   const save = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -98,6 +106,12 @@ export default function AdminPartnerCenters() {
     if (!id || !confirm("حذف هذا المركز؟")) return;
     await fetch(`${API_BASE}/api/admin/partner-centers/${id}`, { method: "DELETE", headers: authHeaders() });
     load();
+  };
+
+  const toggleActive = async (id: string) => {
+    const res = await fetch(`${API_BASE}/api/partner-centers/${id}/toggle-active`, { method: "PATCH", headers: authHeaders() });
+    const d = await res.json();
+    if (d.success) setCenters((prev) => prev.map((c: any) => c._id === id ? { ...c, active: d.active } : c));
   };
 
   const toggleFeatured = async (id: string) => {
@@ -184,6 +198,23 @@ export default function AdminPartnerCenters() {
           <input type="checkbox" checked={form.active} onChange={(e) => setForm({ ...form, active: e.target.checked })} /> نشط (يظهر للعملاء)
         </label>
 
+        {["gold", "platinum"].includes(form.tier) && (
+          <div style={{ background: "#fffbeb", border: "1px solid #fcd34d", borderRadius: "12px", padding: "14px", marginBottom: "12px" }}>
+            <strong style={{ color: "#92400e" }}>⭐ الانتقاء المميّز (لفئة {form.tier === "platinum" ? "بلاتيني" : "ذهبي"})</strong>
+            <p style={{ color: "#a16207", fontSize: "12.5px", margin: "4px 0 10px" }}>اختر منتجات وكورسات من الكتالوج تظهر على صفحة هذا الشريك (تُحفظ مع المركز).</p>
+            <p style={{ color: "#92400e", fontWeight: 700, fontSize: "12.5px", marginBottom: "5px" }}>منتجات ({(form.featuredProducts || []).length}):</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px", marginBottom: "10px" }}>
+              {allProducts.map((p) => { const on = (form.featuredProducts || []).includes(String(p._id)); return <button type="button" key={p._id} onClick={() => setForm((f: any) => ({ ...f, featuredProducts: on ? (f.featuredProducts || []).filter((i: string) => i !== String(p._id)) : [...(f.featuredProducts || []), String(p._id)] }))} style={featChip(on)}>{on ? "✓ " : ""}{p.name}</button>; })}
+              {allProducts.length === 0 && <span style={{ color: "#a16207", fontSize: "12.5px" }}>لا توجد منتجات.</span>}
+            </div>
+            <p style={{ color: "#92400e", fontWeight: 700, fontSize: "12.5px", marginBottom: "5px" }}>كورسات ({(form.featuredCourses || []).length}):</p>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "6px" }}>
+              {allCourses.map((c) => { const on = (form.featuredCourses || []).includes(String(c._id)); return <button type="button" key={c._id} onClick={() => setForm((f: any) => ({ ...f, featuredCourses: on ? (f.featuredCourses || []).filter((i: string) => i !== String(c._id)) : [...(f.featuredCourses || []), String(c._id)] }))} style={featChip(on)}>{on ? "✓ " : ""}{c.title}</button>; })}
+              {allCourses.length === 0 && <span style={{ color: "#a16207", fontSize: "12.5px" }}>لا توجد كورسات.</span>}
+            </div>
+          </div>
+        )}
+
         <div style={{ display: "flex", gap: "12px", marginTop: "8px" }}>
           <button type="submit" style={{ background: "var(--mid)", color: "white", border: "none", padding: "11px 26px", borderRadius: "10px", cursor: "pointer", fontFamily: "inherit" }}>{editingId ? "حفظ التعديل" : "إضافة المركز"}</button>
           {editingId && <button type="button" onClick={reset} style={{ background: "#64748b", color: "white", border: "none", padding: "11px 20px", borderRadius: "10px", cursor: "pointer", fontFamily: "inherit" }}>إلغاء</button>}
@@ -231,6 +262,7 @@ export default function AdminPartnerCenters() {
               >
                 {c.featuredOnHome ? "🏠 في الهوم" : "⊕ عرض في الهوم"}
               </button>
+              <button onClick={() => toggleActive(c._id)} style={mini(c.active === false ? "#b45309" : "#0d9488")} title={c.active === false ? "إظهار للعملاء" : "إخفاء من العملاء"}>{c.active === false ? "🙈 مخفي" : "👁️ ظاهر"}</button>
               <button onClick={() => remove(c._id)} style={mini("#b91c1c")}>حذف</button>
             </div>
           </div>

@@ -34,6 +34,8 @@ const PartnerCenterSchema = new mongoose.Schema(
     slug: { type: String, default: "", index: true },
     owner: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     featuredOnHome: { type: Boolean, default: false },
+    featuredProducts: [{ type: mongoose.Schema.Types.ObjectId, ref: "Product" }],
+    featuredCourses: [{ type: mongoose.Schema.Types.ObjectId, ref: "Course" }],
   },
   { timestamps: true }
 );

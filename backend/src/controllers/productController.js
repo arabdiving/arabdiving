@@ -2,7 +2,8 @@ const Product = require("../models/Product");
 
 const getProducts = async (req, res) => {
   try {
-    const q = { active: true };
+    const q = {};
+    if (req.query.all !== "true") q.active = true;
     if (req.query.category) q.category = req.query.category;
     const products = await Product.find(q).sort({ createdAt: -1 });
     res.json({ success: true, count: products.length, data: products });
@@ -35,4 +36,14 @@ const deleteProduct = async (req, res) => {
   catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
-module.exports = { getProducts, getProductById, createProduct, updateProduct, deleteProduct };
+const toggleActiveProduct = async (req, res) => {
+  try {
+    const p = await Product.findById(req.params.id);
+    if (!p) return res.status(404).json({ success: false, message: "المنتج غير موجود" });
+    p.active = (p.active === false);
+    await p.save();
+    res.json({ success: true, active: p.active });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+module.exports = { getProducts, getProductById, createProduct, updateProduct, deleteProduct, toggleActiveProduct };

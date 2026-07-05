@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {
   getStoreBySlug, getMyCenter, getMyOrders, getMyProducts, createMyProduct, updateMyProduct, deleteMyProduct,
-  getCourseTemplates, getMyCourses, addMyCourseFromTemplate, updateMyCourse, deleteMyCourse,
+  getCourseTemplates, getMyCourses, addMyCourseFromTemplate, updateMyCourse, deleteMyCourse, setMyFeatured,
 } = require("../controllers/storeController");
 const { protect } = require("../middleware/authMiddleware");
 
@@ -17,6 +17,7 @@ router.get("/me/courses", protect, getMyCourses);
 router.post("/me/courses", protect, addMyCourseFromTemplate);
 router.put("/me/courses/:id", protect, updateMyCourse);
 router.delete("/me/courses/:id", protect, deleteMyCourse);
+router.put("/me/featured", protect, setMyFeatured);
 router.get("/:slug", getStoreBySlug);
 
 module.exports = router;

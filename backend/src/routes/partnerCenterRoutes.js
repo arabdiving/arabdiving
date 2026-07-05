@@ -6,6 +6,7 @@ const {
   updatePartnerCenter,
   deletePartnerCenter,
   toggleFeaturedPartnerCenter,
+  toggleActivePartnerCenter,
 } = require("../controllers/partnerCenterController");
 const { protect } = require("../middleware/authMiddleware");
 const { adminOnly } = require("../middleware/adminMiddleware");
@@ -15,5 +16,6 @@ router.get("/:id", getPartnerCenterById);
 router.put("/:id", protect, adminOnly, updatePartnerCenter);
 router.delete("/:id", protect, adminOnly, deletePartnerCenter);
 router.patch("/:id/toggle-featured", protect, adminOnly, toggleFeaturedPartnerCenter);
+router.patch("/:id/toggle-active", protect, adminOnly, toggleActivePartnerCenter);
 
 module.exports = router;

@@ -4,6 +4,7 @@ const getDiveSites = async (req, res) => {
   try {
     const query = {};
     if (req.query.featured === "true") query.featuredOnHome = true;
+    if (req.query.all !== "true" && req.query.featured !== "true") query.listed = { $ne: false };
     const sites = await DiveSite.find(query);
     res.json({ success: true, count: sites.length, data: sites });
   } catch (error) {
@@ -52,8 +53,20 @@ const toggleFeaturedDiveSite = async (req, res) => {
   }
 };
 
+const toggleListedDiveSite = async (req, res) => {
+  try {
+    const site = await DiveSite.findById(req.params.id);
+    if (!site) return res.status(404).json({ success: false, message: "الموقع غير موجود" });
+    site.listed = (site.listed === false);
+    await site.save();
+    res.json({ success: true, listed: site.listed });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
 module.exports = {
   getDiveSites,
+  toggleListedDiveSite,
   createDiveSite,
   updateDiveSite,
   deleteDiveSite,

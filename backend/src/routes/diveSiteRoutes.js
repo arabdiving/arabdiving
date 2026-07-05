@@ -6,6 +6,7 @@ const {
   updateDiveSite,
   deleteDiveSite,
   toggleFeaturedDiveSite,
+  toggleListedDiveSite,
 } = require("../controllers/diveSiteController");
 const { protect } = require("../middleware/authMiddleware");
 const { adminOnly } = require("../middleware/adminMiddleware");
@@ -28,5 +29,6 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", protect, adminOnly, updateDiveSite);
 router.delete("/:id", protect, adminOnly, deleteDiveSite);
 router.patch("/:id/toggle-featured", protect, adminOnly, toggleFeaturedDiveSite);
+router.patch("/:id/toggle-listed", protect, adminOnly, toggleListedDiveSite);
 
 module.exports = router;

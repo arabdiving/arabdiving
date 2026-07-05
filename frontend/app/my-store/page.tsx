@@ -19,6 +19,11 @@ export default function MyStorePage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  const [allProducts, setAllProducts] = useState<any[]>([]);
+  const [allCourses, setAllCourses] = useState<any[]>([]);
+  const [featProducts, setFeatProducts] = useState<string[]>([]);
+  const [featCourses, setFeatCourses] = useState<string[]>([]);
+  const [savingFeat, setSavingFeat] = useState(false);
 
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
   const H: any = { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) };
@@ -32,7 +37,16 @@ export default function MyStorePage() {
   useEffect(() => {
     if (!token) { setAuthed(false); return; }
     setAuthed(true);
-    fetch(`${API_BASE}/api/store/me/center`, { headers: HF }).then((r) => r.json()).then((d) => setCenter(d.center || null)).catch(() => {});
+    fetch(`${API_BASE}/api/store/me/center`, { headers: HF }).then((r) => r.json()).then((d) => {
+      const c = d.center || null;
+      setCenter(c);
+      if (c && ["gold", "platinum"].includes(c.tier)) {
+        setFeatProducts((c.featuredProducts || []).map((x: any) => String(x)));
+        setFeatCourses((c.featuredCourses || []).map((x: any) => String(x)));
+        fetch(`${API_BASE}/api/products?all=true`).then((r) => r.json()).then((x) => setAllProducts(x.data || [])).catch(() => {});
+        fetch(`${API_BASE}/api/courses`).then((r) => r.json()).then((x) => setAllCourses(x.data || [])).catch(() => {});
+      }
+    }).catch(() => {});
     loadProducts(); loadOrders(); loadCourses(); loadTemplates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -87,6 +101,16 @@ export default function MyStorePage() {
   const edit = (p: any) => { setEditingId(p._id); setForm({ name: p.name, description: p.description || "", price: p.price || 0, currency: p.currency || "USD", images: p.images || [], features: p.features || [], sizeType: p.sizeType || "none", sizes: p.sizes || [], inStock: p.inStock !== false, active: p.active !== false }); window.scrollTo({ top: 0 }); };
   const del = async (id: string) => { if (!confirm("حذف المنتج؟")) return; await fetch(`${API_BASE}/api/store/me/products/${id}`, { method: "DELETE", headers: HF }); loadProducts(); };
 
+  const saveFeatured = async () => {
+    setSavingFeat(true);
+    try {
+      const res = await fetch(`${API_BASE}/api/store/me/featured`, { method: "PUT", headers: H, body: JSON.stringify({ featuredProducts: featProducts, featuredCourses: featCourses }) });
+      const d = await res.json();
+      setMsg(d.success ? "تم حفظ الانتقاء المميّز ✅" : (d.message || "تعذّر الحفظ"));
+    } catch { setMsg("تعذّر الاتصال"); }
+    setSavingFeat(false);
+  };
+
   if (authed === false) return <Center><div style={{ fontSize: "48px" }}>🏪</div><h1 style={{ color: "var(--navy)" }}>متجري</h1><p style={{ color: "#666", margin: "10px 0 18px" }}>سجّل الدخول للوصول إلى لوحة متجرك.</p><Link href="/login" style={btnGold}>تسجيل الدخول</Link></Center>;
   if (authed && center === null) return <Center><div style={{ fontSize: "48px" }}>🏪</div><h1 style={{ color: "var(--navy)" }}>متجري</h1><p style={{ color: "#666", marginTop: "10px", lineHeight: 1.8 }}>لا يوجد متجر مرتبط بحسابك بعد.<br />تواصل مع إدارة ArabDiving لإنشاء متجرك الخاص وربطه بحسابك.</p></Center>;
 
@@ -98,6 +122,24 @@ export default function MyStorePage() {
         <h1 style={{ color: "var(--navy)" }}>🏪 {center?.name || "متجري"}</h1>
         {center?.slug && <Link href={`/store/${center.slug}`} style={{ color: "var(--mid)", fontSize: "14px" }}>عرض صفحة متجري ←</Link>}
       </div>
+
+      {center && ["gold", "platinum"].includes(center.tier) && (
+        <div style={{ background: "linear-gradient(135deg,#fffbeb,#fef3c7)", border: "1px solid #fcd34d", borderRadius: "14px", padding: "18px", marginBottom: "20px" }}>
+          <h3 style={{ color: "#92400e", margin: "0 0 4px" }}>⭐ الانتقاء المميّز (فئة {center.tier === "platinum" ? "بلاتينية" : "ذهبية"})</h3>
+          <p style={{ color: "#a16207", fontSize: "13px", marginBottom: "12px" }}>اختر منتجات وكورسات من كتالوج المنصة لعرضها على صفحتك — إضافة إلى منتجاتك ودوراتك.</p>
+          <p style={{ color: "#92400e", fontWeight: 700, fontSize: "13px", marginBottom: "6px" }}>منتجات مميّزة ({featProducts.length}):</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", marginBottom: "14px" }}>
+            {allProducts.map((p) => { const on = featProducts.includes(String(p._id)); return <button key={p._id} onClick={() => setFeatProducts((x) => on ? x.filter((i) => i !== String(p._id)) : [...x, String(p._id)])} style={pickChip(on)}>{on ? "✓ " : ""}{p.name}</button>; })}
+            {allProducts.length === 0 && <span style={{ color: "#a16207", fontSize: "13px" }}>لا توجد منتجات في الكتالوج.</span>}
+          </div>
+          <p style={{ color: "#92400e", fontWeight: 700, fontSize: "13px", marginBottom: "6px" }}>كورسات مميّزة ({featCourses.length}):</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: "7px", marginBottom: "14px" }}>
+            {allCourses.map((c) => { const on = featCourses.includes(String(c._id)); return <button key={c._id} onClick={() => setFeatCourses((x) => on ? x.filter((i) => i !== String(c._id)) : [...x, String(c._id)])} style={pickChip(on)}>{on ? "✓ " : ""}{c.title}</button>; })}
+            {allCourses.length === 0 && <span style={{ color: "#a16207", fontSize: "13px" }}>لا توجد كورسات في الكتالوج.</span>}
+          </div>
+          <button onClick={saveFeatured} disabled={savingFeat} style={{ background: "#c9952a", color: "#fff", border: "none", padding: "10px 22px", borderRadius: "10px", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 }}>{savingFeat ? "جارٍ الحفظ..." : "💾 حفظ الانتقاء"}</button>
+        </div>
+      )}
 
       <div style={{ display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap" }}>
         <button onClick={() => setTab("products")} style={tabBtn(tab === "products")}>المنتجات ({products.length})</button>
@@ -201,6 +243,7 @@ export default function MyStorePage() {
   );
 }
 
+function pickChip(on: boolean): React.CSSProperties { return { background: on ? "#c9952a" : "#fff", color: on ? "#fff" : "#92400e", border: "1px solid #fcd34d", borderRadius: "18px", padding: "5px 12px", cursor: "pointer", fontFamily: "inherit", fontSize: "12.5px", fontWeight: on ? 700 : 500 }; }
 function Center({ children }: { children: React.ReactNode }) { return <main style={{ maxWidth: "520px", margin: "60px auto", padding: "0 20px", textAlign: "center" }}>{children}</main>; }
 const btnGold: React.CSSProperties = { background: "var(--gold)", color: "white", padding: "12px 28px", borderRadius: "10px", fontWeight: 700 };
 const btnMid: React.CSSProperties = { background: "var(--mid)", color: "white", border: "none", padding: "11px 24px", borderRadius: "10px", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 };

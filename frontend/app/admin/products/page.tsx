@@ -19,7 +19,7 @@ export default function AdminProducts() {
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
 
-  const load = () => fetch(`${API_BASE}/api/products`).then((r) => r.json()).then((d) => setItems(d.data || [])).catch(() => setMsg("تعذّر التحميل"));
+  const load = () => fetch(`${API_BASE}/api/products?all=true`).then((r) => r.json()).then((d) => setItems(d.data || [])).catch(() => setMsg("تعذّر التحميل"));
   useEffect(() => { load(); }, []);
 
   const startEdit = (p: any) => {
@@ -50,6 +50,7 @@ export default function AdminProducts() {
     const d = await res.json();
     if (d.success) { setMsg(editingId ? "تم التحديث ✅" : "تمت الإضافة ✅"); reset(); load(); } else setMsg(d.message || "تعذّر الحفظ");
   };
+  const toggleActive = async (id?: string) => { if (!id) return; const res = await fetch(`${API_BASE}/api/products/${id}/toggle-active`, { method: "PATCH", headers: authHeaders() }); const d = await res.json(); if (d.success) setItems((prev) => prev.map((p: any) => p._id === id ? { ...p, active: d.active } : p)); };
   const remove = async (id?: string) => { if (!id || !confirm("حذف المنتج؟")) return; await fetch(`${API_BASE}/api/products/${id}`, { method: "DELETE", headers: authHeaders() }); load(); };
 
   return (
@@ -104,6 +105,7 @@ export default function AdminProducts() {
             <p style={{ color: "#666", fontSize: "13px", margin: "4px 0" }}>{p.price}{symbolOf(p.currency)} · {p.category || "—"} · {p.sizes?.length ? p.sizes.join("/") : "بلا مقاسات"} {p.active ? "" : "· (غير منشور)"}</p>
             <div style={{ display: "flex", gap: "8px", marginTop: "8px" }}>
               <button onClick={() => startEdit(p)} style={mini("#2e75b6")}>تعديل</button>
+              <button onClick={() => toggleActive(p._id)} style={mini(p.active === false ? "#b45309" : "#0d9488")} title={p.active === false ? "إظهار في المتجر" : "إخفاء من المتجر"}>{p.active === false ? "🙈 مخفي" : "👁️ ظاهر"}</button>
               <button onClick={() => remove(p._id)} style={mini("#b91c1c")}>حذف</button>
             </div>
           </div>

@@ -15,6 +15,7 @@ interface Site {
   image: string;
   images: string[];
   featuredOnHome?: boolean;
+  listed?: boolean;
 }
 
 const empty: Site = { name: "", country: "مصر", city: "", depth: 0, difficulty: "Beginner", description: "", image: "", images: [] };
@@ -28,7 +29,7 @@ export default function AdminDiveSites() {
   const [busy, setBusy] = useState(false);
 
   const load = () => {
-    fetch(`${API_BASE}/api/dive-sites`)
+    fetch(`${API_BASE}/api/dive-sites?all=true`)
       .then((r) => r.json())
       .then((d) => setSites(d.data || []))
       .catch(() => setMsg("تعذّر تحميل المواقع"));
@@ -101,6 +102,12 @@ export default function AdminDiveSites() {
     }
   };
 
+  const toggleListed = async (id: string) => {
+    const res = await fetch(`${API_BASE}/api/dive-sites/${id}/toggle-listed`, { method: "PATCH", headers: authHeaders() });
+    const d = await res.json();
+    if (d.success) setSites((prev) => prev.map((s: any) => s._id === id ? { ...s, listed: d.listed } : s));
+  };
+
   const importDefaults = async () => {
     if (!confirm("استيراد قائمة مواقع الغوص الافتراضية (41 موقعًا)؟")) return;
     setMsg("");
@@ -161,7 +168,7 @@ export default function AdminDiveSites() {
         <div>
           <h2 style={{ color: "var(--navy)", fontSize: "20px", margin: 0 }}>كل المواقع ({sites.length})</h2>
           <p style={{ color: "#888", fontSize: "13px", margin: "4px 0 0" }}>
-            🏠 الظاهرة في الهوم: {sites.filter((s: any) => s.featuredOnHome).length}
+            🏠 الظاهرة في الهوم: {sites.filter((s: any) => s.featuredOnHome).length} · 🙈 مخفية من صفحة المواقع: {sites.filter((s: any) => s.listed === false).length}
           </p>
         </div>
         {sites.length === 0 && (
@@ -197,6 +204,13 @@ export default function AdminDiveSites() {
                 title={s.featuredOnHome ? "إزالة من الهوم" : "عرض في الهوم"}
               >
                 {s.featuredOnHome ? "🏠 في الهوم" : "⊕ عرض في الهوم"}
+              </button>
+              <button
+                onClick={() => toggleListed(s._id)}
+                style={mini(s.listed === false ? "#b45309" : "#0d9488")}
+                title={s.listed === false ? "إظهار في صفحة مواقع الغوص" : "إخفاء من صفحة مواقع الغوص"}
+              >
+                {s.listed === false ? "🙈 مخفي من المواقع" : "👁️ ظاهر في المواقع"}
               </button>
               <button onClick={() => remove(s._id)} style={mini("#b91c1c")}>حذف</button>
             </div>
