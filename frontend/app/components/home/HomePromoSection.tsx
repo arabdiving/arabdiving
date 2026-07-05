@@ -175,54 +175,34 @@ const PAGE_PROMOS: Record<string, {
   },
 };
 
-export default function HomePromoSection({ pageKey }: { pageKey: string }) {
+export default function HomePromoSection({ pageKey, image }: { pageKey: string; image?: string }) {
   const cfg = PAGE_PROMOS[pageKey];
   if (!cfg) return null;
 
   return (
-    <section style={{ padding: "70px 20px" }}>
-      <div style={{ maxWidth: "1100px", margin: "0 auto" }}>
-        <div style={{
-          background: cfg.bg, borderRadius: "24px", overflow: "hidden",
-          display: "grid", gridTemplateColumns: "1fr 1fr", minHeight: "300px",
-        }}>
-          {/* Left: content */}
-          <div style={{ padding: "52px 48px", display: "flex", flexDirection: "column", justifyContent: "center" }}>
-            <div style={{ fontSize: "52px", marginBottom: "16px", lineHeight: 1 }}>{cfg.icon}</div>
-            <h2 style={{ fontSize: "clamp(22px,3.5vw,34px)", fontWeight: 900, color: "white", marginBottom: "14px", lineHeight: 1.25 }}>
-              {cfg.label}
-            </h2>
-            <p style={{ color: "rgba(255,255,255,0.8)", fontSize: "15px", lineHeight: 1.8, marginBottom: "24px", maxWidth: "420px" }}>
-              {cfg.desc}
-            </p>
-            <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "28px" }}>
-              {cfg.bullets.map((b, i) => (
-                <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", color: "rgba(255,255,255,0.9)", fontSize: "14px" }}>
-                  <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: cfg.accent, flexShrink: 0 }} />
-                  {b}
-                </div>
-              ))}
+    <div style={{ background: cfg.bg, borderRadius: "22px", overflow: "hidden", display: "flex", flexDirection: "column", height: "100%", border: "1px solid rgba(255,255,255,0.08)" }}>
+      {image && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={image} alt={cfg.label} style={{ width: "100%", height: "165px", objectFit: "cover" }} />
+      )}
+      <div style={{ padding: "30px 28px", display: "flex", flexDirection: "column", flex: 1 }}>
+        {!image && (
+          <div style={{ width: "56px", height: "56px", borderRadius: "16px", background: "rgba(255,255,255,0.12)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: "28px", marginBottom: "16px" }}>{cfg.icon}</div>
+        )}
+        <h2 style={{ fontSize: "clamp(20px,3vw,27px)", fontWeight: 900, color: "white", marginBottom: "10px", lineHeight: 1.3 }}>{cfg.label}</h2>
+        <p style={{ color: "rgba(255,255,255,0.78)", fontSize: "14.5px", lineHeight: 1.8, marginBottom: "18px" }}>{cfg.desc}</p>
+        <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: "22px" }}>
+          {cfg.bullets.map((b, i) => (
+            <div key={i} style={{ display: "flex", alignItems: "center", gap: "10px", color: "rgba(255,255,255,0.9)", fontSize: "14px" }}>
+              <span style={{ width: "6px", height: "6px", borderRadius: "50%", background: cfg.accent, flexShrink: 0 }} />
+              {b}
             </div>
-            <Link href={cfg.href} style={{
-              display: "inline-flex", alignItems: "center", gap: "8px",
-              background: cfg.accent, color: "#0f172a",
-              padding: "13px 28px", borderRadius: "12px",
-              fontWeight: 800, fontSize: "15px", alignSelf: "flex-start",
-              textDecoration: "none", boxShadow: "0 4px 14px rgba(0,0,0,0.2)",
-            }}>
-              {cfg.cta} ←
-            </Link>
-          </div>
-          {/* Right: decorative */}
-          <div style={{
-            background: "rgba(255,255,255,0.05)",
-            display: "flex", alignItems: "center", justifyContent: "center",
-            fontSize: "120px", opacity: 0.25,
-          }}>
-            {cfg.icon}
-          </div>
+          ))}
         </div>
+        <Link href={cfg.href} style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: cfg.accent, color: "#0f172a", padding: "12px 26px", borderRadius: "12px", fontWeight: 800, fontSize: "15px", alignSelf: "flex-start", marginTop: "auto", boxShadow: "0 4px 14px rgba(0,0,0,0.25)" }}>
+          {cfg.cta} ←
+        </Link>
       </div>
-    </section>
+    </div>
   );
 }

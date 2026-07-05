@@ -12,6 +12,7 @@ import HomePromoSection from "./components/home/HomePromoSection";
 import HomeMarketplace from "./components/home/HomeMarketplace";
 import RedSeaMap from "./components/RedSeaMap";
 import { API_BASE } from "./lib/api";
+import { ReactNode } from "react";
 
 interface HomeBlock {
   key: string;
@@ -34,16 +35,14 @@ const DEFAULT_BLOCKS: HomeBlock[] = [
   { key: "page_cards",        visible: true,  order: 11 },
 ];
 
-async function getHomeBlocks(): Promise<HomeBlock[]> {
+async function getHomeData(): Promise<{ blocks: HomeBlock[]; promoImages: Record<string, string> }> {
   try {
-    const res = await fetch(`${API_BASE}/api/settings`, {
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) return DEFAULT_BLOCKS;
+    const res = await fetch(`${API_BASE}/api/settings`, { next: { revalidate: 60 } });
+    if (!res.ok) return { blocks: DEFAULT_BLOCKS, promoImages: {} };
     const data = await res.json();
+    const promoImages: Record<string, string> = data.settings?.promoImages || {};
     const hb: HomeBlock[] = data.settings?.homeBlocks;
     if (hb && hb.length > 0) {
-      // Merge: ensure all DEFAULT_BLOCKS keys exist (hidden if new)
       const dbKeys = new Set(hb.map((b) => b.key));
       const merged = [
         ...hb,
@@ -51,13 +50,14 @@ async function getHomeBlocks(): Promise<HomeBlock[]> {
           .filter((d) => !dbKeys.has(d.key))
           .map((d) => ({ ...d, order: d.key === "sea_map" ? 0.5 : hb.length + d.order })),
       ];
-      return merged.sort((a, b) => a.order - b.order);
+      return { blocks: merged.sort((a, b) => a.order - b.order), promoImages };
     }
+    return { blocks: DEFAULT_BLOCKS, promoImages };
   } catch {}
-  return DEFAULT_BLOCKS;
+  return { blocks: DEFAULT_BLOCKS, promoImages: {} };
 }
 
-function renderBlock(key: string) {
+function renderBlock(key: string, promoImages: Record<string, string> = {}) {
   switch (key) {
     // ─── بلوكات أساسية ───────────────────────────────────────────
     case "hero":               return <Hero key="hero" />;
@@ -73,39 +73,52 @@ function renderBlock(key: string) {
     case "marketplace_grid":  return <HomeMarketplace key="marketplace_grid" />;
     case "page_cards":        return <HomePageCards key="page_cards" />;
     // ─── بروموشن الصفحات المنفردة ────────────────────────────────
-    case "survey_promo":       return <HomePromoSection key="survey_promo"       pageKey="survey" />;
-    case "courses_promo":      return <HomePromoSection key="courses_promo"      pageKey="courses" />;
-    case "guide_promo":        return <HomePromoSection key="guide_promo"        pageKey="guide" />;
-    case "quiz_promo":         return <HomePromoSection key="quiz_promo"         pageKey="quiz" />;
-    case "try_diving_promo":   return <HomePromoSection key="try_diving_promo"   pageKey="try_diving" />;
-    case "retreats_promo":     return <HomePromoSection key="retreats_promo"     pageKey="retreats" />;
-    case "trips_promo":        return <HomePromoSection key="trips_promo"        pageKey="trips" />;
-    case "women_promo":        return <HomePromoSection key="women_promo"        pageKey="women" />;
-    case "youth_promo":        return <HomePromoSection key="youth_promo"        pageKey="youth" />;
-    case "kids_promo":         return <HomePromoSection key="kids_promo"         pageKey="kids" />;
-    case "logbook_promo":      return <HomePromoSection key="logbook_promo"      pageKey="logbook" />;
-    case "marketplace_promo":  return <HomePromoSection key="marketplace_promo"  pageKey="marketplace" />;
-    case "temperatures_promo": return <HomePromoSection key="temperatures_promo" pageKey="temperatures" />;
-    case "trends_promo":       return <HomePromoSection key="trends_promo"       pageKey="trends" />;
-    case "weight_calc_promo":  return <HomePromoSection key="weight_calc_promo"  pageKey="weight_calc_promo" />;
-    case "communities_promo":  return <HomePromoSection key="communities_promo"  pageKey="communities" />;
-    case "stories_promo":      return <HomePromoSection key="stories_promo"      pageKey="stories" />;
-    case "dive_sites_promo":   return <HomePromoSection key="dive_sites_promo"   pageKey="dive_sites" />;
-    case "game_promo":         return <HomePromoSection key="game_promo"         pageKey="game" />;
-    case "family_booking_promo": return <HomePromoSection key="family_booking_promo" pageKey="family_booking" />;
-    case "sizes_promo":        return <HomePromoSection key="sizes_promo"        pageKey="sizes" />;
-    case "members_promo":      return <HomePromoSection key="members_promo"      pageKey="members" />;
-    case "training_fit_promo": return <HomePromoSection key="training_fit_promo" pageKey="training_fit" />;
-    case "standards_promo":    return <HomePromoSection key="standards_promo"    pageKey="standards" />;
+    case "survey_promo":       return <HomePromoSection key="survey_promo" pageKey="survey" image={promoImages["survey_promo"]} />;
+    case "courses_promo":      return <HomePromoSection key="courses_promo" pageKey="courses" image={promoImages["courses_promo"]} />;
+    case "guide_promo":        return <HomePromoSection key="guide_promo" pageKey="guide" image={promoImages["guide_promo"]} />;
+    case "quiz_promo":         return <HomePromoSection key="quiz_promo" pageKey="quiz" image={promoImages["quiz_promo"]} />;
+    case "try_diving_promo":   return <HomePromoSection key="try_diving_promo" pageKey="try_diving" image={promoImages["try_diving_promo"]} />;
+    case "retreats_promo":     return <HomePromoSection key="retreats_promo" pageKey="retreats" image={promoImages["retreats_promo"]} />;
+    case "trips_promo":        return <HomePromoSection key="trips_promo" pageKey="trips" image={promoImages["trips_promo"]} />;
+    case "women_promo":        return <HomePromoSection key="women_promo" pageKey="women" image={promoImages["women_promo"]} />;
+    case "youth_promo":        return <HomePromoSection key="youth_promo" pageKey="youth" image={promoImages["youth_promo"]} />;
+    case "kids_promo":         return <HomePromoSection key="kids_promo" pageKey="kids" image={promoImages["kids_promo"]} />;
+    case "logbook_promo":      return <HomePromoSection key="logbook_promo" pageKey="logbook" image={promoImages["logbook_promo"]} />;
+    case "marketplace_promo":  return <HomePromoSection key="marketplace_promo" pageKey="marketplace" image={promoImages["marketplace_promo"]} />;
+    case "temperatures_promo": return <HomePromoSection key="temperatures_promo" pageKey="temperatures" image={promoImages["temperatures_promo"]} />;
+    case "trends_promo":       return <HomePromoSection key="trends_promo" pageKey="trends" image={promoImages["trends_promo"]} />;
+    case "weight_calc_promo":  return <HomePromoSection key="weight_calc_promo" pageKey="weight_calc_promo" image={promoImages["weight_calc_promo"]} />;
+    case "communities_promo":  return <HomePromoSection key="communities_promo" pageKey="communities" image={promoImages["communities_promo"]} />;
+    case "stories_promo":      return <HomePromoSection key="stories_promo" pageKey="stories" image={promoImages["stories_promo"]} />;
+    case "dive_sites_promo":   return <HomePromoSection key="dive_sites_promo" pageKey="dive_sites" image={promoImages["dive_sites_promo"]} />;
+    case "game_promo":         return <HomePromoSection key="game_promo" pageKey="game" image={promoImages["game_promo"]} />;
+    case "family_booking_promo": return <HomePromoSection key="family_booking_promo" pageKey="family_booking" image={promoImages["family_booking_promo"]} />;
+    case "sizes_promo":        return <HomePromoSection key="sizes_promo" pageKey="sizes" image={promoImages["sizes_promo"]} />;
+    case "members_promo":      return <HomePromoSection key="members_promo" pageKey="members" image={promoImages["members_promo"]} />;
+    case "training_fit_promo": return <HomePromoSection key="training_fit_promo" pageKey="training_fit" image={promoImages["training_fit_promo"]} />;
+    case "standards_promo":    return <HomePromoSection key="standards_promo" pageKey="standards" image={promoImages["standards_promo"]} />;
     default:                   return null;
   }
 }
 
 export default async function Home() {
-  const blocks = await getHomeBlocks();
-  return (
-    <>
-      {blocks.filter((b) => b.visible).map((b) => renderBlock(b.key))}
-    </>
-  );
+  const { blocks, promoImages } = await getHomeData();
+  const visible = blocks.filter((b) => b.visible);
+  const out: ReactNode[] = [];
+  let run: HomeBlock[] = [];
+  const flush = () => {
+    if (run.length === 0) return;
+    out.push(
+      <div key={`promorow-${out.length}`} style={{ maxWidth: "1100px", margin: "0 auto", padding: "38px 20px", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(340px, 1fr))", gap: "22px" }}>
+        {run.map((b) => renderBlock(b.key, promoImages))}
+      </div>
+    );
+    run = [];
+  };
+  for (const b of visible) {
+    if (b.key.endsWith("_promo")) run.push(b);
+    else { flush(); out.push(renderBlock(b.key, promoImages)); }
+  }
+  flush();
+  return <>{out}</>;
 }

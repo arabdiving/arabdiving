@@ -77,6 +77,7 @@ const SettingsSchema = new mongoose.Schema(
         { key: "community_survey",  label: "community_survey",  visible: false, order: 8 },
       ],
     },
+    promoImages: { type: mongoose.Schema.Types.Mixed, default: {} },
     mapPoints: {
       type: [
         {

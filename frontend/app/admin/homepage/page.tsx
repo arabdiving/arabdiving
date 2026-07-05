@@ -1,5 +1,7 @@
 "use client";
 
+import { uploadImage } from "@/app/lib/uploadImage";
+
 import { useEffect, useState } from "react";
 import { API_BASE } from "@/app/lib/api";
 
@@ -54,6 +56,7 @@ const BLOCK_REGISTRY: Record<string, { label: string; icon: string; desc: string
 
 export default function HomepageBlocksAdmin() {
   const [blocks, setBlocks] = useState<Block[]>([]);
+  const [promoImages, setPromoImages] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
@@ -84,6 +87,7 @@ export default function HomepageBlocksAdmin() {
 
         const all = [...enriched, ...missing].sort((a, b) => a.order - b.order);
         setBlocks(all);
+        setPromoImages(d.settings?.promoImages || {});
       })
       .catch(() => setError("تعذّر تحميل الإعدادات"));
   }, []);
@@ -124,7 +128,7 @@ export default function HomepageBlocksAdmin() {
       const res = await fetch(`${API_BASE}/api/settings`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ homeBlocks: payload }),
+        body: JSON.stringify({ homeBlocks: payload, promoImages }),
       });
       const data = await res.json();
       if (data.success) {
@@ -151,6 +155,12 @@ export default function HomepageBlocksAdmin() {
     setShowAdd(false);
     setSaved(false);
   };
+
+  const uploadPromo = async (key: string, file: File) => {
+    try { const url = await uploadImage(file); setPromoImages((p) => ({ ...p, [key]: url })); setSaved(false); }
+    catch (e: any) { alert(e?.message || "تعذّر رفع الصورة"); }
+  };
+  const removePromo = (key: string) => { setPromoImages((p) => ({ ...p, [key]: "" })); setSaved(false); };
 
   const th: React.CSSProperties = {
     background: "var(--navy)", color: "#fff", padding: "12px 16px",
@@ -207,6 +217,21 @@ export default function HomepageBlocksAdmin() {
                         )}
                       </div>
                     </div>
+                    {b.key.endsWith("_promo") && (
+                      <div style={{ marginTop: "10px", display: "flex", alignItems: "center", gap: "8px", flexWrap: "wrap" }}>
+                        {promoImages[b.key] ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={promoImages[b.key]} alt="" style={{ width: "64px", height: "40px", objectFit: "cover", borderRadius: "8px", border: "1px solid #dde8f4" }} />
+                        ) : (
+                          <span style={{ fontSize: "12px", color: "#94a3b8" }}>لا توجد صورة</span>
+                        )}
+                        <label style={{ background: "#eef4fa", color: "#0d6cb0", padding: "5px 12px", borderRadius: "8px", fontSize: "12.5px", cursor: "pointer", fontWeight: 600 }}>
+                          📷 صورة
+                          <input type="file" accept="image/*" hidden onChange={(e) => { const fl = e.target.files?.[0]; if (fl) uploadPromo(b.key, fl); }} />
+                        </label>
+                        {promoImages[b.key] && <button onClick={() => removePromo(b.key)} style={{ background: "transparent", border: "none", color: "#b91c1c", cursor: "pointer", fontSize: "12.5px", fontWeight: 600 }}>حذف الصورة</button>}
+                      </div>
+                    )}
                   </td>
                   <td style={{ ...td, textAlign: "center" }}>
                     <button
