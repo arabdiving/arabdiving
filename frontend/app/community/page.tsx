@@ -53,6 +53,7 @@ export default function CommunityPage() {
   };
   const getToken = () => localStorage.getItem("token");
   const currentUser = typeof window !== "undefined" ? getCurrentUser() : null;
+  const myId = (currentUser as any)?._id || (currentUser as any)?.id || "";
 
   const loadComments = async (postId: string) => {
     try {
@@ -212,7 +213,7 @@ export default function CommunityPage() {
     );
   };
 
-  const myPosts = posts.filter((p) => p.user?._id === currentUser?._id);
+  const myPosts = posts.filter((p) => p.user?._id === myId);
   const authors = Array.from(new Map(posts.filter((p) => p.user).map((p) => [p.user!._id, p.user!] as [string, User])).values()).slice(0, 8);
   const shownPosts = posts.filter((p) => (filter === "images" ? !!p.image : filter === "videos" ? !!p.video : true));
 
@@ -303,7 +304,7 @@ export default function CommunityPage() {
       </form>
 
       {shownPosts.map((post) => {
-        const canManage = currentUser?.role === "admin" || currentUser?._id === post.user?._id;
+        const canManage = currentUser?.role === "admin" || myId === post.user?._id;
         const isEditing = editingPost === post._id;
         return (
           <div key={post._id} style={{ background: "var(--glass-bg,rgba(8,20,48,0.78))", border: "1px solid var(--glass-border,rgba(255,255,255,0.08))", borderRadius: "18px", padding: "20px", marginBottom: "18px", backdropFilter: "blur(14px)" }}>
@@ -371,7 +372,7 @@ export default function CommunityPage() {
               ) : <p style={{ color: "#9a6f1f", marginTop: "10px" }}>التعليقات معطّلة حاليًا.</p>}
               <div style={{ marginTop: "15px" }}>
                 {comments[post._id]?.length ? comments[post._id].map((c) => {
-                  const canEdit = currentUser?.role === "admin" || currentUser?._id === c.user?._id;
+                  const canEdit = currentUser?.role === "admin" || myId === c.user?._id;
                   const editing = editingComment === c._id;
                   return (
                     <div key={c._id} style={{ borderTop: "1px solid rgba(255,255,255,0.08)", padding: "10px 0" }}>

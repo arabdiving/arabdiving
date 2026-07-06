@@ -25,7 +25,7 @@ const updateUserRole = async (req, res) => {
 
 const createUser = async (req, res) => {
   try {
-    const { name, email, password, role } = req.body;
+    const { name, email, password, role, surveyRole } = req.body;
     if (!name || !email || !password) {
       return res.status(400).json({ success: false, message: "الاسم والبريد وكلمة المرور مطلوبة" });
     }
@@ -39,6 +39,7 @@ const createUser = async (req, res) => {
       email: email.toLowerCase(),
       password: hashed,
       role: role === "admin" ? "admin" : "member",
+      personality: { role: ["teacher", "student", "both"].includes(surveyRole) ? surveyRole : "", dominant: "" },
     });
     res.status(201).json({
       success: true,
@@ -139,12 +140,13 @@ const adminUpdateUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (!user) return res.status(404).json({ success: false, message: "المستخدم غير موجود" });
-    const { name, email, role, password, country, city } = req.body;
+    const { name, email, role, password, country, city, surveyRole } = req.body;
     if (typeof name === "string" && name.trim()) user.name = name.trim();
     if (typeof email === "string" && email.trim()) user.email = email.trim().toLowerCase();
     if (typeof country === "string") user.country = country;
     if (typeof city === "string") user.city = city;
     if (role && ["member", "admin"].includes(role)) user.role = role;
+    if (["teacher", "student", "both", ""].includes(surveyRole)) { user.personality = user.personality || {}; user.personality.role = surveyRole; user.markModified("personality"); }
     if (password && String(password).length >= 6) {
       user.password = await bcrypt.hash(String(password), 10);
     }

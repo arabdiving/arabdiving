@@ -16,7 +16,8 @@ function sanitizeUser(u, viewer) {
   r.profileImage = photoOk ? (o.profileImage || "") : "";
   r.photoHidden = !photoOk;
   r.infoHidden = !infoOk;
-  if (o.showInColor && o.personality && o.personality.dominant) { r.colorCommunity = o.personality.dominant; r.surveyRole = o.personality.role || ""; }
+  if (o.showInColor && o.personality && o.personality.dominant) r.colorCommunity = o.personality.dominant;
+  if (o.personality && o.personality.role) r.surveyRole = o.personality.role;
   if (infoOk) { r.country = o.country || ""; r.city = o.city || ""; r.bio = o.bio || ""; r.certificationLevel = o.certificationLevel || ""; r.dateOfBirth = o.dateOfBirth || ""; }
   return r;
 }

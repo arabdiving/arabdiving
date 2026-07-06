@@ -76,7 +76,7 @@ export default function ChatWidget() {
       </button>
 
       {open && (
-        <div style={{ position: "fixed", bottom: "92px", insetInlineEnd: "20px", zIndex: 80, width: "min(360px, calc(100vw - 40px))", background: "white", borderRadius: "18px", boxShadow: "0 18px 50px rgba(0,0,0,0.3)", overflow: "hidden", display: "flex", flexDirection: "column", maxHeight: "70vh" }}>
+        <div style={{ position: "fixed", bottom: "92px", insetInlineEnd: "20px", zIndex: 80, width: "min(360px, calc(100vw - 40px))", background: "#0b1f3a", border: "1px solid rgba(255,255,255,0.08)", borderRadius: "18px", boxShadow: "0 18px 50px rgba(0,0,0,0.3)", overflow: "hidden", display: "flex", flexDirection: "column", maxHeight: "70vh" }}>
           {/* Header */}
           <div style={{ background: "#0B2C59", color: "white", padding: "16px 18px" }}>
             <strong style={{ fontSize: "16px" }}>تواصل مع الغواصين العرب</strong>
@@ -94,9 +94,9 @@ export default function ChatWidget() {
           {chatEnabled ? (
             <>
               {/* Messages */}
-              <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px", background: "#f6f9fc", display: "flex", flexDirection: "column", gap: "10px", minHeight: "180px" }}>
+              <div ref={scrollRef} style={{ flex: 1, overflowY: "auto", padding: "16px", background: "#08152b", display: "flex", flexDirection: "column", gap: "10px", minHeight: "180px" }}>
                 {msgs.map((m, i) => (
-                  <div key={i} style={{ alignSelf: m.from === "bot" ? "flex-start" : "flex-end", maxWidth: "85%", background: m.from === "bot" ? "white" : "var(--mid, #2e75b6)", color: m.from === "bot" ? "#06324f" : "white", padding: "10px 14px", borderRadius: "14px", fontSize: "14px", lineHeight: 1.7, boxShadow: "0 2px 6px rgba(0,0,0,0.06)" }}>
+                  <div key={i} style={{ alignSelf: m.from === "bot" ? "flex-start" : "flex-end", maxWidth: "85%", background: m.from === "bot" ? "rgba(255,255,255,0.1)" : "var(--mid, #22d3ee)", color: m.from === "bot" ? "#f1f5f9" : "#04121f", fontWeight: m.from === "bot" ? 400 : 600, padding: "10px 14px", borderRadius: "14px", fontSize: "14px", lineHeight: 1.7, boxShadow: "0 2px 6px rgba(0,0,0,0.06)" }}>
                     {m.text}
                   </div>
                 ))}
@@ -104,21 +104,21 @@ export default function ChatWidget() {
 
               {/* Input */}
               {step <= 2 ? (
-                <div style={{ display: "flex", gap: "8px", padding: "12px", borderTop: "1px solid #eef2f6" }}>
+                <div style={{ display: "flex", gap: "8px", padding: "12px", borderTop: "1px solid rgba(255,255,255,0.08)" }}>
                   <input value={input} onChange={(e) => setInput(e.target.value)} onKeyDown={(e) => e.key === "Enter" && send()}
                     placeholder={step === 1 ? "رقم الجوال أو البريد..." : "اكتب هنا..."} type={step === 1 ? "text" : "text"}
-                    style={{ flex: 1, padding: "10px 12px", borderRadius: "10px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "14px", color: "#0f172a", background: "white" }} />
+                    style={{ flex: 1, padding: "10px 12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.15)", fontFamily: "inherit", fontSize: "14px", color: "#f1f5f9", background: "rgba(255,255,255,0.06)" }} />
                   <button onClick={send} disabled={sending} style={{ background: "var(--gold, #c9952a)", color: "white", border: "none", borderRadius: "10px", padding: "0 16px", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 }}>إرسال</button>
                 </div>
               ) : (
-                <div style={{ padding: "12px", borderTop: "1px solid #eef2f6", textAlign: "center" }}>
+                <div style={{ padding: "12px", borderTop: "1px solid rgba(255,255,255,0.08)", textAlign: "center" }}>
                   <button onClick={() => { setMsgs([{ from: "bot", text: STEP_PROMPTS[0] }]); setStep(0); setAnswers({ name: "", contact: "", message: "" }); }}
-                    style={{ background: "#eef4fa", color: "#0d6cb0", border: "none", borderRadius: "10px", padding: "10px 18px", cursor: "pointer", fontFamily: "inherit", fontSize: "14px" }}>بدء محادثة جديدة</button>
+                    style={{ background: "rgba(255,255,255,0.08)", color: "#22d3ee", border: "1px solid rgba(255,255,255,0.12)", borderRadius: "10px", padding: "10px 18px", cursor: "pointer", fontFamily: "inherit", fontSize: "14px" }}>بدء محادثة جديدة</button>
                 </div>
               )}
             </>
           ) : (
-            <div style={{ padding: "20px", textAlign: "center", color: "#666", fontSize: "14px" }}>تواصل معنا عبر واتساب أعلاه 👆</div>
+            <div style={{ padding: "20px", textAlign: "center", color: "rgba(255,255,255,0.6)", fontSize: "14px" }}>تواصل معنا عبر واتساب أعلاه 👆</div>
           )}
         </div>
       )}

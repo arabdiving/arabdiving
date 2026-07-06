@@ -15,10 +15,10 @@ interface U {
 export default function AdminUsers() {
   const [users, setUsers] = useState<U[]>([]);
   const [msg, setMsg] = useState("");
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "member" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "member", surveyRole: "" });
 
   const [editing, setEditing] = useState<U | null>(null);
-  const [edit, setEdit] = useState({ name: "", email: "", role: "member", password: "", country: "", city: "" });
+  const [edit, setEdit] = useState({ name: "", email: "", role: "member", password: "", country: "", city: "", surveyRole: "" });
 
   const load = () => {
     fetch(`${API_BASE}/api/admin/users`, { headers: authHeaders() })
@@ -33,7 +33,7 @@ export default function AdminUsers() {
     setMsg("");
     const res = await fetch(`${API_BASE}/api/admin/users`, { method: "POST", headers: authHeaders(), body: JSON.stringify(form) });
     const d = await res.json();
-    if (d.success) { setForm({ name: "", email: "", password: "", role: "member" }); setMsg("تمت إضافة المستخدم ✅"); load(); }
+    if (d.success) { setForm({ name: "", email: "", password: "", role: "member", surveyRole: "" }); setMsg("تمت إضافة المستخدم ✅"); load(); }
     else setMsg(d.message || "تعذّرت الإضافة");
   };
 
@@ -52,13 +52,13 @@ export default function AdminUsers() {
 
   const startEdit = (u: U) => {
     setEditing(u);
-    setEdit({ name: u.name, email: u.email, role: u.role, password: "", country: u.country || "", city: u.city || "" });
+    setEdit({ name: u.name, email: u.email, role: u.role, password: "", country: u.country || "", city: u.city || "", surveyRole: (u as any).personality?.role || "" });
   };
 
   const saveEdit = async () => {
     if (!editing) return;
     setMsg("");
-    const body: any = { name: edit.name, email: edit.email, role: edit.role, country: edit.country, city: edit.city };
+    const body: any = { name: edit.name, email: edit.email, role: edit.role, country: edit.country, city: edit.city, surveyRole: edit.surveyRole };
     if (edit.password.trim()) body.password = edit.password.trim();
     const res = await fetch(`${API_BASE}/api/admin/users/${editing._id}`, { method: "PUT", headers: authHeaders(), body: JSON.stringify(body) });
     const d = await res.json();
@@ -81,6 +81,12 @@ export default function AdminUsers() {
         <select style={field} value={form.role} onChange={(e) => setForm({ ...form, role: e.target.value })}>
           <option value="member">عضو</option>
           <option value="admin">مشرف</option>
+        </select>
+        <select style={field} value={form.surveyRole} onChange={(e) => setForm({ ...form, surveyRole: e.target.value })}>
+          <option value="">التصنيف: غير محدد</option>
+          <option value="teacher">مدرّب</option>
+          <option value="student">متدرّب</option>
+          <option value="both">مدرّب ومتدرّب</option>
         </select>
         <button type="submit" style={{ background: "var(--mid)", color: "white", border: "none", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontFamily: "inherit" }}>إضافة</button>
       </form>
@@ -131,6 +137,14 @@ export default function AdminUsers() {
               <select style={{ ...field, width: "100%" }} value={edit.role} onChange={(e) => setEdit({ ...edit, role: e.target.value })}>
                 <option value="member">عضو</option>
                 <option value="admin">مشرف</option>
+              </select>
+            </L>
+            <L label="التصنيف (مدرّب/متدرّب)">
+              <select style={{ ...field, width: "100%" }} value={edit.surveyRole} onChange={(e) => setEdit({ ...edit, surveyRole: e.target.value })}>
+                <option value="">غير محدد</option>
+                <option value="teacher">مدرّب</option>
+                <option value="student">متدرّب</option>
+                <option value="both">مدرّب ومتدرّب</option>
               </select>
             </L>
             <L label="كلمة مرور جديدة (اتركها فارغة لعدم التغيير)"><input style={{ ...field, width: "100%" }} type="text" value={edit.password} onChange={(e) => setEdit({ ...edit, password: e.target.value })} placeholder="6 أحرف على الأقل" /></L>
