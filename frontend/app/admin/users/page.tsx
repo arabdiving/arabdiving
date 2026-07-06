@@ -98,15 +98,20 @@ export default function AdminUsers() {
               <th style={{ padding: "12px" }}>الاسم</th>
               <th style={{ padding: "12px" }}>البريد</th>
               <th style={{ padding: "12px" }}>الدور</th>
+              <th style={{ padding: "12px" }}>التصنيف</th>
               <th style={{ padding: "12px" }}>إجراءات</th>
             </tr>
           </thead>
           <tbody>
-            {users.map((u) => (
+            {users.map((u) => {
+              const sRole = (u as any).personality?.role || "";
+              const sRoleLabel = sRole === "teacher" ? "🎓 مدرّب" : sRole === "student" ? "🤿 متدرّب" : sRole === "both" ? "🎓🤿 كلاهما" : "—";
+              return (
               <tr key={u._id} style={{ borderTop: "1px solid #eee" }}>
                 <td style={{ padding: "12px" }}>{u.name}</td>
                 <td style={{ padding: "12px", direction: "ltr", textAlign: "right" }}>{u.email}</td>
                 <td style={{ padding: "12px" }}>{u.role === "admin" ? "مشرف" : "عضو"}</td>
+                <td style={{ padding: "12px", color: sRole ? "#0d6cb0" : "#aaa", fontSize: "13px" }}>{sRoleLabel}</td>
                 <td style={{ padding: "12px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
                   <button onClick={() => startEdit(u)} style={btn("#0d6cb0")}>تعديل</button>
                   {u.role === "admin" ? (
@@ -117,7 +122,8 @@ export default function AdminUsers() {
                   <button onClick={() => remove(u._id)} style={btn("#b91c1c")}>حذف</button>
                 </td>
               </tr>
-            ))}
+              );
+            })}
           </tbody>
         </table>
       </div>

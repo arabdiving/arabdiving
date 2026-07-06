@@ -51,7 +51,14 @@ export default function MembersPage() {
   const COLOR_NAMES: any = { red: "🔴 الأحمر", yellow: "🟡 الأصفر", green: "🟢 الأخضر", blue: "🔵 الأزرق" };
   const ROLE_NAMES: any = { teacher: "مدرّب", student: "متدرّب", both: "الاثنان" };
   const countries = Array.from(new Set(members.map((m) => m.country).filter(Boolean)));
-  const shown = members.filter((m) => m._id !== me && (!fCountry || m.country === fCountry) && (!fColor || m.colorCommunity === fColor) && (!fRole || m.surveyRole === fRole));
+  // "both" users should appear under teacher OR student filter
+  const roleMatch = (surveyRole: string, filter: string) => {
+    if (!filter) return true;
+    if (surveyRole === filter) return true;
+    if (surveyRole === "both" && (filter === "teacher" || filter === "student")) return true;
+    return false;
+  };
+  const shown = members.filter((m) => m._id !== me && (!fCountry || m.country === fCountry) && (!fColor || m.colorCommunity === fColor) && roleMatch(m.surveyRole, fRole));
   const selStyle: React.CSSProperties = { padding: "9px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "14px" };
   const btn = (bg: string, color = "white"): React.CSSProperties => ({ background: bg, color, border: "none", padding: "8px 14px", borderRadius: "8px", cursor: "pointer", fontFamily: "inherit", fontSize: "13px", fontWeight: 700 });
 
