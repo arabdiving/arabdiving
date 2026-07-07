@@ -9,6 +9,7 @@ import Footer from "./components/layout/Footer";
 import { API_BASE } from "./lib/api";
 import ChatWidget from "./components/ChatWidget";
 import PwaRegister from "./components/PwaRegister";
+import PwaInstallBanner from "./components/PwaInstallBanner";
 import ThemeStyle from "./components/ThemeStyle";
 
 const cairo = Cairo({
@@ -91,9 +92,4 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <Footer />
 
-        <ChatWidget />
-        <PwaRegister />
-      </body>
-    </html>
-  );
-}
+        <ChatWidge
