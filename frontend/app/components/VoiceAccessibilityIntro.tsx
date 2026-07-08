@@ -5,10 +5,14 @@ import { useEffect, useRef, useState, useCallback } from "react";
 /*
   VoiceAccessibilityIntro
   ───────────────────────
-  • Shows an Arabic banner on first page load each session
+  • Shows an Arabic banner on first page load each session (5 s)
   • Triple-click anywhere within 3 s → activates Arabic voice reading (Web Speech API)
   • While active: clicking any element reads its text aloud
   • Red pulsing "Stop" button + speaker cursor while active
+
+  FIX: speak() called directly inside user-gesture handler (no setTimeout)
+       so browsers don't block it as a non-gesture audio call.
+  FIX: voices preloaded via onvoiceschanged; Arabic fallback chain.
 */
 
 export default function VoiceAccessibilityIntro() {
@@ -16,69 +20,91 @@ export default function VoiceAccessibilityIntro() {
   const [bannerFading, setBannerFading] = useState(false);
   const [voiceActive, setVoiceActive] = useState(false);
 
-  // Refs so click handler always sees current values without re-registering
   const voiceActiveRef = useRef(false);
   const clickTimesRef = useRef<number[]>([]);
   const synthRef = useRef<SpeechSynthesis | null>(null);
+  const voicesRef = useRef<SpeechSynthesisVoice[]>([]);
 
-  /* ── Init ─────────────────────────────────────────────── */
+  /* ── Init: load synth + preload voice list ─────────────── */
   useEffect(() => {
     if (typeof window === "undefined") return;
-    synthRef.current = window.speechSynthesis;
+    const synth = window.speechSynthesis;
+    synthRef.current = synth;
 
-    // Show banner only once per browser session
+    // Preload voices — Chrome needs the onvoiceschanged event
+    const loadVoices = () => { voicesRef.current = synth.getVoices(); };
+    loadVoices();
+    synth.onvoiceschanged = loadVoices;
+
+    // Show banner once per session
     if (!sessionStorage.getItem("voice-intro-seen")) {
       sessionStorage.setItem("voice-intro-seen", "1");
       setShowBanner(true);
     }
+
+    return () => { synth.onvoiceschanged = null; };
   }, []);
 
   /* ── Auto-dismiss banner after 5 s ───────────────────── */
   useEffect(() => {
     if (!showBanner) return;
-    const fadeTimer = setTimeout(() => setBannerFading(true), 4400);
-    const hideTimer = setTimeout(() => setShowBanner(false), 5200);
+    const fadeTimer = setTimeout(() => setBannerFading(true), 5000);
+    const hideTimer = setTimeout(() => setShowBanner(false), 5900);
     return () => { clearTimeout(fadeTimer); clearTimeout(hideTimer); };
   }, [showBanner]);
 
-  /* ── Keep ref in sync with state ─────────────────────── */
+  /* ── Keep ref in sync ─────────────────────────────────── */
   useEffect(() => { voiceActiveRef.current = voiceActive; }, [voiceActive]);
 
-  /* ── Speak helper ─────────────────────────────────────── */
+  /* ── Pick best Arabic voice ───────────────────────────── */
+  const getBestVoice = useCallback((): SpeechSynthesisVoice | null => {
+    const voices = voicesRef.current.length
+      ? voicesRef.current
+      : synthRef.current?.getVoices() ?? [];
+    // Priority: ar-SA → ar-EG → any ar → any voice
+    return (
+      voices.find(v => v.lang === "ar-SA") ||
+      voices.find(v => v.lang === "ar-EG") ||
+      voices.find(v => v.lang.startsWith("ar")) ||
+      voices[0] ||
+      null
+    );
+  }, []);
+
+  /* ── Speak — MUST be called from inside a user-gesture ── */
   const speak = useCallback((text: string) => {
     const synth = synthRef.current;
     if (!synth || !text.trim()) return;
     synth.cancel();
     const utt = new SpeechSynthesisUtterance(text.trim().slice(0, 400));
     utt.lang = "ar-SA";
-    utt.rate = 0.88;
+    utt.rate = 0.85;
     utt.pitch = 1;
+    const voice = getBestVoice();
+    if (voice) utt.voice = voice;
     synth.speak(utt);
-  }, []);
+  }, [getBestVoice]);
 
   /* ── Global click handler ─────────────────────────────── */
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
       const now = Date.now();
-
-      // Build rolling 3-second window of clicks
       clickTimesRef.current.push(now);
       clickTimesRef.current = clickTimesRef.current.filter(t => now - t <= 3000);
 
-      // ── Triple-click activates voice reading ──
+      /* Triple-click → activate */
       if (clickTimesRef.current.length >= 3 && !voiceActiveRef.current) {
         clickTimesRef.current = [];
         setVoiceActive(true);
         setShowBanner(false);
-        // slight delay so cancel() doesn't kill the announcement
-        setTimeout(() => speak("تم تفعيل القراءة الصوتية. انقر على أي عنصر لسماعه."), 150);
+        // ✅ Called directly inside click handler — no setTimeout — keeps user-gesture context
+        speak("تم تفعيل القراءة الصوتية. انقر على أي عنصر لسماعه.");
         return;
       }
 
-      // ── Voice active: read clicked element ──
+      /* Voice active → read clicked element */
       if (voiceActiveRef.current) {
         const target = e.target as HTMLElement;
-        // Walk up to a meaningful text-bearing element
         const el: HTMLElement =
           target.closest<HTMLElement>(
             "button,a,p,h1,h2,h3,h4,h5,h6,li,label,td,th,span,div[role],input,textarea,select"
@@ -111,7 +137,7 @@ export default function VoiceAccessibilityIntro() {
 
   return (
     <>
-      {/* ══ Intro banner ══ */}
+      {/* ══ Intro Banner (5 s) ══ */}
       {showBanner && (
         <div
           role="alert"
@@ -124,11 +150,10 @@ export default function VoiceAccessibilityIntro() {
             display: "flex", alignItems: "center", justifyContent: "space-between", gap: "14px",
             boxShadow: "0 4px 28px rgba(0,0,0,0.45)",
             opacity: bannerFading ? 0 : 1,
-            transition: "opacity 0.85s ease",
+            transition: "opacity 0.9s ease",
             fontFamily: "inherit",
           }}
         >
-          {/* Icon + message */}
           <div style={{ display: "flex", alignItems: "center", gap: "14px", flex: 1, minWidth: 0 }}>
             <span style={{ fontSize: "32px", flexShrink: 0, lineHeight: 1 }}>🔊</span>
             <div>
@@ -143,9 +168,12 @@ export default function VoiceAccessibilityIntro() {
             </div>
           </div>
 
-          {/* Dismiss button */}
           <button
-            onClick={(e) => { e.stopPropagation(); setBannerFading(true); setTimeout(() => setShowBanner(false), 850); }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setBannerFading(true);
+              setTimeout(() => setShowBanner(false), 900);
+            }}
             aria-label="تخطى وأغلق الرسالة"
             style={{
               background: "rgba(255,255,255,0.12)",
@@ -172,59 +200,36 @@ export default function VoiceAccessibilityIntro() {
               0%,100% { box-shadow: 0 6px 20px rgba(220,38,38,0.55); }
               50%      { box-shadow: 0 6px 36px rgba(220,38,38,0.85), 0 0 0 8px rgba(220,38,38,0.12); }
             }
-            /* Speaker cursor everywhere while voice mode is on */
             body, body * {
               cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='30' height='30'><text y='26' font-size='26'>🔊</text></svg>") 15 15, auto !important;
             }
           `}</style>
 
-          {/* Tooltip hint */}
           <div
             aria-live="polite"
             style={{
-              position: "fixed",
-              bottom: "80px",
-              left: "50%",
-              transform: "translateX(-50%)",
+              position: "fixed", bottom: "80px", left: "50%", transform: "translateX(-50%)",
               zIndex: 9500,
-              background: "rgba(7,26,62,0.92)",
-              color: "rgba(255,255,255,0.9)",
-              borderRadius: "10px",
-              padding: "9px 18px",
-              fontSize: "13px",
-              fontFamily: "inherit",
-              backdropFilter: "blur(8px)",
-              whiteSpace: "nowrap",
-              pointerEvents: "none",
+              background: "rgba(7,26,62,0.92)", color: "rgba(255,255,255,0.9)",
+              borderRadius: "10px", padding: "9px 18px",
+              fontSize: "13px", fontFamily: "inherit",
+              backdropFilter: "blur(8px)", whiteSpace: "nowrap", pointerEvents: "none",
             }}
           >
             🔊 وضع القراءة الصوتية مفعّل — انقر على أي نص لسماعه
           </div>
 
-          {/* Stop button — centered bottom */}
           <button
             onClick={stopVoice}
             aria-label="إيقاف القراءة الصوتية"
             style={{
-              position: "fixed",
-              bottom: "24px",
-              left: "50%",
-              transform: "translateX(-50%)",
+              position: "fixed", bottom: "24px", left: "50%", transform: "translateX(-50%)",
               zIndex: 9600,
-              background: "#dc2626",
-              color: "white",
-              border: "none",
-              borderRadius: "32px",
-              padding: "13px 28px",
-              cursor: "pointer",
-              fontFamily: "inherit",
-              fontWeight: 800,
-              fontSize: "15px",
+              background: "#dc2626", color: "white", border: "none",
+              borderRadius: "32px", padding: "13px 28px",
+              cursor: "pointer", fontFamily: "inherit", fontWeight: 800, fontSize: "15px",
               animation: "voicePulse 2s ease-in-out infinite",
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              letterSpacing: "0.01em",
+              display: "flex", alignItems: "center", gap: "10px",
             }}
           >
             🔇 إيقاف القراءة الصوتية
