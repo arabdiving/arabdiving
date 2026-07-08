@@ -92,4 +92,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 
         <Footer />
 
-        <ChatWidge
+        <ChatWidget />
+        <PwaRegister />
+        <PwaInstallBanner />
+      </body>
+    </html>
+  );
+}

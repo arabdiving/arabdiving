@@ -1,4 +1,4 @@
-import Link from "next/link";
+import StandardsClientForms from "./StandardsClientForms";
 
 /*
   صفحة عامة: معايير اعتماد المراكز — النسخة المبسطة من ميثاق ArabDiving.
@@ -154,25 +154,8 @@ export default function StandardsPage() {
           </p>
         </section>
 
-        {/* CTA */}
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "14px" }}>
-          <div style={{ background: "white", borderRadius: "16px", padding: "24px", textAlign: "center", boxShadow: "0 4px 14px rgba(0,0,0,0.05)" }}>
-            <div style={{ fontSize: "32px", marginBottom: "8px" }}>🤿</div>
-            <div style={{ fontWeight: 800, color: "var(--navy)", marginBottom: "8px" }}>غواص أو مقبل على التجربة؟</div>
-            <p style={{ color: "#666", fontSize: "13.5px", lineHeight: 1.8, marginBottom: "14px" }}>لا تحجز قبل أن تسأل: هل المركز يلتزم بهذه المعايير؟ أو اطلب منا ترشيحًا معتمدًا.</p>
-            <Link href="/contact" style={{ display: "inline-block", background: "var(--navy)", color: "white", borderRadius: "10px", padding: "11px 26px", fontWeight: 700, fontSize: "14px", textDecoration: "none" }}>
-              اسألنا قبل ما تحجز
-            </Link>
-          </div>
-          <div style={{ background: "white", borderRadius: "16px", padding: "24px", textAlign: "center", boxShadow: "0 4px 14px rgba(0,0,0,0.05)" }}>
-            <div style={{ fontSize: "32px", marginBottom: "8px" }}>🏢</div>
-            <div style={{ fontWeight: 800, color: "var(--navy)", marginBottom: "8px" }}>مركز غوص وتؤمن بهذه المعايير؟</div>
-            <p style={{ color: "#666", fontSize: "13.5px", lineHeight: 1.8, marginBottom: "14px" }}>انضم لشبكة المراكز المعتمدة واكسب شريحة الغواصين العرب — الأعلى إنفاقًا والأكثر ولاءً.</p>
-            <Link href="/contact" style={{ display: "inline-block", background: "var(--gold)", color: "#0f172a", borderRadius: "10px", padding: "11px 26px", fontWeight: 800, fontSize: "14px", textDecoration: "none" }}>
-              اطلب الاعتماد
-            </Link>
-          </div>
-        </div>
+        {/* CTA — interactive forms */}
+        <StandardsClientForms />
 
         <p style={{ textAlign: "center", color: "#94a3b8", fontSize: "13px", marginTop: "30px", lineHeight: 1.8 }}>
           مرجعيتنا: خبرة ميدانية +20 عامًا · المعيار الدولي ISO 24803 · لوائح غرفة الغوص المصرية CDWS
