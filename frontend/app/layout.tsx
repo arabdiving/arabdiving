@@ -11,6 +11,7 @@ import ChatWidget from "./components/ChatWidget";
 import PwaRegister from "./components/PwaRegister";
 import PwaInstallBanner from "./components/PwaInstallBanner";
 import AccessibilityWidget from "./components/AccessibilityWidget";
+import VoiceAccessibilityIntro from "./components/VoiceAccessibilityIntro";
 import ThemeStyle from "./components/ThemeStyle";
 
 const cairo = Cairo({
@@ -99,6 +100,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Footer />
 
         <ChatWidget />
+        <VoiceAccessibilityIntro />
         <AccessibilityWidget />
         <PwaInstallBanner />
         <PwaRegister />
