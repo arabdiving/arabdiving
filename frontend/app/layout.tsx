@@ -10,6 +10,7 @@ import { API_BASE } from "./lib/api";
 import ChatWidget from "./components/ChatWidget";
 import PwaRegister from "./components/PwaRegister";
 import PwaInstallBanner from "./components/PwaInstallBanner";
+import AccessibilityWidget from "./components/AccessibilityWidget";
 import ThemeStyle from "./components/ThemeStyle";
 
 const cairo = Cairo({
@@ -72,6 +73,11 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export const viewport: Viewport = {
   themeColor: "#0B2C59",
+  width: "device-width",
+  initialScale: 1,
+  // explicitly allow zoom for accessibility
+  userScalable: true,
+  maximumScale: 5,
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -85,14 +91,31 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </>
         )}
 
+        {/* Skip to content — for keyboard & screen reader users */}
+        <a
+          href="#main-content"
+          style={{
+            position: "absolute", top: "-100px", right: "50%", transform: "translateX(50%)",
+            background: "#c9952a", color: "white", padding: "12px 24px", borderRadius: "0 0 12px 12px",
+            fontWeight: 700, fontSize: "15px", zIndex: 9999, textDecoration: "none",
+            transition: "top 0.2s",
+          }}
+          onFocus={(e) => { e.currentTarget.style.top = "0"; }}
+          onBlur={(e) => { e.currentTarget.style.top = "-100px"; }}
+        >
+          تخطى إلى المحتوى الرئيسي
+        </a>
         <ThemeStyle />
         <Navbar />
 
-        {children}
+        <main id="main-content">
+          {children}
+        </main>
 
         <Footer />
 
         <ChatWidget />
+        <AccessibilityWidget />
         <PwaRegister />
         <PwaInstallBanner />
       </body>
