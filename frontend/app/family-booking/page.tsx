@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
 import { siteImageSrc } from "@/app/lib/image";
-import TravelLinks from "@/app/components/TravelLinks";
+import TravelResults from "@/app/components/TravelResults";
 
 type BadgeKey = "womenStaff" | "privateTrip" | "family" | "separateFacilities" | "sanitizedGear" | "technical" | "ecoFriendly";
 
@@ -156,8 +156,8 @@ export default function FamilyBookingPage() {
           </div>
         )}
 
-        {/* أكمل رحلتك: فنادق وطيران بروابط معبأة بوجهتك وتاريخك */}
-        <TravelLinks city={city} date={date} people={people} />
+        {/* أكمل رحلتك: أسعار طيران وفنادق حية حسب بحث المستخدم (مع تحوّل تلقائي لروابط عميقة) */}
+        <TravelResults city={city} date={date} people={people} />
       </section>
     </main>
   );
