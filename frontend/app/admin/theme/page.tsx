@@ -46,6 +46,7 @@ const BRAND_FIELDS: { key: keyof Branding; label: string; hint?: string }[] = [
 export default function AdminTheme() {
   const [t, setT] = useState<Theme>(DEFAULT);
   const [brand, setBrand] = useState<Branding>(BRAND_DEFAULT);
+  const [aff, setAff] = useState<{ bookingAid: string; agodaCid: string }>({ bookingAid: "", agodaCid: "" });
   const [dnEnabled, setDnEnabled] = useState(false);
   const [day, setDay] = useState<Theme | null>(null);
   const [night, setNight] = useState<Theme | null>(null);
@@ -56,6 +57,7 @@ export default function AdminTheme() {
     fetch(`${API_BASE}/api/settings`).then((r) => r.json()).then((d) => {
       setT({ ...DEFAULT, ...(d.settings?.theme || {}) });
       setBrand({ ...BRAND_DEFAULT, ...(d.settings?.branding || {}) });
+      setAff({ bookingAid: "", agodaCid: "", ...(d.settings?.affiliates || {}) });
       const dn = d.settings?.dayNight || {};
       setDnEnabled(!!dn.enabled);
       if (dn.day && Object.keys(dn.day).length) setDay({ ...DEFAULT, ...dn.day });
@@ -72,7 +74,7 @@ export default function AdminTheme() {
   const save = async () => {
     setSaving(true); setMsg("");
     try {
-      const res = await fetch(`${API_BASE}/api/settings`, { method: "PUT", headers: authHeaders(), body: JSON.stringify({ theme: t, branding: brand, dayNight: { enabled: dnEnabled, day: day || {}, night: night || {} } }) });
+      const res = await fetch(`${API_BASE}/api/settings`, { method: "PUT", headers: authHeaders(), body: JSON.stringify({ theme: t, branding: brand, affiliates: aff, dayNight: { enabled: dnEnabled, day: day || {}, night: night || {} } }) });
       const d = await res.json();
       setMsg(d.success ? "تم حفظ الهوية والألوان ✅ (تطبّق على الموقع كله)" : d.message || "تعذّر الحفظ");
     } catch { setMsg("تعذّر الاتصال بالخادم"); } finally { setSaving(false); }
@@ -110,6 +112,28 @@ export default function AdminTheme() {
             <div style={{ color: "#94a3b8", fontSize: "11px" }}>{brand.tagline || "الشعار النصي"}</div>
           </div>
           <span style={{ marginInlineStart: "auto", color: "#94a3b8", fontSize: "12px" }}>معاينة الهيدر</span>
+        </div>
+      </div>
+
+      {/* روابط العمولة (فنادق/طيران) */}
+      <div style={{ background: "white", borderRadius: "14px", padding: "20px", boxShadow: "0 8px 24px rgba(0,0,0,0.06)", marginBottom: "18px" }}>
+        <div style={{ fontWeight: 700, color: "var(--navy)", marginBottom: "6px" }}>💸 معرفات العمولة — قسم «أكمل رحلتك»</div>
+        <p style={{ color: "#666", fontSize: "13px", lineHeight: 1.7, marginBottom: "12px" }}>
+          عند قبولك في برنامج شراكة Booking (عبر Awin) أو Agoda Partners، ضع معرفك هنا — روابط الفنادق في الموقع ستبدأ باحتساب عمولتك تلقائيًا. اتركها فارغة الآن والروابط تعمل عاديًا.
+        </p>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(220px,1fr))", gap: "12px" }}>
+          <div>
+            <label style={{ display: "block", color: "#444", fontSize: "13.5px", fontWeight: 600, marginBottom: "4px" }}>Booking.com — AID</label>
+            <input value={aff.bookingAid} onChange={(e) => setAff({ ...aff, bookingAid: e.target.value })}
+              placeholder="مثال: 1234567"
+              style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "14px" }} />
+          </div>
+          <div>
+            <label style={{ display: "block", color: "#444", fontSize: "13.5px", fontWeight: 600, marginBottom: "4px" }}>Agoda — CID</label>
+            <input value={aff.agodaCid} onChange={(e) => setAff({ ...aff, agodaCid: e.target.value })}
+              placeholder="مثال: 1891234"
+              style={{ width: "100%", padding: "10px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "14px" }} />
+          </div>
         </div>
       </div>
 

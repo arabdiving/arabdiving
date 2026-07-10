@@ -5,6 +5,7 @@ import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
 import { siteImageSrc } from "@/app/lib/image";
 import { symbolOf } from "@/app/lib/currency";
+import TravelLinks from "@/app/components/TravelLinks";
 
 const BADGES: { key: string; label: string; emoji: string }[] = [
   { key: "womenStaff", label: "طاقم نسائي", emoji: "🧕" },
@@ -161,6 +162,9 @@ export default function StorePage({ params }: { params: Promise<{ slug: string }
             })}
           </div>
         )}
+
+        {/* أكمل رحلتك: فنادق وطيران لمدينة المركز */}
+        <TravelLinks city={center.city} />
       </section>
     </main>
   );

@@ -10,7 +10,7 @@ const getSettings = async () => {
 const readSettings = async (req, res) => {
   try {
     const s = await getSettings();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {} } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {} } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -119,6 +119,13 @@ const updateSettings = async (req, res) => {
       }));
       s.markModified("mapPoints");
     }
+    // معرفات العمولة (فنادق/طيران)
+    if (req.body.affiliates && typeof req.body.affiliates === "object") {
+      s.affiliates = s.affiliates || {};
+      if (typeof req.body.affiliates.bookingAid === "string") s.affiliates.bookingAid = req.body.affiliates.bookingAid.trim().slice(0, 40);
+      if (typeof req.body.affiliates.agodaCid === "string")   s.affiliates.agodaCid = req.body.affiliates.agodaCid.trim().slice(0, 40);
+      s.markModified("affiliates");
+    }
     // العلامة التجارية (White-Label)
     if (req.body.branding && typeof req.body.branding === "object") {
       const b = req.body.branding;
@@ -132,7 +139,7 @@ const updateSettings = async (req, res) => {
       s.markModified("branding");
     }
     await s.save();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {} } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {} } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

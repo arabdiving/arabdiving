@@ -14,6 +14,12 @@ const SettingsSchema = new mongoose.Schema(
       footerText:  { type: String, default: "" },  // إن تُرك فارغًا: © السنة + اسم الموقع
     },
 
+    // معرفات برامج العمولة (فنادق/طيران) — تُضاف عند قبولك في البرامج
+    affiliates: {
+      bookingAid: { type: String, default: "" }, // Booking.com Affiliate (aid)
+      agodaCid:   { type: String, default: "" }, // Agoda Partner (cid)
+    },
+
     commentsEnabled: { type: Boolean, default: true },
     hiddenPages: { type: [String], default: [] },
     whatsappNumber: { type: String, default: "" },
