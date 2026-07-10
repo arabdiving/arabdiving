@@ -85,6 +85,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="ar" dir="rtl">
       <body className={cairo.variable + " " + cairo.className}>
+        {/* Travelpayouts Drive — التحقق من الملكية + تحويل روابط السفر لعمولات تلقائيًا.
+            beforeInteractive = يُحقن في <head> قبل كل السكربتات (شرط التحقق عندهم). */}
+        <Script
+          id="tp-drive"
+          src="https://emrldtp.cc/NTQ4ODIy.js?t=548822"
+          strategy="beforeInteractive"
+        />
+
         {GA_ID && (
           <>
             <Script src={"https://www.googletagmanager.com/gtag/js?id=" + GA_ID} strategy="afterInteractive" />
