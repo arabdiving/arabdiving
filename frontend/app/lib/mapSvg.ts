@@ -209,6 +209,7 @@ export const PAGE_OPTIONS: { href: string; label: string; icon: string }[] = [
   { href: "/youth", label: "الشباب", icon: "⚡" },
   { href: "/kids", label: "الأطفال", icon: "👧" },
   { href: "/trips", label: "الرحلات", icon: "🚢" },
+  { href: "/travel", label: "رحلتك: طيران وفنادق", icon: "✈️" },
   { href: "/community", label: "المجتمع", icon: "👥" },
   { href: "/marketplace", label: "المتجر", icon: "🛒" },
   { href: "/guide", label: "الدليل", icon: "📖" },

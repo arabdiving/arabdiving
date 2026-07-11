@@ -73,7 +73,7 @@ export default async function HomeDiveCenters() {
               مراكزنا الشريكة المعتمدة
             </h2>
           </div>
-          <Link href="/partner-centers" style={{
+          <Link href="/family-booking" style={{
             background: "var(--navy)", color: "#fff", padding: "10px 22px",
             borderRadius: "10px", textDecoration: "none", fontWeight: 600,
             fontSize: "14px", whiteSpace: "nowrap",

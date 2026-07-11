@@ -13,6 +13,7 @@ interface MEntry { label: string; href?: string; items: MItem[]; }
 const NAV_MAIN: MItem[] = [
   { href: "/", label: "الرئيسية" },
   { href: "/family-booking", label: "احجز رحلة" },
+  { href: "/travel", label: "رحلتك ✈️" },
   { href: "/dive-sites", label: "مواقع الغوص" },
   { href: "/community", label: "المجتمع" },
   { href: "/marketplace", label: "المتجر" },

@@ -43,6 +43,7 @@ export default function TravelResults({ city, date, people = 2 }: { city?: strin
   const [origin, setOrigin] = useState("RUH");
   const [flights, setFlights] = useState<Flight[]>([]);
   const [hotels, setHotels] = useState<Hotel[]>([]);
+  const [centers, setCenters] = useState<any[]>([]);
   const [calDays, setCalDays] = useState<CalDay[]>([]);
   const [flightsOn, setFlightsOn] = useState(false);
   const [hotelsOn, setHotelsOn] = useState(false);
@@ -55,7 +56,14 @@ export default function TravelResults({ city, date, people = 2 }: { city?: strin
 
   useEffect(() => {
     try { const o = localStorage.getItem("ad_origin"); if (o) setOrigin(o); } catch {}
+    // مراكز الغوص المعتمدة (بلا جداول مواعيد — تظهر كخيارات المدينة مع تواصل مباشر)
+    fetch(`${API_BASE}/api/partner-centers`)
+      .then((r) => r.json())
+      .then((d) => setCenters((d.data || d.centers || []).filter((c: any) => c.active !== false)))
+      .catch(() => {});
   }, []);
+
+  const cityCenters = centers.filter((c) => c.city === destLabel || (c.city || "").includes(destLabel));
 
   useEffect(() => {
     if (!date) { setChecked(true); setFlightsOn(false); setHotelsOn(false); return; }
@@ -200,6 +208,43 @@ export default function TravelResults({ city, date, people = 2 }: { city?: strin
             </div>
           </div>
         )}
+
+        {/* 🤿 مراكز الغوص المعتمدة في المدينة — قلب الرحلة */}
+        <div style={{ marginTop: "20px", paddingTop: "18px", borderTop: "1px solid var(--glass-border,rgba(255,255,255,0.08))" }}>
+          <h3 style={{ color: "var(--text,#fff)", fontSize: "15px", fontWeight: 800, marginBottom: "4px" }}>🤿 مراكز الغوص المعتمدة في {destLabel}</h3>
+          <p style={{ color: "var(--muted,rgba(255,255,255,0.55))", fontSize: "12px", marginBottom: "12px" }}>
+            المراكز تعمل بالتنسيق المباشر لا بجداول حجز — راسل المركز بتاريخك ويرتب لك الغطسات.
+          </p>
+          {cityCenters.length === 0 ? (
+            <p style={{ color: "var(--muted,rgba(255,255,255,0.55))", fontSize: "13.5px" }}>
+              لا مراكز معتمدة في {destLabel} بعد — نعتمد المراكز وفق <a href="/standards" style={{ color: "#22d3ee" }}>ميثاقنا</a> أولًا بأول، أو <a href="/community" style={{ color: "#22d3ee" }}>اسأل المجتمع وسنرشح لك</a>.
+            </p>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))", gap: "10px" }}>
+              {cityCenters.map((c) => {
+                const cwa = (c.whatsapp || "").replace(/[^0-9]/g, "");
+                const waMsg = encodeURIComponent(`مرحبًا ${c.name}، ناوي أكون في ${destLabel} يوم ${date} (${people || 2} أشخاص) وأرغب بترتيب غطسات — جايكم من ArabDiving 🤿`);
+                return (
+                  <div key={c._id} style={{ background: "var(--glass-light-bg,rgba(255,255,255,0.07))", border: "1px solid var(--glass-light-border,rgba(255,255,255,0.1))", borderRadius: "12px", padding: "12px 14px" }}>
+                    <div style={{ display: "flex", alignItems: "center", gap: "8px", marginBottom: "8px" }}>
+                      <div style={{ minWidth: 0, flex: 1 }}>
+                        <div style={{ color: "var(--text,#fff)", fontWeight: 800, fontSize: "13.5px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.name}</div>
+                        <div style={{ color: "var(--muted,rgba(255,255,255,0.55))", fontSize: "11.5px" }}>
+                          {c.tier === "platinum" ? "💎 سفير العرب" : c.tier === "gold" ? "🥇 موصى به" : "🥈 معتمد"}
+                          {c.rating ? ` · ⭐ ${c.rating}` : ""}
+                        </div>
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "6px" }}>
+                      {c.slug && <a href={`/store/${c.slug}`} style={{ flex: 1, textAlign: "center", color: "#22d3ee", border: "1px solid rgba(34,211,238,0.35)", borderRadius: "8px", padding: "7px", fontSize: "12.5px", fontWeight: 700, textDecoration: "none" }}>الصفحة</a>}
+                      {cwa && <a href={`https://wa.me/${cwa}?text=${waMsg}`} target="_blank" rel="noopener noreferrer" style={{ flex: 1, textAlign: "center", background: "#25D366", color: "white", borderRadius: "8px", padding: "7px", fontSize: "12.5px", fontWeight: 700, textDecoration: "none" }}>رتب غطساتي 💬</a>}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
 
         <p style={{ color: "var(--faint,rgba(255,255,255,0.35))", fontSize: "11.5px", marginTop: "14px", marginBottom: 0, lineHeight: 1.7 }}>
           الضغط على أي نتيجة يفتح إتمام الحجز الآمن لدى المزود العالمي — قد نحصل على عمولة لا تؤثر على سعرك.
