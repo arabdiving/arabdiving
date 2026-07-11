@@ -1,9 +1,10 @@
 const express = require("express");
 const router = express.Router();
-const { searchFlights, searchHotels } = require("../controllers/travelController");
+const { searchFlights, searchHotels, priceCalendar } = require("../controllers/travelController");
 
-// أسعار حية (Amadeus) — عامة بدون توثيق، محمية بكاش داخلي
+// أسعار حية (Travelpayouts + Amadeus) — عامة بدون توثيق، محمية بكاش داخلي
 router.get("/flights", searchFlights);
 router.get("/hotels", searchHotels);
+router.get("/calendar", priceCalendar);
 
 module.exports = router;
