@@ -47,6 +47,7 @@ export default function AdminTheme() {
   const [t, setT] = useState<Theme>(DEFAULT);
   const [brand, setBrand] = useState<Branding>(BRAND_DEFAULT);
   const [aff, setAff] = useState<{ bookingAid: string; agodaCid: string }>({ bookingAid: "", agodaCid: "" });
+  const [tw, setTw] = useState<Array<{ title: string; code: string }>>([]);
   const [dnEnabled, setDnEnabled] = useState(false);
   const [day, setDay] = useState<Theme | null>(null);
   const [night, setNight] = useState<Theme | null>(null);
@@ -58,6 +59,7 @@ export default function AdminTheme() {
       setT({ ...DEFAULT, ...(d.settings?.theme || {}) });
       setBrand({ ...BRAND_DEFAULT, ...(d.settings?.branding || {}) });
       setAff({ bookingAid: "", agodaCid: "", ...(d.settings?.affiliates || {}) });
+      setTw(d.settings?.travelWidgets || []);
       const dn = d.settings?.dayNight || {};
       setDnEnabled(!!dn.enabled);
       if (dn.day && Object.keys(dn.day).length) setDay({ ...DEFAULT, ...dn.day });
@@ -74,7 +76,7 @@ export default function AdminTheme() {
   const save = async () => {
     setSaving(true); setMsg("");
     try {
-      const res = await fetch(`${API_BASE}/api/settings`, { method: "PUT", headers: authHeaders(), body: JSON.stringify({ theme: t, branding: brand, affiliates: aff, dayNight: { enabled: dnEnabled, day: day || {}, night: night || {} } }) });
+      const res = await fetch(`${API_BASE}/api/settings`, { method: "PUT", headers: authHeaders(), body: JSON.stringify({ theme: t, branding: brand, affiliates: aff, travelWidgets: tw, dayNight: { enabled: dnEnabled, day: day || {}, night: night || {} } }) });
       const d = await res.json();
       setMsg(d.success ? "تم حفظ الهوية والألوان ✅ (تطبّق على الموقع كله)" : d.message || "تعذّر الحفظ");
     } catch { setMsg("تعذّر الاتصال بالخادم"); } finally { setSaving(false); }
@@ -113,6 +115,34 @@ export default function AdminTheme() {
           </div>
           <span style={{ marginInlineStart: "auto", color: "#94a3b8", fontSize: "12px" }}>معاينة الهيدر</span>
         </div>
+      </div>
+
+      {/* ويدجت صفحة رحلتك /travel */}
+      <div style={{ background: "white", borderRadius: "14px", padding: "20px", boxShadow: "0 8px 24px rgba(0,0,0,0.06)", marginBottom: "18px" }}>
+        <div style={{ fontWeight: 700, color: "var(--navy)", marginBottom: "6px" }}>✈️ ويدجت صفحة «رحلتك» (/travel)</div>
+        <p style={{ color: "#666", fontSize: "13px", lineHeight: 1.7, marginBottom: "12px" }}>
+          من لوحة Travelpayouts ← Tools ← Widgets: اختر الويدجت (نموذج البحث، تقويم أرخص الأسعار، عروض الفنادق...)
+          وانسخ كود التضمين والصقه هنا — يظهر فورًا في صفحة /travel بعمولتك. يُقبل كود tp.media الرسمي فقط.
+        </p>
+        {tw.map((w, i) => (
+          <div key={i} style={{ border: "1px solid #e2e8f0", borderRadius: "10px", padding: "12px", marginBottom: "10px" }}>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "8px" }}>
+              <input value={w.title} placeholder="عنوان القسم (مثال: ✈️ ابحث عن أرخص طيران)"
+                onChange={(e) => setTw(tw.map((x, j) => j === i ? { ...x, title: e.target.value } : x))}
+                style={{ flex: 1, padding: "9px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "13.5px" }} />
+              <button onClick={() => setTw(tw.filter((_, j) => j !== i))}
+                style={{ background: "#fee2e2", color: "#b91c1c", border: "none", borderRadius: "8px", padding: "0 14px", cursor: "pointer", fontFamily: "inherit", fontWeight: 700 }}>حذف</button>
+            </div>
+            <textarea value={w.code} placeholder='<script async src="https://tp.media/content?..."></script>'
+              onChange={(e) => setTw(tw.map((x, j) => j === i ? { ...x, code: e.target.value } : x))}
+              rows={3} dir="ltr"
+              style={{ width: "100%", padding: "9px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "monospace", fontSize: "12px", resize: "vertical", boxSizing: "border-box" }} />
+          </div>
+        ))}
+        <button onClick={() => setTw([...tw, { title: "", code: "" }])}
+          style={{ background: "#f0f5ff", color: "var(--navy)", border: "2px dashed #b8d0f0", borderRadius: "10px", padding: "10px 20px", cursor: "pointer", fontFamily: "inherit", fontWeight: 700, fontSize: "13.5px", width: "100%" }}>
+          ＋ أضف ويدجت
+        </button>
       </div>
 
       {/* روابط العمولة (فنادق/طيران) */}

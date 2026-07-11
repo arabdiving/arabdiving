@@ -20,6 +20,12 @@ const SettingsSchema = new mongoose.Schema(
       agodaCid:   { type: String, default: "" }, // Agoda Partner (cid)
     },
 
+    // ويدجت صفحة «رحلتك» /travel — أكواد التضمين من Travelpayouts (Tools → Widgets)
+    travelWidgets: {
+      type: [{ title: { type: String, default: "" }, code: { type: String, default: "" } }],
+      default: [],
+    },
+
     commentsEnabled: { type: Boolean, default: true },
     hiddenPages: { type: [String], default: [] },
     whatsappNumber: { type: String, default: "" },

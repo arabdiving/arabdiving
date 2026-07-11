@@ -53,6 +53,7 @@ const BLOCK_REGISTRY: Record<string, { label: string; icon: string; desc: string
   members_promo:     { label: "دليل الأعضاء",            icon: "🤝", desc: "قسم ترويجي لتصفح أعضاء المجتمع /members" },
   training_fit_promo:{ label: "استبيان التوافق التدريبي", icon: "🧭", desc: "قسم ترويجي لاستبيان التوافق العملي /training-fit" },
   standards_promo:   { label: "معايير اعتماد المراكز",   icon: "🛡️", desc: "قسم ترويجي لصفحة الميثاق المعلن /standards" },
+  travel_promo:      { label: "رحلتك: طيران وفنادق",     icon: "✈️", desc: "قسم ترويجي لصفحة حجز الطيران والفنادق /travel" },
 };
 
 export default function HomepageBlocksAdmin() {

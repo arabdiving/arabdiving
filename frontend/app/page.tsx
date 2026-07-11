@@ -100,6 +100,7 @@ function renderBlock(key: string, promoImages: Record<string, string> = {}) {
     case "members_promo":      return <HomePromoSection key="members_promo" pageKey="members" image={promoImages["members_promo"]} />;
     case "training_fit_promo": return <HomePromoSection key="training_fit_promo" pageKey="training_fit" image={promoImages["training_fit_promo"]} />;
     case "standards_promo":    return <HomePromoSection key="standards_promo" pageKey="standards" image={promoImages["standards_promo"]} />;
+    case "travel_promo":       return <HomePromoSection key="travel_promo" pageKey="travel" image={promoImages["travel_promo"]} />;
     default:                   return null;
   }
 }

@@ -10,7 +10,7 @@ const getSettings = async () => {
 const readSettings = async (req, res) => {
   try {
     const s = await getSettings();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {} } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {}, travelWidgets: s.travelWidgets || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -119,6 +119,17 @@ const updateSettings = async (req, res) => {
       }));
       s.markModified("mapPoints");
     }
+    // ويدجت صفحة رحلتك (أكواد تضمين Travelpayouts)
+    if (Array.isArray(req.body.travelWidgets)) {
+      s.travelWidgets = req.body.travelWidgets
+        .filter((w) => w && typeof w.code === "string" && w.code.trim())
+        .slice(0, 10)
+        .map((w) => ({
+          title: String(w.title || "").slice(0, 80),
+          code: String(w.code).slice(0, 3000),
+        }));
+      s.markModified("travelWidgets");
+    }
     // معرفات العمولة (فنادق/طيران)
     if (req.body.affiliates && typeof req.body.affiliates === "object") {
       s.affiliates = s.affiliates || {};
@@ -139,7 +150,7 @@ const updateSettings = async (req, res) => {
       s.markModified("branding");
     }
     await s.save();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {} } });
+    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {}, travelWidgets: s.travelWidgets || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
