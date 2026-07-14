@@ -16,7 +16,7 @@ export const DEFAULT_SECTIONS: Section[] = [
   { slug: "tools", name: "أدوات مساعدة", icon: "🧰", color: "#06b6d4", pages: ["/survey", "/quiz", "/training-fit", "/weight-calculator", "/temperatures", "/sizes"] },
   { slug: "learn", name: "تعلّم الغوص", icon: "🎓", color: "#a855f7", pages: ["/courses", "/try-diving", "/guide", "/dive-sites", "/standards"] },
   { slug: "community", name: "المجتمع", icon: "👥", color: "#e879f9", pages: ["/community", "/members", "/stories", "/communities"] },
-  { slug: "trips", name: "الرحلات والحجز", icon: "🚢", color: "#c9952a", pages: ["/family-booking", "/travel", "/trips", "/retreats"] },
+  { slug: "trips", name: "الرحلات والحجز", icon: "🚢", color: "#c9952a", pages: ["/travel", "/family-booking", "/trips", "/retreats"] },
   { slug: "audiences", name: "لكل الفئات", icon: "🧕", color: "#f97316", pages: ["/women", "/youth", "/kids"] },
   { slug: "shop", name: "المتجر والمعدات", icon: "🛒", color: "#34d399", pages: ["/marketplace"] },
 ];
@@ -27,7 +27,7 @@ const SUB: Record<string, string> = {
   "/courses": "PADI و SDI معتمدة", "/try-diving": "أول تجربة بدون شهادة", "/guide": "دليل الغوّاص الشامل",
   "/dive-sites": "أشهر مواقع البحر الأحمر", "/standards": "معاييرنا لاعتماد المراكز",
   "/community": "شارك وتواصل", "/members": "تعرّف على الغوّاصين", "/stories": "قصص وتجارب", "/communities": "مجتمعات متخصصة",
-  "/family-booking": "احجز رحلتك", "/travel": "طيران وفنادق رحلتك", "/trips": "كل الرحلات", "/retreats": "باقات VIP خاصة",
+  "/family-booking": "دليل المراكز المعتمدة", "/travel": "الحجز الموحد: غوص + طيران + فندق", "/trips": "كل الرحلات", "/retreats": "باقات VIP خاصة",
   "/women": "غوص السيدات", "/youth": "برامج الشباب", "/kids": "غوص الأطفال",
   "/marketplace": "معدات من مراكز موثوقة",
 };

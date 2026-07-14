@@ -71,7 +71,7 @@ export default function Hero() {
         </p>
 
         {/* Airbnb-style search bar — كل الحقول تفتح صفحة الحجز */}
-        <Link href="/family-booking" style={{ textDecoration: "none", display: "block", maxWidth: "780px", margin: "0 auto 32px", animation: "fadeInUp 0.8s 0.55s ease both" }}>
+        <Link href="/travel" style={{ textDecoration: "none", display: "block", maxWidth: "780px", margin: "0 auto 32px", animation: "fadeInUp 0.8s 0.55s ease both" }}>
           <div style={{ background: "white", borderRadius: "18px", padding: "6px", display: "flex", alignItems: "center", boxShadow: "0 24px 64px rgba(0,0,0,0.32)", cursor: "pointer" }}>
             <div style={{ flex: 1, padding: "12px 20px", textAlign: "start", borderRadius: "12px" }}>
               <div style={{ fontSize: "10px", fontWeight: 700, color: "var(--muted)", marginBottom: "3px", letterSpacing: "0.6px" }}>الوجهة</div>
@@ -98,8 +98,8 @@ export default function Hero() {
           <Link href="/explore" style={{ background: "linear-gradient(135deg,#0891b2,#06b6d4)", border: "1px solid rgba(255,255,255,0.25)", color: "white", padding: "11px 22px", borderRadius: "12px", fontWeight: 700, fontSize: "15px", transition: "all .2s", boxShadow: "0 6px 18px rgba(8,145,178,0.35)" }}>
             🗺️ استكشف عبر الخريطة
           </Link>
-          <Link href="/family-booking" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", color: "white", padding: "11px 22px", borderRadius: "12px", fontWeight: 600, fontSize: "15px", transition: "all .2s" }}>
-            👨‍👩‍👧‍👦 احجز رحلة عائلية
+          <Link href="/travel" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", color: "white", padding: "11px 22px", borderRadius: "12px", fontWeight: 600, fontSize: "15px", transition: "all .2s" }}>
+            ✈️ احجز رحلتك كاملة
           </Link>
           <Link href="/women" style={{ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.25)", color: "white", padding: "11px 22px", borderRadius: "12px", fontWeight: 600, fontSize: "15px", transition: "all .2s" }}>
             🧕 للسيدات
