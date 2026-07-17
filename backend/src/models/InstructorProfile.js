@@ -24,6 +24,21 @@ const InstructorProfileSchema = new mongoose.Schema(
     bio: { type: String, default: "" },
     whatsapp: { type: String, default: "" },
 
+    // موقع التدريب على الخريطة (يُملأ تلقائيًا من المدينة، ويمكن ضبطه يدويًا لاحقًا)
+    location: { lat: { type: Number, default: null }, lng: { type: Number, default: null } },
+
+    // «من يناسبني؟» — اختيارات قسرية (Forced-Choice): كل اختيار له ثمن فلا مجال للتجمّل.
+    // تُعرض علنًا: «يناسبه» + «قد يكون مدرب آخر أنسب لك إذا…» بصياغة محترمة.
+    fit: {
+      level:   { type: String, default: "" }, // beginner (المبتدئ الخائف) | advanced (المتقدم الطموح)
+      pace:    { type: String, default: "" }, // patient (تكرار وصبر) | fast (إيقاع سريع وتحدٍ)
+      age:     { type: String, default: "" }, // kids (أطفال ونشء) | adults (بالغون)
+      style:   { type: String, default: "" }, // structured (نظام وانضباط) | fun (مرح ومرونة)
+      group:   { type: String, default: "" }, // private (فردي وخاص) | group (مجموعات)
+      special: { type: String, default: "" }, // adaptive (حالات خاصة وذوو همم) | standard (الحالات القياسية)
+      takenAt: Date,
+    },
+
     // بصمة المدرب (متوسط كل محور 1-5)
     fingerprint: {
       scores: {

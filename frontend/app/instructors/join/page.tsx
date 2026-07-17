@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
+import { FIT_QUESTIONS, FIT_DISPLAY, FitKey } from "@/app/lib/instructorFit";
 
 /*
   انضمام المدرب — خطوتان:
@@ -63,7 +64,8 @@ const field: React.CSSProperties = { background: "rgba(255,255,255,0.07)", borde
 const lbl: React.CSSProperties = { display: "block", color: "rgba(255,255,255,0.6)", fontSize: "12.5px", fontWeight: 700, marginBottom: "5px" };
 
 export default function InstructorJoinPage() {
-  const [step, setStep] = useState<"info" | "survey" | "result">("info");
+  const [step, setStep] = useState<"info" | "survey" | "fit" | "result">("info");
+  const [fitAnswers, setFitAnswers] = useState<Partial<Record<FitKey, string>>>({});
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [form, setForm] = useState<any>({ agency: "PADI", instructorNumber: "", rank: RANKS[1], sinceYear: "", specialties: [] as string[], languages: ["العربية"], city: "شرم الشيخ", bio: "", whatsapp: "", showWeakness: false });
   const [answers, setAnswers] = useState<Record<number, number>>({});
@@ -107,7 +109,16 @@ export default function InstructorJoinPage() {
 
     const res = await fetch(`${API_BASE}/api/instructors/me/fingerprint`, { method: "PUT", headers: H, body: JSON.stringify({ scores }) });
     const d = await res.json();
-    if (d.success) { setResult({ strengths: d.strengths || [], weakness: d.weakness || null, scores }); setStep("result"); window.scrollTo({ top: 0 }); }
+    if (d.success) { setResult({ strengths: d.strengths || [], weakness: d.weakness || null, scores }); setStep("fit"); window.scrollTo({ top: 0 }); }
+    else setMsg(d.message || "تعذّر الحفظ");
+  };
+
+  const allFitAnswered = FIT_QUESTIONS.every((q) => fitAnswers[q.key]);
+
+  const submitFit = async () => {
+    const res = await fetch(`${API_BASE}/api/instructors/me/fit`, { method: "PUT", headers: H, body: JSON.stringify(fitAnswers) });
+    const d = await res.json();
+    if (d.success) { setStep("result"); window.scrollTo({ top: 0 }); }
     else setMsg(d.message || "تعذّر الحفظ");
   };
 
@@ -127,7 +138,7 @@ export default function InstructorJoinPage() {
       <div style={{ maxWidth: "760px", margin: "0 auto" }}>
         <h1 style={{ color: "#fff", fontSize: "clamp(24px,5vw,34px)", fontWeight: 900, textAlign: "center", marginBottom: "6px" }}>🧑‍🏫 بروفايل المدرب</h1>
         <p style={{ color: "rgba(255,255,255,0.55)", textAlign: "center", marginBottom: "26px", lineHeight: 1.8 }}>
-          {step === "info" ? "الخطوة 1 من 2 — بيانات اعتمادك وتخصصاتك" : step === "survey" ? "الخطوة 2 من 2 — بصمة المدرب (تقييم ذاتي علمي)" : "بصمتك جاهزة 🎉"}
+          {step === "info" ? "الخطوة 1 من 3 — بيانات اعتمادك وتخصصاتك" : step === "survey" ? "الخطوة 2 من 3 — بصمة المدرب (تقييم ذاتي علمي)" : step === "fit" ? "الخطوة 3 من 3 — من يناسبك؟ (اختيارات صريحة)" : "بروفايلك جاهز 🎉"}
         </p>
         {msg && <p style={{ color: "#f87171", textAlign: "center", marginBottom: "14px" }}>{msg}</p>}
 
@@ -232,6 +243,41 @@ export default function InstructorJoinPage() {
             <button onClick={submitSurvey} disabled={!allAnswered}
               style={{ width: "100%", background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "white", border: "none", borderRadius: "12px", padding: "14px", fontSize: "16px", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", opacity: allAnswered ? 1 : 0.4 }}>
               اعرض بصمتي 🧬
+            </button>
+          </div>
+        )}
+
+        {/* ═══ الخطوة 3: من يناسبني؟ (اختيار قسري) ═══ */}
+        {step === "fit" && (
+          <div style={{ ...glass, borderRadius: "18px", padding: "24px" }}>
+            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "13.5px", lineHeight: 1.9, marginBottom: "8px" }}>
+              لا توجد إجابة «أفضل» هنا — <b style={{ color: "#fbbf24" }}>كل اختيار له ثمن، وهذا سرّ صدقه</b>.
+              اختر ما يشبهك فعلًا، لا ما يبدو أجمل.
+            </p>
+            <p style={{ color: "#22d3ee", fontSize: "13px", lineHeight: 1.8, marginBottom: "20px" }}>
+              💡 لماذا مصلحتك أن تصدق؟ إجاباتك تحدد من يصلك من الطلاب — الصادق يحصل على طلاب يناسبونه
+              فيستمتع ويُبدع وتعلو تقييماته. المتجمّل يحصل على طلاب لا يطيقهم.
+            </p>
+            {FIT_QUESTIONS.map((q, i) => (
+              <div key={q.key} style={{ marginBottom: "20px", paddingBottom: "18px", borderBottom: i < FIT_QUESTIONS.length - 1 ? "1px solid rgba(255,255,255,0.07)" : "none" }}>
+                <div style={{ color: "#fff", fontSize: "14.5px", fontWeight: 700, marginBottom: "10px" }}>{i + 1}. {q.question}</div>
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "10px" }}>
+                  {[q.a, q.b].map((opt) => (
+                    <button key={opt.value} onClick={() => setFitAnswers({ ...fitAnswers, [q.key]: opt.value })}
+                      style={{ padding: "14px 12px", borderRadius: "12px", fontSize: "13px", lineHeight: 1.7, cursor: "pointer", fontFamily: "inherit", textAlign: "center",
+                        border: fitAnswers[q.key] === opt.value ? "2px solid #fbbf24" : "1px solid rgba(255,255,255,0.15)",
+                        background: fitAnswers[q.key] === opt.value ? "rgba(251,191,36,0.14)" : "rgba(255,255,255,0.05)",
+                        color: "#fff", fontWeight: fitAnswers[q.key] === opt.value ? 800 : 400 }}>
+                      <span style={{ fontSize: "24px", display: "block", marginBottom: "6px" }}>{opt.icon}</span>
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <button onClick={submitFit} disabled={!allFitAnswered}
+              style={{ width: "100%", background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "white", border: "none", borderRadius: "12px", padding: "14px", fontSize: "16px", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", opacity: allFitAnswered ? 1 : 0.4 }}>
+              احفظ واعرض بروفايلي 🎉
             </button>
           </div>
         )}

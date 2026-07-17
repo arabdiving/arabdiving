@@ -4,6 +4,7 @@ import { use, useEffect, useState } from "react";
 import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
 import { siteImageSrc } from "@/app/lib/image";
+import { FIT_DISPLAY, FIT_QUESTIONS } from "@/app/lib/instructorFit";
 
 /* البروفايل العام للمدرب — البصمة كاملة، نقاط التميّز، التخصصات، وتواصل مباشر. */
 
@@ -121,6 +122,47 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
             )}
           </div>
         )}
+
+        {/* 🤝 من يناسبه؟ — نتائج استبيان الملاءمة القسري */}
+        {ins.fit && (() => {
+          const suits: string[] = [];
+          const redirects: string[] = [];
+          FIT_QUESTIONS.forEach((q) => {
+            const v = ins.fit[q.key];
+            const d = FIT_DISPLAY[q.key]?.[v];
+            if (!d) return;
+            const icon = q.a.value === v ? q.a.icon : q.b.icon;
+            suits.push(`${icon} ${d.suits}`);
+            if (d.redirect) redirects.push(d.redirect);
+          });
+          if (suits.length === 0) return null;
+          return (
+            <div style={{ ...glass, borderRadius: "18px", padding: "22px" }}>
+              <h2 style={{ color: "#fff", fontSize: "18px", fontWeight: 800, marginBottom: "4px" }}>🤝 من يناسبه هذا المدرب؟</h2>
+              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "12.5px", marginBottom: "16px" }}>
+                إجابات صادقة بنظام «اختر واحدًا» — كل اختيار له ثمن، فلا مجال للتجميل. المدرب الذي يحدد من لا يناسبه مدرب يعرف نفسه.
+              </p>
+              <div style={{ display: "flex", flexDirection: "column", gap: "8px", marginBottom: redirects.length ? "16px" : 0 }}>
+                {suits.map((s) => (
+                  <div key={s} style={{ background: "rgba(52,211,153,0.09)", border: "1px solid rgba(52,211,153,0.22)", borderRadius: "10px", padding: "9px 14px", color: "#6ee7b7", fontSize: "13.5px", fontWeight: 600 }}>
+                    ✅ يناسبه: {s}
+                  </div>
+                ))}
+              </div>
+              {redirects.length > 0 && (
+                <div style={{ background: "rgba(251,191,36,0.08)", border: "1px solid rgba(251,191,36,0.22)", borderRadius: "12px", padding: "14px 16px" }}>
+                  <p style={{ color: "#fbbf24", fontSize: "13px", fontWeight: 800, margin: "0 0 8px" }}>💛 بصراحة الناصح الأمين — قد يكون مدرب آخر أنسب لك إذا كنت:</p>
+                  <ul style={{ margin: 0, paddingInlineStart: "18px", color: "rgba(255,255,255,0.7)", fontSize: "12.5px", lineHeight: 2 }}>
+                    {redirects.map((r) => <li key={r}>{r}</li>)}
+                  </ul>
+                  <p style={{ color: "rgba(255,255,255,0.45)", fontSize: "11.5px", margin: "8px 0 0" }}>
+                    هذا ليس ضعفًا — بل احترام لوقتك ومالك. <Link href="/instructors" style={{ color: "#22d3ee" }}>تصفح بقية المدربين</Link> لتجد الأنسب لك.
+                  </p>
+                </div>
+              )}
+            </div>
+          );
+        })()}
 
         {/* التخصصات */}
         {ins.specialties?.length > 0 && (

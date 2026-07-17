@@ -3,6 +3,22 @@ const InstructorProfile = require("../models/InstructorProfile");
 const AXES = ["planning", "strategies", "management", "engagement", "watermanship", "professionalism"];
 const clamp5 = (v) => Math.max(1, Math.min(5, Number(v) || 0));
 
+// إحداثيات مدن التدريب — تُملأ تلقائيًا في location عند اختيار المدينة
+const CITY_COORDS = {
+  "شرم الشيخ": { lat: 27.9158, lng: 34.3299 },
+  "دهب":       { lat: 28.4913, lng: 34.5136 },
+  "الغردقة":   { lat: 27.2579, lng: 33.8116 },
+  "مرسى علم":  { lat: 25.0676, lng: 34.8790 },
+  "الجونة":    { lat: 27.3949, lng: 33.6782 },
+  "سفاجا":     { lat: 26.7517, lng: 33.9344 },
+  "نويبع":     { lat: 29.0327, lng: 34.6672 },
+};
+
+const FIT_VALUES = {
+  level: ["beginner", "advanced"], pace: ["patient", "fast"], age: ["kids", "adults"],
+  style: ["structured", "fun"], group: ["private", "group"], special: ["adaptive", "standard"],
+};
+
 // أقوى محورين (يظهران علنًا) + أضعف محور (خاص)
 function analyze(scores) {
   if (!scores) return { strengths: [], weakness: null };
@@ -29,6 +45,11 @@ function publicProfile(p) {
     fingerprint: o.fingerprint?.scores || null, // الرادار كامل علني (الأرقام) — القوة تُبرز والضعف يُفسَّر فقط لصاحبه
     strengths,
     weakness: o.showWeakness ? weakness : null,
+    location: o.location?.lat ? o.location : null,
+    fit: o.fit?.takenAt ? {
+      level: o.fit.level, pace: o.fit.pace, age: o.fit.age,
+      style: o.fit.style, group: o.fit.group, special: o.fit.special,
+    } : null,
   };
 }
 
@@ -82,6 +103,12 @@ const upsertMyInstructorProfile = async (req, res) => {
       ...(typeof b.showWeakness === "boolean" ? { showWeakness: b.showWeakness } : {}),
       active: true,
     };
+    // موقع الخريطة: تلقائي من المدينة (أو إحداثيات صريحة إن أُرسلت)
+    if (b.location?.lat && b.location?.lng) {
+      fields.location = { lat: Number(b.location.lat), lng: Number(b.location.lng) };
+    } else if (CITY_COORDS[fields.city]) {
+      fields.location = CITY_COORDS[fields.city];
+    }
     const p = await InstructorProfile.findOneAndUpdate(
       { user: req.user._id },
       { $set: fields, $setOnInsert: { user: req.user._id } },
@@ -107,4 +134,25 @@ const saveFingerprint = async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
-module.exports = { listInstructors, getInstructor, getMyInstructorProfile, upsertMyInstructorProfile, saveFingerprint };
+/* ── خاص: حفظ «من يناسبني؟» (الاختيارات القسرية) ── */
+const saveFit = async (req, res) => {
+  try {
+    const b = req.body || {};
+    const fit = { takenAt: new Date() };
+    let valid = 0;
+    Object.entries(FIT_VALUES).forEach(([k, allowed]) => {
+      if (allowed.includes(b[k])) { fit[k] = b[k]; valid += 1; }
+    });
+    if (valid < Object.keys(FIT_VALUES).length) {
+      return res.status(400).json({ success: false, message: "أجب على كل الاختيارات — كل اختيار له ثمن، وهذا سر صدقه" });
+    }
+    const p = await InstructorProfile.findOneAndUpdate(
+      { user: req.user._id },
+      { $set: { fit }, $setOnInsert: { user: req.user._id } },
+      { upsert: true, new: true }
+    );
+    res.json({ success: true, fit: p.fit });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+module.exports = { listInstructors, getInstructor, getMyInstructorProfile, upsertMyInstructorProfile, saveFingerprint, saveFit };

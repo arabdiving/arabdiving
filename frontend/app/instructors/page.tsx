@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
 import { siteImageSrc } from "@/app/lib/image";
+import { CITY_COORDS, FIT_DISPLAY, distanceKm } from "@/app/lib/instructorFit";
 
 /* دليل المدربين — بطاقات زجاجية بنقاط التميّز والخبرة، مع فلاتر المدينة والمنظمة والتخصص. */
 
@@ -23,6 +24,19 @@ export default function InstructorsPage() {
   const [loading, setLoading] = useState(true);
   const [city, setCity] = useState("");
   const [agency, setAgency] = useState("");
+  const [myPos, setMyPos] = useState<{ lat: number; lng: number } | null>(null);
+  const [geoMsg, setGeoMsg] = useState("");
+
+  // «الأقرب إليّ» — تحديد موقع المتدرب وترتيب المدربين بالمسافة
+  const locateMe = () => {
+    if (!("geolocation" in navigator)) { setGeoMsg("متصفحك لا يدعم تحديد الموقع"); return; }
+    setGeoMsg("📡 نحدد موقعك...");
+    navigator.geolocation.getCurrentPosition(
+      (p) => { setMyPos({ lat: p.coords.latitude, lng: p.coords.longitude }); setGeoMsg(""); setCity(""); },
+      () => setGeoMsg("لم نستطع تحديد موقعك — اختر مدينة من الخريطة"),
+      { timeout: 8000 }
+    );
+  };
 
   useEffect(() => {
     fetch(`${API_BASE}/api/instructors`)
@@ -34,7 +48,33 @@ export default function InstructorsPage() {
 
   const cities = useMemo(() => Array.from(new Set(list.map((i) => i.city).filter(Boolean))), [list]);
   const agencies = useMemo(() => Array.from(new Set(list.map((i) => i.agency).filter(Boolean))), [list]);
-  const shown = list.filter((i) => (!city || i.city === city) && (!agency || i.agency === agency));
+
+  // المسافة من موقع المتدرب لموقع تدريب المدرب
+  const distOf = (ins: any): number | null => {
+    if (!myPos) return null;
+    const loc = ins.location || CITY_COORDS[ins.city];
+    return loc ? distanceKm(myPos, loc) : null;
+  };
+
+  const shown = useMemo(() => {
+    const f = list.filter((i) => (!city || i.city === city) && (!agency || i.agency === agency));
+    if (!myPos) return f;
+    return [...f].sort((a, b) => (distOf(a) ?? 1e9) - (distOf(b) ?? 1e9));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [list, city, agency, myPos]);
+
+  // عدّاد المدربين لكل مدينة (لنقاط الخريطة)
+  const cityCounts = useMemo(() => {
+    const m: Record<string, number> = {};
+    list.forEach((i) => { if (i.city) m[i.city] = (m[i.city] || 0) + 1; });
+    return m;
+  }, [list]);
+
+  // إسقاط الإحداثيات على صندوق الخريطة (خليج العقبة والبحر الأحمر: lat 24.5-29.5, lng 33-35.5)
+  const project = (c: { lat: number; lng: number }) => ({
+    x: ((c.lng - 33) / 2.5) * 100,
+    y: ((29.5 - c.lat) / 5) * 100,
+  });
 
   const chip = (active: boolean): React.CSSProperties => ({
     background: active ? "#0891b2" : "rgba(255,255,255,0.07)", color: "#fff",
@@ -59,6 +99,45 @@ export default function InstructorsPage() {
       </section>
 
       <section style={{ maxWidth: "1100px", margin: "0 auto", padding: "30px 18px 70px" }}>
+
+        {/* 🗺️ خريطة مواقع التدريب + الأقرب إليّ */}
+        <div style={{ ...glass, borderRadius: "18px", padding: "20px", marginBottom: "22px" }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap", marginBottom: "12px" }}>
+            <h2 style={{ color: "#fff", fontSize: "17px", fontWeight: 800, margin: 0 }}>🗺️ أين يدرّبون؟ اختر مدينة — أو حدد موقعك</h2>
+            <button onClick={locateMe}
+              style={{ background: "linear-gradient(135deg,#0891b2,#06b6d4)", color: "white", border: "none", borderRadius: "11px", padding: "10px 20px", fontWeight: 800, fontSize: "13.5px", cursor: "pointer", fontFamily: "inherit" }}>
+              📍 الأقرب إليّ
+            </button>
+          </div>
+          {geoMsg && <p style={{ color: "#fbbf24", fontSize: "12.5px", marginBottom: "10px" }}>{geoMsg}</p>}
+          {myPos && <p style={{ color: "#34d399", fontSize: "12.5px", marginBottom: "10px" }}>✅ تم تحديد موقعك — المدربون مرتبون من الأقرب للأبعد</p>}
+
+          <div style={{ position: "relative", height: "260px", borderRadius: "14px", overflow: "hidden", background: "radial-gradient(ellipse at 60% 40%, #0a2a4a 0%, #040d1a 75%)", border: "1px solid rgba(255,255,255,0.07)" }}>
+            {/* شبكة ملاحية */}
+            <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(100,180,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(100,180,255,1) 1px,transparent 1px)", backgroundSize: "40px 40px", opacity: 0.05 }} />
+            <span style={{ position: "absolute", top: "8px", insetInlineStart: "12px", color: "rgba(255,255,255,0.3)", fontSize: "11px" }}>البحر الأحمر وخليج العقبة</span>
+            {Object.entries(CITY_COORDS).map(([name, c]) => {
+              const p = project(c);
+              const count = cityCounts[name] || 0;
+              const active = city === name;
+              return (
+                <button key={name} onClick={() => { setCity(active ? "" : name); setMyPos(null); }}
+                  title={`${name} — ${count} مدرب`}
+                  style={{ position: "absolute", left: `${p.x}%`, top: `${p.y}%`, transform: "translate(-50%,-50%)", background: "transparent", border: "none", cursor: "pointer", fontFamily: "inherit", zIndex: 5 }}>
+                  <span style={{ display: "block", width: active ? "18px" : "13px", height: active ? "18px" : "13px", borderRadius: "50%", margin: "0 auto",
+                    background: count > 0 ? "#22d3ee" : "rgba(255,255,255,0.25)",
+                    boxShadow: count > 0 ? "0 0 14px rgba(34,211,238,0.8)" : "none",
+                    border: active ? "3px solid #fbbf24" : "none",
+                    animation: count > 0 ? "pulseGlow 2s ease-in-out infinite" : "none" }} />
+                  <span style={{ display: "block", color: active ? "#fbbf24" : "rgba(255,255,255,0.75)", fontSize: "11px", fontWeight: active ? 800 : 600, marginTop: "4px", whiteSpace: "nowrap", textShadow: "0 0 8px rgba(0,0,0,0.9)" }}>
+                    {name}{count > 0 ? ` (${count})` : ""}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         {/* فلاتر */}
         {(cities.length > 0 || agencies.length > 0) && (
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginBottom: "22px" }}>
@@ -80,6 +159,11 @@ export default function InstructorsPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(290px, 1fr))", gap: "18px" }}>
               {shown.map((ins) => {
                 const img = siteImageSrc(ins.user?.profileImage);
+                const d = distOf(ins);
+                // سطر «يناسبه» المختصر: المستوى + العمر من استبيان الملاءمة
+                const fitBits = ins.fit
+                  ? [FIT_DISPLAY.level[ins.fit.level]?.suits, FIT_DISPLAY.age[ins.fit.age]?.suits].filter(Boolean)
+                  : [];
                 return (
                   <Link key={ins._id} href={`/instructors/${ins._id}`}
                     style={{ ...glass, borderRadius: "18px", padding: "20px", textDecoration: "none", display: "flex", flexDirection: "column", gap: "12px", transition: "transform .2s" }}
@@ -99,9 +183,18 @@ export default function InstructorsPage() {
                         <div style={{ color: "rgba(255,255,255,0.55)", fontSize: "12.5px" }}>
                           {ins.agency} · {ins.rank}{ins.yearsExp ? ` · خبرة ${ins.yearsExp}+ سنة` : ""}
                         </div>
-                        <div style={{ color: "rgba(255,255,255,0.45)", fontSize: "12px" }}>📍 {ins.city}</div>
+                        <div style={{ color: "rgba(255,255,255,0.45)", fontSize: "12px" }}>
+                          📍 {ins.city}{d !== null && <span style={{ color: "#34d399", fontWeight: 700 }}> · على بُعد ~{d} كم</span>}
+                        </div>
                       </div>
                     </div>
+
+                    {/* من يناسبه؟ — من استبيان الملاءمة الصادق */}
+                    {fitBits.length > 0 && (
+                      <div style={{ background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.25)", borderRadius: "9px", padding: "6px 11px", color: "#6ee7b7", fontSize: "12px", fontWeight: 600 }}>
+                        🤝 يناسب: {fitBits.join(" · ")}
+                      </div>
+                    )}
 
                     {/* نقاط التميّز */}
                     {ins.strengths?.length > 0 && (
