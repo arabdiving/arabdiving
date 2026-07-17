@@ -26,6 +26,10 @@ const SettingsSchema = new mongoose.Schema(
       default: [],
     },
 
+    // مفتاح عام: السماح بعرض وسائل التواصل المباشر للمدربين والمراكز.
+    // مفتوح الآن كوسيلة جذب — يمكن إغلاقه لاحقًا ليمر التواصل عبر المنصة.
+    directContactEnabled: { type: Boolean, default: true },
+
     commentsEnabled: { type: Boolean, default: true },
     hiddenPages: { type: [String], default: [] },
     whatsappNumber: { type: String, default: "" },

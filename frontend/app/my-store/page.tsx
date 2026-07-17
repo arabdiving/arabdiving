@@ -10,7 +10,12 @@ const empty = { name: "", description: "", price: 0, currency: "USD", images: []
 export default function MyStorePage() {
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [center, setCenter] = useState<any>(null);
-  const [tab, setTab] = useState<"products" | "courses" | "orders">("products");
+  const [tab, setTab] = useState<"products" | "courses" | "orders" | "page">("products");
+  // صفحتي والفريق
+  const [pageForm, setPageForm] = useState<any>({ description: "", video: "", whatsapp: "", showContact: true });
+  const [team, setTeam] = useState<any[]>([]);
+  const [allInstructors, setAllInstructors] = useState<any[]>([]);
+  const [invitePick, setInvitePick] = useState("");
   const [products, setProducts] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
   const [templates, setTemplates] = useState<any[]>([]);
@@ -33,6 +38,28 @@ export default function MyStorePage() {
   const loadOrders = () => fetch(`${API_BASE}/api/store/me/orders`, { headers: HF }).then((r) => r.json()).then((d) => setOrders(d.orders || [])).catch(() => {});
   const loadCourses = () => fetch(`${API_BASE}/api/store/me/courses`, { headers: HF }).then((r) => r.json()).then((d) => setCourses(d.courses || [])).catch(() => {});
   const loadTemplates = () => fetch(`${API_BASE}/api/store/me/course-templates`, { headers: HF }).then((r) => r.json()).then((d) => setTemplates(d.templates || [])).catch(() => {});
+  const loadTeam = () => fetch(`${API_BASE}/api/store/me/team`, { headers: HF }).then((r) => r.json()).then((d) => setTeam(d.team || [])).catch(() => {});
+
+  const savePage = async () => {
+    const res = await fetch(`${API_BASE}/api/store/me/center`, { method: "PUT", headers: H, body: JSON.stringify(pageForm) });
+    const d = await res.json();
+    setMsg(d.success ? "تم حفظ صفحتك ✅" : d.message || "تعذّر الحفظ");
+    if (d.success) setCenter(d.center);
+  };
+
+  const inviteIns = async () => {
+    if (!invitePick) return;
+    const res = await fetch(`${API_BASE}/api/store/me/team/invite`, { method: "POST", headers: H, body: JSON.stringify({ instructorId: invitePick }) });
+    const d = await res.json();
+    setMsg(d.message || (d.success ? "✅" : "تعذّر الإرسال"));
+    if (d.success) { setInvitePick(""); loadTeam(); }
+  };
+
+  const respondIns = async (instructorId: string, accept: boolean) => {
+    const res = await fetch(`${API_BASE}/api/store/me/team/${instructorId}/respond`, { method: "POST", headers: H, body: JSON.stringify({ accept }) });
+    const d = await res.json();
+    if (d.success) loadTeam(); else setMsg(d.message || "تعذّر التنفيذ");
+  };
 
   useEffect(() => {
     if (!token) { setAuthed(false); return; }
@@ -40,6 +67,7 @@ export default function MyStorePage() {
     fetch(`${API_BASE}/api/store/me/center`, { headers: HF }).then((r) => r.json()).then((d) => {
       const c = d.center || null;
       setCenter(c);
+      if (c) setPageForm({ description: c.description || "", video: c.video || "", whatsapp: c.whatsapp || "", showContact: c.showContact !== false });
       if (c && ["gold", "platinum"].includes(c.tier)) {
         setFeatProducts((c.featuredProducts || []).map((x: any) => String(x)));
         setFeatCourses((c.featuredCourses || []).map((x: any) => String(x)));
@@ -47,7 +75,8 @@ export default function MyStorePage() {
         fetch(`${API_BASE}/api/courses`).then((r) => r.json()).then((x) => setAllCourses(x.data || [])).catch(() => {});
       }
     }).catch(() => {});
-    loadProducts(); loadOrders(); loadCourses(); loadTemplates();
+    loadProducts(); loadOrders(); loadCourses(); loadTemplates(); loadTeam();
+    fetch(`${API_BASE}/api/instructors`).then((r) => r.json()).then((d) => setAllInstructors(d.instructors || [])).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -145,10 +174,72 @@ export default function MyStorePage() {
         <button onClick={() => setTab("products")} style={tabBtn(tab === "products")}>المنتجات ({products.length})</button>
         <button onClick={() => setTab("courses")} style={tabBtn(tab === "courses")}>🎓 دوراتي ({courses.length})</button>
         <button onClick={() => setTab("orders")} style={tabBtn(tab === "orders")}>الطلبات ({orders.length})</button>
+        <button onClick={() => setTab("page")} style={tabBtn(tab === "page")}>🏛️ صفحتي والفريق ({team.filter((t) => t.status === "approved").length})</button>
       </div>
       {msg && <p style={{ color: msg.includes("✅") ? "#1e7e34" : "#c0392b", marginBottom: "12px" }}>{msg}</p>}
 
-      {tab === "courses" ? (
+      {tab === "page" ? (
+        <>
+          {/* ── إعدادات صفحتي ── */}
+          <div style={{ background: "white", borderRadius: "14px", padding: "20px", marginBottom: "22px", boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}>
+            <h3 style={{ color: "var(--navy)", marginBottom: "14px" }}>🏛️ صفحة مركزي</h3>
+            <label style={{ display: "block", fontSize: "13px", color: "#666", marginBottom: "5px" }}>وصف المركز</label>
+            <textarea style={{ ...inp, resize: "vertical" }} rows={3} maxLength={1200} value={pageForm.description} onChange={(e) => setPageForm({ ...pageForm, description: e.target.value })} />
+            <label style={{ display: "block", fontSize: "13px", color: "#666", margin: "12px 0 5px" }}>🎬 فيديو تعريفي (رابط يوتيوب أو فيديو مباشر)</label>
+            <input style={inp} dir="ltr" placeholder="https://youtube.com/watch?v=..." value={pageForm.video} onChange={(e) => setPageForm({ ...pageForm, video: e.target.value })} />
+            <label style={{ display: "block", fontSize: "13px", color: "#666", margin: "12px 0 5px" }}>واتساب المركز</label>
+            <input style={inp} dir="ltr" placeholder="+20..." value={pageForm.whatsapp} onChange={(e) => setPageForm({ ...pageForm, whatsapp: e.target.value })} />
+            <label style={{ display: "flex", gap: "8px", alignItems: "center", marginTop: "12px", color: "#444", cursor: "pointer" }}>
+              <input type="checkbox" checked={pageForm.showContact !== false} onChange={(e) => setPageForm({ ...pageForm, showContact: e.target.checked })} />
+              📞 إظهار وسائل التواصل في صفحتنا العامة
+            </label>
+            <button onClick={savePage} style={{ ...btnMid, marginTop: "14px" }}>💾 حفظ صفحتي</button>
+          </div>
+
+          {/* ── فريق المدربين ── */}
+          <div style={{ background: "white", borderRadius: "14px", padding: "20px", boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}>
+            <h3 style={{ color: "var(--navy)", marginBottom: "4px" }}>🧑‍🏫 فريق المدربين</h3>
+            <p style={{ color: "#888", fontSize: "13px", lineHeight: 1.8, marginBottom: "14px" }}>
+              الانضمام بموافقة الطرفين: المدرب يطلب وأنت توافق، أو أنت تدعو وهو يوافق. المعتمدون يظهرون في صفحة مركزك.
+            </p>
+
+            {team.length === 0 && <p style={{ color: "#888", marginBottom: "14px" }}>لا مدربون بعد — ادعُ مدربًا من الدليل بالأسفل.</p>}
+            <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "16px" }}>
+              {team.map((t) => (
+                <div key={t.instructor._id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap", border: "1px solid #e8edf2", borderRadius: "12px", padding: "12px 14px" }}>
+                  <div>
+                    <Link href={`/instructors/${t.instructor._id}`} style={{ color: "var(--navy)", fontWeight: 700, fontSize: "14.5px" }}>
+                      🧑‍🏫 {t.instructor.user?.name || "مدرب"} {t.instructor.verified ? "✅" : ""}
+                    </Link>
+                    <div style={{ fontSize: "12.5px", color: "#666", marginTop: "2px" }}>{t.instructor.agency} · {t.instructor.rank} · 📍 {t.instructor.city}</div>
+                    <div style={{ fontSize: "12.5px", marginTop: "3px", color: t.status === "approved" ? "#1e7e34" : "#b45309", fontWeight: 700 }}>
+                      {t.status === "approved" ? "✅ معتمد" : t.status === "pending_center" ? "⏳ طلب انضمام — بانتظار ردك" : "📨 دعوتك مرسلة — بانتظار المدرب"}
+                    </div>
+                  </div>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    {t.status === "pending_center" && (
+                      <button onClick={() => respondIns(t.instructor._id, true)} style={miniBtn("#059669")}>قبول ✅</button>
+                    )}
+                    <button onClick={() => respondIns(t.instructor._id, false)} style={miniBtn("#b91c1c")}>
+                      {t.status === "approved" ? "إزالة" : t.status === "pending_center" ? "رفض" : "إلغاء الدعوة"}
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <select value={invitePick} onChange={(e) => setInvitePick(e.target.value)} style={{ ...inp, flex: 1, minWidth: "200px", width: "auto" }}>
+                <option value="">ادعُ مدربًا من الدليل...</option>
+                {allInstructors
+                  .filter((i) => !team.some((t) => t.instructor._id === i._id))
+                  .map((i) => <option key={i._id} value={i._id}>{i.user?.name || "مدرب"} — {i.agency} · {i.city}</option>)}
+              </select>
+              <button onClick={inviteIns} disabled={!invitePick} style={{ ...btnMid, opacity: invitePick ? 1 : 0.4 }}>📨 أرسل الدعوة</button>
+            </div>
+          </div>
+        </>
+      ) : tab === "courses" ? (
         <>
           <div style={{ background: "#f0fdfa", border: "1px solid #99f6e4", borderRadius: "12px", padding: "14px 18px", marginBottom: "20px", color: "#134e4a", fontSize: "13.5px", lineHeight: 1.8 }}>
             💡 محتوى الدورات معتمد وموحّد من المنصة (المنهج، الغطسات، أيام التدريب) — أنت تضيف الدورة لصفحتك وتحدد <strong>سعرك</strong> فقط. هذا يضمن للعميل العربي محتوى موثوقًا أينما حجز.

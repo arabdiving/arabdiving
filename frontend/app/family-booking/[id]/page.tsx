@@ -6,6 +6,7 @@ import { API_BASE } from "@/app/lib/api";
 import { siteImageSrc } from "@/app/lib/image";
 import SeaHeroesGame, { ChildProfileData } from "@/app/components/SeaHeroesGame";
 import { CURRENCIES, fetchRates, convert, formatMoney, FALLBACK_RATES } from "@/app/lib/currency";
+import { youtubeId, isDirectVideo } from "@/app/lib/video";
 
 type BadgeKey = "womenStaff" | "privateTrip" | "family" | "separateFacilities" | "sanitizedGear" | "technical" | "ecoFriendly";
 const BADGES: { key: BadgeKey; label: string; emoji: string }[] = [
@@ -32,6 +33,7 @@ const STEPS = ["التفاصيل", "الركاب", "الإضافات", "التأ
 export default function BookingWizard({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
   const [center, setCenter] = useState<any>(null);
+  const [team, setTeam] = useState<any[]>([]); // مدربو المركز المعتمدون (بموافقة الطرفين)
   const [loading, setLoading] = useState(true);
   const [step, setStep] = useState(0);
 
@@ -56,7 +58,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
     if (q.get("people")) setPeople(Number(q.get("people")) || 2);
     if (q.get("date")) setDate(q.get("date")!);
     fetch(`${API_BASE}/api/partner-centers/${id}`)
-      .then((r) => r.json()).then((d) => setCenter(d.center)).catch(() => {}).finally(() => setLoading(false));
+      .then((r) => r.json()).then((d) => { setCenter(d.center); setTeam(d.team || []); }).catch(() => {}).finally(() => setLoading(false));
     fetch(`${API_BASE}/api/settings`).then((r) => r.json()).then((d) => { if (d.settings?.addons?.length) setAddonList(d.settings.addons); }).catch(() => {});
     fetchRates().then(setRates).catch(() => {});
   }, [id]);
@@ -172,6 +174,45 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
           <div style={{ color: "#777", fontSize: "14px" }}>📍 {center.city} · ⭐ {center.rating} · من {money(priceFromUSD)}/للفرد</div>
         </div>
       </div>
+
+      {/* 🎬 فيديو المركز التعريفي */}
+      {center.video && step === 0 && (() => {
+        const yt = youtubeId(center.video);
+        return (
+          <div style={{ margin: "12px 0", borderRadius: "14px", overflow: "hidden" }}>
+            {yt ? (
+              <iframe src={`https://www.youtube.com/embed/${yt}`} title="فيديو المركز"
+                style={{ width: "100%", aspectRatio: "16/9", border: "none", borderRadius: "14px", display: "block" }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+            ) : isDirectVideo(center.video) ? (
+              <video src={center.video} controls style={{ width: "100%", borderRadius: "14px", display: "block" }} />
+            ) : (
+              <a href={center.video} target="_blank" rel="noopener noreferrer" style={{ color: "var(--mid)", fontWeight: 700, fontSize: "14px" }}>🎬 شاهد فيديو المركز</a>
+            )}
+          </div>
+        );
+      })()}
+
+      {/* 🧑‍🏫 فريق المدربين المعتمد */}
+      {team.length > 0 && step === 0 && (
+        <div style={{ margin: "12px 0 4px" }}>
+          <div style={{ color: "var(--navy)", fontWeight: 800, fontSize: "15px", marginBottom: "8px" }}>🧑‍🏫 مدربو المركز (بموافقة الطرفين)</div>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {team.map((t: any) => (
+              <Link key={t._id} href={`/instructors/${t._id}`}
+                style={{ display: "flex", alignItems: "center", gap: "8px", background: "rgba(6,182,212,0.1)", border: "1px solid rgba(6,182,212,0.3)", borderRadius: "30px", padding: "6px 14px 6px 8px", textDecoration: "none" }}>
+                {siteImageSrc(t.user?.profileImage) ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={siteImageSrc(t.user?.profileImage) || ""} alt="" style={{ width: "28px", height: "28px", borderRadius: "50%", objectFit: "cover" }} />
+                ) : <span style={{ fontSize: "18px" }}>🧑‍🏫</span>}
+                <span style={{ color: "var(--mid)", fontWeight: 700, fontSize: "13px" }}>
+                  {t.user?.name || "مدرب"} {t.verified ? "✅" : ""}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Stepper */}
       <div style={{ display: "flex", gap: "6px", margin: "18px 0 26px", flexWrap: "wrap" }}>

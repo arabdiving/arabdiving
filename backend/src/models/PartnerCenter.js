@@ -29,6 +29,21 @@ const PartnerCenterSchema = new mongoose.Schema(
     },
 
     whatsapp: { type: String, default: "" }, // for booking welcome message
+    showContact: { type: Boolean, default: true }, // المركز يتحكم في إظهار وسائل تواصله (والأدمن له مفتاح عام)
+    video: { type: String, default: "" },          // رابط فيديو تعريفي (يوتيوب/رابط مباشر)
+
+    // فريق المدربين — انضمام بموافقة الطرفين:
+    // pending_center     = المدرب طلب الانضمام وينتظر موافقة المركز
+    // pending_instructor = المركز دعا المدرب وينتظر موافقته
+    // approved           = الطرفان وافقا — يظهر علنًا
+    team: {
+      type: [{
+        instructor: { type: mongoose.Schema.Types.ObjectId, ref: "InstructorProfile" },
+        status: { type: String, enum: ["pending_center", "pending_instructor", "approved"], default: "pending_center" },
+        at: { type: Date, default: Date.now },
+      }],
+      default: [],
+    },
     tier: { type: String, enum: ["silver", "gold", "platinum"], default: "silver" },
     active: { type: Boolean, default: true },
     slug: { type: String, default: "", index: true },

@@ -67,7 +67,11 @@ export default function InstructorJoinPage() {
   const [step, setStep] = useState<"info" | "survey" | "fit" | "result">("info");
   const [fitAnswers, setFitAnswers] = useState<Partial<Record<FitKey, string>>>({});
   const [authed, setAuthed] = useState<boolean | null>(null);
-  const [form, setForm] = useState<any>({ agency: "PADI", instructorNumber: "", rank: RANKS[1], sinceYear: "", specialties: [] as string[], languages: ["العربية"], city: "شرم الشيخ", bio: "", whatsapp: "", showWeakness: false });
+  const [form, setForm] = useState<any>({ agency: "PADI", instructorNumber: "", rank: RANKS[1], sinceYear: "", specialties: [] as string[], languages: ["العربية"], city: "شرم الشيخ", bio: "", whatsapp: "", video: "", showWeakness: false, showContact: true });
+  // عضويتي في مراكز الغوص (بموافقة الطرفين)
+  const [centers, setCenters] = useState<any[]>([]);
+  const [memberships, setMemberships] = useState<any[]>([]);
+  const [centerPick, setCenterPick] = useState("");
   const [answers, setAnswers] = useState<Record<number, number>>({});
   const [result, setResult] = useState<{ strengths: string[]; weakness: string | null; scores: Record<string, number> } | null>(null);
   const [msg, setMsg] = useState("");
@@ -82,8 +86,28 @@ export default function InstructorJoinPage() {
     fetch(`${API_BASE}/api/instructors/me`, { headers: H }).then((r) => r.json()).then((d) => {
       if (d.profile) setForm((f: any) => ({ ...f, ...d.profile, sinceYear: d.profile.sinceYear || "" }));
     }).catch(() => {});
+    loadMemberships();
+    fetch(`${API_BASE}/api/partner-centers`).then((r) => r.json()).then((d) => setCenters(d.data || [])).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const loadMemberships = () =>
+    fetch(`${API_BASE}/api/instructors/me/centers`, { headers: H }).then((r) => r.json())
+      .then((d) => setMemberships(d.memberships || [])).catch(() => {});
+
+  const requestJoin = async () => {
+    if (!centerPick) return;
+    const res = await fetch(`${API_BASE}/api/instructors/me/centers/${centerPick}/request`, { method: "POST", headers: H });
+    const d = await res.json();
+    setMsg(d.message || (d.success ? "" : "تعذّر إرسال الطلب"));
+    if (d.success) { setCenterPick(""); loadMemberships(); }
+  };
+
+  const respondCenter = async (centerId: string, accept: boolean) => {
+    const res = await fetch(`${API_BASE}/api/instructors/me/centers/${centerId}/respond`, { method: "POST", headers: H, body: JSON.stringify({ accept }) });
+    const d = await res.json();
+    if (d.success) loadMemberships(); else setMsg(d.message || "تعذّر التنفيذ");
+  };
 
   const toggle = (key: "specialties" | "languages", v: string) =>
     setForm((f: any) => ({ ...f, [key]: f[key].includes(v) ? f[key].filter((x: string) => x !== v) : [...f[key], v] }));
@@ -207,10 +231,74 @@ export default function InstructorJoinPage() {
               <textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={3} maxLength={600} placeholder="من أنت كمدرب؟ ما فلسفتك في التعليم؟" style={{ ...field, resize: "vertical" }} />
             </div>
 
+            <div>
+              <label style={lbl}>🎬 فيديو تعريفي (رابط يوتيوب أو فيديو مباشر — اختياري)</label>
+              <input value={form.video || ""} onChange={(e) => setForm({ ...form, video: e.target.value })} placeholder="https://youtube.com/watch?v=..." style={field} dir="ltr" />
+            </div>
+
+            <label style={{ display: "flex", alignItems: "center", gap: "10px", cursor: "pointer", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "11px", padding: "12px 14px" }}>
+              <input type="checkbox" checked={form.showContact !== false} onChange={(e) => setForm({ ...form, showContact: e.target.checked })} style={{ width: "18px", height: "18px", accentColor: "#22d3ee" }} />
+              <span style={{ color: "rgba(255,255,255,0.8)", fontSize: "13.5px", lineHeight: 1.7 }}>
+                📞 إظهار وسائل التواصل (واتساب) في بروفايلي العام — يمكنك إخفاؤها في أي وقت
+              </span>
+            </label>
+
             <button type="submit" style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "white", border: "none", borderRadius: "12px", padding: "14px", fontSize: "16px", fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
               التالي: بصمة المدرب ←
             </button>
           </form>
+        )}
+
+        {/* ═══ 🤝 مراكزي — عضوية بموافقة الطرفين ═══ */}
+        {step === "info" && authed && (
+          <div style={{ ...glass, borderRadius: "18px", padding: "24px", marginTop: "18px" }}>
+            <h2 style={{ color: "#fff", fontSize: "17px", fontWeight: 800, marginBottom: "4px" }}>🤝 مراكز الغوص التي أعمل معها</h2>
+            <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "12.5px", lineHeight: 1.8, marginBottom: "16px" }}>
+              اطلب الانضمام لمركز — يظهر اسمك في صفحته بعد موافقته، وتظهر مراكزك في بروفايلك. (احفظ بياناتك أولًا إن كنت جديدًا)
+            </p>
+
+            {/* عضوياتي الحالية */}
+            {memberships.length > 0 && (
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px", marginBottom: "16px" }}>
+                {memberships.map((m) => (
+                  <div key={m.center._id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "12px 14px" }}>
+                    <div>
+                      <div style={{ color: "#fff", fontWeight: 700, fontSize: "14px" }}>🏛️ {m.center.name}</div>
+                      <div style={{ fontSize: "12px", marginTop: "3px", color: m.status === "approved" ? "#34d399" : "#fbbf24" }}>
+                        {m.status === "approved" ? "✅ معتمد — تظهر في صفحة المركز" : m.status === "pending_center" ? "⏳ بانتظار موافقة المركز" : "📨 المركز دعاك — بانتظار ردك"}
+                      </div>
+                    </div>
+                    <div style={{ display: "flex", gap: "8px" }}>
+                      {m.status === "pending_instructor" && (
+                        <button onClick={() => respondCenter(m.center._id, true)}
+                          style={{ background: "#059669", color: "#fff", border: "none", borderRadius: "9px", padding: "8px 16px", fontWeight: 800, fontSize: "12.5px", cursor: "pointer", fontFamily: "inherit" }}>
+                          أقبل الدعوة ✅
+                        </button>
+                      )}
+                      <button onClick={() => respondCenter(m.center._id, false)}
+                        style={{ background: "rgba(248,113,113,0.12)", color: "#f87171", border: "1px solid rgba(248,113,113,0.3)", borderRadius: "9px", padding: "8px 14px", fontWeight: 700, fontSize: "12.5px", cursor: "pointer", fontFamily: "inherit" }}>
+                        {m.status === "approved" ? "مغادرة" : m.status === "pending_center" ? "إلغاء الطلب" : "رفض"}
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
+            {/* طلب انضمام جديد */}
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <select value={centerPick} onChange={(e) => setCenterPick(e.target.value)} style={{ ...field, flex: 1, minWidth: "200px", width: "auto" }}>
+                <option value="" style={{ color: "#0f172a" }}>اختر مركزًا للانضمام...</option>
+                {centers
+                  .filter((c) => !memberships.some((m) => m.center._id === c._id))
+                  .map((c) => <option key={c._id} value={c._id} style={{ color: "#0f172a" }}>{c.name} — {c.city}</option>)}
+              </select>
+              <button onClick={requestJoin} disabled={!centerPick}
+                style={{ background: "linear-gradient(135deg,#0891b2,#06b6d4)", color: "#fff", border: "none", borderRadius: "11px", padding: "11px 22px", fontWeight: 800, fontSize: "13.5px", cursor: "pointer", fontFamily: "inherit", opacity: centerPick ? 1 : 0.4 }}>
+                أرسل طلب الانضمام
+              </button>
+            </div>
+          </div>
         )}
 
         {/* ═══ الخطوة 2: الاستبيان ═══ */}

@@ -2,23 +2,116 @@ const PartnerCenter = require("../models/PartnerCenter");
 const Product = require("../models/Product");
 const Booking = require("../models/Booking");
 const Course = require("../models/Course");
+const InstructorProfile = require("../models/InstructorProfile");
+const { publicProfile, contactAllowed } = require("./instructorController");
 
 const findMyCenter = (userId) => PartnerCenter.findOne({ owner: userId });
 
-// Public: partner page by slug + its active products AND courses.
+// تعقيم مركز للعرض العام — الواتساب يظهر فقط بموافقة المركز والمنصة معًا
+function sanitizeCenter(center, allowed) {
+  const o = center.toObject ? center.toObject() : { ...center };
+  if (!allowed || o.showContact === false) o.whatsapp = "";
+  delete o.team; // الفريق يُرسل مُعقّمًا على حدة
+  return o;
+}
+
+// Public: partner page by slug + its active products AND courses + approved team.
 const getStoreBySlug = async (req, res) => {
   try {
     const center = await PartnerCenter.findOne({ slug: req.params.slug, active: true });
     if (!center) return res.status(404).json({ success: false, message: "المتجر غير موجود" });
-    const [ownProducts, ownCourses, featProducts, featCourses] = await Promise.all([
+    const approvedIds = (center.team || []).filter((t) => t.status === "approved").map((t) => t.instructor);
+    const [ownProducts, ownCourses, featProducts, featCourses, teamProfiles, allowed] = await Promise.all([
       Product.find({ center: center._id, active: true }).sort({ createdAt: -1 }),
       Course.find({ center: center._id, active: true }).sort({ order: 1, createdAt: -1 }),
       (center.featuredProducts && center.featuredProducts.length) ? Product.find({ _id: { $in: center.featuredProducts }, active: true }) : [],
       (center.featuredCourses && center.featuredCourses.length) ? Course.find({ _id: { $in: center.featuredCourses }, active: true }) : [],
+      approvedIds.length ? InstructorProfile.find({ _id: { $in: approvedIds }, active: true }).populate("user", "name profileImage") : [],
+      contactAllowed(),
     ]);
     const pMap = new Map(); [...ownProducts, ...featProducts].forEach((p) => pMap.set(String(p._id), p));
     const cMap = new Map(); [...ownCourses, ...featCourses].forEach((c) => cMap.set(String(c._id), c));
-    res.json({ success: true, center, products: [...pMap.values()], courses: [...cMap.values()] });
+    res.json({
+      success: true,
+      center: sanitizeCenter(center, allowed),
+      products: [...pMap.values()], courses: [...cMap.values()],
+      team: teamProfiles.map((p) => publicProfile(p, allowed)),
+    });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+/* ─── المركز يعدّل صفحته: وصف/صورة/فيديو/واتساب/إظهار التواصل ─── */
+const updateMyCenter = async (req, res) => {
+  try {
+    const center = await findMyCenter(req.user._id);
+    if (!center) return res.status(403).json({ success: false, message: "لا تملك صفحة مركز. تواصل مع الإدارة." });
+    const b = req.body || {};
+    if (typeof b.description === "string") center.description = b.description.slice(0, 1200);
+    if (typeof b.image === "string") center.image = b.image.slice(0, 300);
+    if (typeof b.video === "string") center.video = b.video.slice(0, 300);
+    if (typeof b.whatsapp === "string") center.whatsapp = b.whatsapp.slice(0, 20);
+    if (typeof b.showContact === "boolean") center.showContact = b.showContact;
+    await center.save();
+    res.json({ success: true, center });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+/* ─── فريق المدربين — جهة المركز ─── */
+
+// فريقي بكل الحالات (طلبات واردة + دعواتي المرسلة + المعتمدون)
+const getMyTeam = async (req, res) => {
+  try {
+    const center = await findMyCenter(req.user._id);
+    if (!center) return res.json({ success: true, team: [] });
+    const ids = (center.team || []).map((t) => t.instructor);
+    const profiles = ids.length ? await InstructorProfile.find({ _id: { $in: ids } }).populate("user", "name profileImage") : [];
+    const pMap = new Map(profiles.map((p) => [String(p._id), p]));
+    const team = (center.team || []).map((t) => {
+      const p = pMap.get(String(t.instructor));
+      return p ? { instructor: publicProfile(p, true), status: t.status, at: t.at } : null;
+    }).filter(Boolean);
+    res.json({ success: true, team });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+// المركز يدعو مدربًا
+const inviteInstructor = async (req, res) => {
+  try {
+    const center = await findMyCenter(req.user._id);
+    if (!center) return res.status(403).json({ success: false, message: "لا تملك صفحة مركز." });
+    const ins = await InstructorProfile.findOne({ _id: req.body.instructorId, active: true });
+    if (!ins) return res.status(404).json({ success: false, message: "المدرب غير موجود" });
+    const existing = (center.team || []).find((t) => String(t.instructor) === String(ins._id));
+    if (existing) {
+      if (existing.status === "approved") return res.status(409).json({ success: false, message: "المدرب ضمن فريقك بالفعل" });
+      if (existing.status === "pending_instructor") return res.status(409).json({ success: false, message: "دعوتك السابقة ما زالت بانتظار رد المدرب" });
+      // كان المدرب قد طلب الانضمام — دعوتك الآن تُعتبر موافقة
+      existing.status = "approved"; existing.at = new Date();
+      await center.save();
+      return res.json({ success: true, status: "approved", message: "المدرب كان قد طلب الانضمام — تم الاعتماد ✅" });
+    }
+    center.team.push({ instructor: ins._id, status: "pending_instructor", at: new Date() });
+    await center.save();
+    res.json({ success: true, status: "pending_instructor", message: "أُرسلت الدعوة — بانتظار موافقة المدرب" });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+// المركز يرد على طلب مدرب (قبول/رفض) أو يزيله من الفريق
+const respondToInstructor = async (req, res) => {
+  try {
+    const center = await findMyCenter(req.user._id);
+    if (!center) return res.status(403).json({ success: false, message: "لا تملك صفحة مركز." });
+    const entry = (center.team || []).find((t) => String(t.instructor) === String(req.params.instructorId));
+    if (!entry) return res.status(404).json({ success: false, message: "لا توجد علاقة مع هذا المدرب" });
+    if (req.body.accept === true) {
+      if (entry.status !== "pending_center") return res.status(400).json({ success: false, message: "لا يوجد طلب بانتظار ردك" });
+      entry.status = "approved"; entry.at = new Date();
+      await center.save();
+      return res.json({ success: true, status: "approved" });
+    }
+    center.team = center.team.filter((t) => String(t.instructor) !== String(req.params.instructorId));
+    await center.save();
+    res.json({ success: true, status: "removed" });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
@@ -158,4 +251,5 @@ module.exports = {
   setMyFeatured,
   getStoreBySlug, getMyCenter, getMyOrders, getMyProducts, createMyProduct, updateMyProduct, deleteMyProduct,
   getCourseTemplates, getMyCourses, addMyCourseFromTemplate, updateMyCourse, deleteMyCourse,
+  updateMyCenter, getMyTeam, inviteInstructor, respondToInstructor,
 };

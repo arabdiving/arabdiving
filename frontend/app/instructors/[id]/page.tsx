@@ -5,6 +5,7 @@ import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
 import { siteImageSrc } from "@/app/lib/image";
 import { FIT_DISPLAY, FIT_QUESTIONS } from "@/app/lib/instructorFit";
+import { youtubeId, isDirectVideo } from "@/app/lib/video";
 
 /* البروفايل العام للمدرب — البصمة كاملة، نقاط التميّز، التخصصات، وتواصل مباشر. */
 
@@ -85,6 +86,41 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
         {ins.bio && (
           <div style={{ ...glass, borderRadius: "18px", padding: "22px" }}>
             <p style={{ color: "rgba(255,255,255,0.85)", lineHeight: 2, fontSize: "15px", margin: 0 }}>{ins.bio}</p>
+          </div>
+        )}
+
+        {/* 🎬 الفيديو التعريفي */}
+        {ins.video && (() => {
+          const yt = youtubeId(ins.video);
+          return (
+            <div style={{ ...glass, borderRadius: "18px", padding: "16px", overflow: "hidden" }}>
+              {yt ? (
+                <iframe src={`https://www.youtube.com/embed/${yt}`} title="فيديو تعريفي"
+                  style={{ width: "100%", aspectRatio: "16/9", border: "none", borderRadius: "12px", display: "block" }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen />
+              ) : isDirectVideo(ins.video) ? (
+                <video src={ins.video} controls style={{ width: "100%", borderRadius: "12px", display: "block" }} />
+              ) : (
+                <a href={ins.video} target="_blank" rel="noopener noreferrer" style={{ color: "#22d3ee", fontWeight: 700, fontSize: "14px" }}>
+                  🎬 شاهد الفيديو التعريفي للمدرب
+                </a>
+              )}
+            </div>
+          );
+        })()}
+
+        {/* 🏛️ يعمل مع مراكز (بموافقة الطرفين) */}
+        {ins.centers?.length > 0 && (
+          <div style={{ ...glass, borderRadius: "18px", padding: "22px" }}>
+            <h2 style={{ color: "#fff", fontSize: "18px", fontWeight: 800, marginBottom: "12px" }}>🏛️ يعمل مع</h2>
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              {ins.centers.map((c: any) => (
+                <Link key={c._id} href={`/family-booking/${c._id}`}
+                  style={{ background: "rgba(6,182,212,0.1)", border: "1px solid rgba(6,182,212,0.25)", color: "#22d3ee", borderRadius: "12px", padding: "10px 18px", fontSize: "13.5px", fontWeight: 700, textDecoration: "none" }}>
+                  🏛️ {c.name} — {c.city}
+                </Link>
+              ))}
+            </div>
           </div>
         )}
 

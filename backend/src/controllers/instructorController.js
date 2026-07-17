@@ -1,4 +1,12 @@
 const InstructorProfile = require("../models/InstructorProfile");
+const PartnerCenter = require("../models/PartnerCenter");
+const { getSettings } = require("./settingsController");
+
+// المفتاح العام: هل التواصل المباشر مسموح على مستوى المنصة؟
+async function contactAllowed() {
+  try { const s = await getSettings(); return s.directContactEnabled !== false; }
+  catch { return true; }
+}
 
 const AXES = ["planning", "strategies", "management", "engagement", "watermanship", "professionalism"];
 const clamp5 = (v) => Math.max(1, Math.min(5, Number(v) || 0));
@@ -29,17 +37,20 @@ function analyze(scores) {
   return { strengths: [sorted[0][0], sorted[1][0]], weakness: sorted[sorted.length - 1][0] };
 }
 
-// تعقيم البروفايل للعرض العام
-function publicProfile(p) {
+// تعقيم البروفايل للعرض العام — التواصل يظهر فقط إذا سمح المدرب والمنصة معًا
+function publicProfile(p, showContactGlobal = true) {
   const o = p.toObject ? p.toObject() : p;
   const { strengths, weakness } = analyze(o.fingerprint?.scores);
+  const contactVisible = showContactGlobal && o.showContact !== false;
   return {
     _id: o._id,
     user: o.user, // populated: name, profileImage
     agency: o.agency, rank: o.rank, sinceYear: o.sinceYear,
     yearsExp: o.sinceYear ? Math.max(0, new Date().getFullYear() - o.sinceYear) : null,
     specialties: o.specialties || [], languages: o.languages || [],
-    city: o.city, bio: o.bio, whatsapp: o.whatsapp || "",
+    city: o.city, bio: o.bio,
+    whatsapp: contactVisible ? (o.whatsapp || "") : "",
+    video: o.video || "",
     verified: !!o.verified,
     hasFingerprint: Boolean(o.fingerprint?.takenAt),
     fingerprint: o.fingerprint?.scores || null, // الرادار كامل علني (الأرقام) — القوة تُبرز والضعف يُفسَّر فقط لصاحبه
@@ -60,19 +71,27 @@ const listInstructors = async (req, res) => {
     if (req.query.city) q.city = req.query.city;
     if (req.query.agency) q.agency = req.query.agency;
     if (req.query.specialty) q.specialties = req.query.specialty;
-    const list = await InstructorProfile.find(q)
-      .populate("user", "name profileImage")
-      .sort({ verified: -1, createdAt: 1 });
-    res.json({ success: true, instructors: list.map(publicProfile) });
+    const [list, allowed] = await Promise.all([
+      InstructorProfile.find(q).populate("user", "name profileImage").sort({ verified: -1, createdAt: 1 }),
+      contactAllowed(),
+    ]);
+    res.json({ success: true, instructors: list.map((p) => publicProfile(p, allowed)) });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
-/* ── عام: بروفايل مدرب ── */
+/* ── عام: بروفايل مدرب (+ مراكزه المعتمدة بموافقة الطرفين) ── */
 const getInstructor = async (req, res) => {
   try {
-    const p = await InstructorProfile.findById(req.params.id).populate("user", "name profileImage");
+    const [p, allowed] = await Promise.all([
+      InstructorProfile.findById(req.params.id).populate("user", "name profileImage"),
+      contactAllowed(),
+    ]);
     if (!p || !p.active) return res.status(404).json({ success: false, message: "المدرب غير موجود" });
-    res.json({ success: true, instructor: publicProfile(p) });
+    const centers = await PartnerCenter.find(
+      { active: true, team: { $elemMatch: { instructor: p._id, status: "approved" } } },
+      "name city image slug"
+    );
+    res.json({ success: true, instructor: { ...publicProfile(p, allowed), centers } });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
@@ -100,7 +119,9 @@ const upsertMyInstructorProfile = async (req, res) => {
       city: String(b.city || "").slice(0, 40),
       bio: String(b.bio || "").slice(0, 600),
       whatsapp: String(b.whatsapp || "").slice(0, 20),
+      video: String(b.video || "").slice(0, 300),
       ...(typeof b.showWeakness === "boolean" ? { showWeakness: b.showWeakness } : {}),
+      ...(typeof b.showContact === "boolean" ? { showContact: b.showContact } : {}),
       active: true,
     };
     // موقع الخريطة: تلقائي من المدينة (أو إحداثيات صريحة إن أُرسلت)
@@ -155,4 +176,73 @@ const saveFit = async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
-module.exports = { listInstructors, getInstructor, getMyInstructorProfile, upsertMyInstructorProfile, saveFingerprint, saveFit };
+/* ═══ عضوية المدرب في مراكز الغوص — بموافقة الطرفين ═══ */
+
+// بروفايلي المدرب (يجب أن يكون موجودًا قبل أي طلب عضوية)
+async function myProfile(userId) { return InstructorProfile.findOne({ user: userId, active: true }); }
+
+/* ── خاص: مراكزي (كل الحالات: معتمد / بانتظار المركز / دعوة بانتظاري) ── */
+const getMyCenters = async (req, res) => {
+  try {
+    const me = await myProfile(req.user._id);
+    if (!me) return res.json({ success: true, memberships: [] });
+    const centers = await PartnerCenter.find(
+      { team: { $elemMatch: { instructor: me._id } } },
+      "name city image slug team"
+    );
+    const memberships = centers.map((c) => {
+      const entry = c.team.find((t) => String(t.instructor) === String(me._id));
+      return { center: { _id: c._id, name: c.name, city: c.city, image: c.image, slug: c.slug }, status: entry?.status, at: entry?.at };
+    });
+    res.json({ success: true, memberships });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+/* ── خاص: المدرب يطلب الانضمام لمركز ── */
+const requestJoinCenter = async (req, res) => {
+  try {
+    const me = await myProfile(req.user._id);
+    if (!me) return res.status(403).json({ success: false, message: "أنشئ بروفايلك كمدرب أولًا" });
+    const center = await PartnerCenter.findById(req.params.centerId);
+    if (!center || !center.active) return res.status(404).json({ success: false, message: "المركز غير موجود" });
+    const existing = (center.team || []).find((t) => String(t.instructor) === String(me._id));
+    if (existing) {
+      if (existing.status === "approved") return res.status(409).json({ success: false, message: "أنت بالفعل ضمن فريق هذا المركز" });
+      if (existing.status === "pending_center") return res.status(409).json({ success: false, message: "طلبك السابق ما زال بانتظار موافقة المركز" });
+      // كان المركز قد دعاه — طلبه الآن يُعتبر قبولًا للدعوة
+      existing.status = "approved"; existing.at = new Date();
+      await center.save();
+      return res.json({ success: true, status: "approved", message: "المركز كان قد دعاك — تم الاعتماد ✅" });
+    }
+    center.team.push({ instructor: me._id, status: "pending_center", at: new Date() });
+    await center.save();
+    res.json({ success: true, status: "pending_center", message: "أُرسل طلبك — بانتظار موافقة المركز" });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+/* ── خاص: المدرب يرد على دعوة مركز (قبول/رفض) أو يغادر/يلغي طلبه ── */
+const respondToCenter = async (req, res) => {
+  try {
+    const me = await myProfile(req.user._id);
+    if (!me) return res.status(403).json({ success: false, message: "أنشئ بروفايلك كمدرب أولًا" });
+    const center = await PartnerCenter.findById(req.params.centerId);
+    if (!center) return res.status(404).json({ success: false, message: "المركز غير موجود" });
+    const entry = (center.team || []).find((t) => String(t.instructor) === String(me._id));
+    if (!entry) return res.status(404).json({ success: false, message: "لا توجد علاقة بينك وبين هذا المركز" });
+    if (req.body.accept === true) {
+      if (entry.status !== "pending_instructor") return res.status(400).json({ success: false, message: "لا توجد دعوة بانتظار ردك" });
+      entry.status = "approved"; entry.at = new Date();
+      await center.save();
+      return res.json({ success: true, status: "approved" });
+    }
+    // رفض الدعوة أو إلغاء الطلب أو مغادرة الفريق — كلها إزالة للعلاقة
+    center.team = center.team.filter((t) => String(t.instructor) !== String(me._id));
+    await center.save();
+    res.json({ success: true, status: "removed" });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+module.exports = {
+  listInstructors, getInstructor, getMyInstructorProfile, upsertMyInstructorProfile, saveFingerprint, saveFit,
+  getMyCenters, requestJoinCenter, respondToCenter, publicProfile, contactAllowed,
+};

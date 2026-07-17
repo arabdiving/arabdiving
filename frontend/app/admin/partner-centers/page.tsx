@@ -46,6 +46,20 @@ export default function AdminPartnerCenters() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [msg, setMsg] = useState("");
   const [busy, setBusy] = useState(false);
+  // المفتاح العام: السماح بالتواصل المباشر (مدربون + مراكز)
+  const [directContact, setDirectContact] = useState(true);
+  useEffect(() => {
+    fetch(`${API_BASE}/api/settings`).then((r) => r.json())
+      .then((d) => setDirectContact(d.settings?.directContactEnabled !== false)).catch(() => {});
+  }, []);
+  const toggleDirectContact = async () => {
+    const next = !directContact;
+    setDirectContact(next);
+    const res = await fetch(`${API_BASE}/api/settings`, { method: "PUT", headers: authHeaders(), body: JSON.stringify({ directContactEnabled: next }) });
+    const d = await res.json();
+    if (!d.success) { setDirectContact(!next); setMsg(d.message || "تعذّر الحفظ"); }
+    else setMsg(next ? "التواصل المباشر مفعّل ✅" : "التواصل المباشر موقوف — تُخفى أرقام الواتساب من كل الصفحات العامة ✅");
+  };
 
   const load = () => {
     fetch(`${API_BASE}/api/partner-centers?all=true`)
@@ -138,6 +152,22 @@ export default function AdminPartnerCenters() {
     <div style={{ maxWidth: "900px" }}>
       <h1 style={{ color: "var(--navy)", marginBottom: "18px" }}>المراكز الشريكة</h1>
       {msg && <p style={{ color: msg.includes("✅") ? "#1e7e34" : "#c0392b", marginBottom: "12px" }}>{msg}</p>}
+
+      {/* المفتاح العام للتواصل المباشر */}
+      <div style={{ background: directContact ? "#ecf7f0" : "#fef2f2", border: `1px solid ${directContact ? "#b7e4c7" : "#fecaca"}`, borderRadius: "14px", padding: "16px 18px", marginBottom: "22px", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px", flexWrap: "wrap" }}>
+        <div>
+          <strong style={{ color: "var(--navy)", fontSize: "15px" }}>📞 التواصل المباشر (مدربون + مراكز)</strong>
+          <p style={{ color: "#666", fontSize: "13px", margin: "4px 0 0", lineHeight: 1.7 }}>
+            {directContact
+              ? "مفعّل — أرقام الواتساب تظهر لمن اختار إظهارها (وسيلة جذب الآن)."
+              : "موقوف — كل أرقام الواتساب مخفية من الصفحات العامة، والتواصل يمر عبر المنصة فقط."}
+          </p>
+        </div>
+        <button type="button" onClick={toggleDirectContact}
+          style={{ background: directContact ? "#059669" : "#b91c1c", color: "#fff", border: "none", borderRadius: "10px", padding: "10px 22px", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+          {directContact ? "إيقاف التواصل المباشر" : "تفعيل التواصل المباشر"}
+        </button>
+      </div>
 
       <form onSubmit={save} style={{ background: "white", borderRadius: "14px", padding: "22px", marginBottom: "28px", boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}>
         <h3 style={{ color: "var(--navy)", marginBottom: "16px" }}>{editingId ? "تعديل مركز" : "إضافة مركز جديد"}</h3>

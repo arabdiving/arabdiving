@@ -23,6 +23,8 @@ const InstructorProfileSchema = new mongoose.Schema(
     city: { type: String, default: "" },
     bio: { type: String, default: "" },
     whatsapp: { type: String, default: "" },
+    showContact: { type: Boolean, default: true }, // المدرب يتحكم في إظهار وسائل تواصله (والأدمن له مفتاح عام)
+    video: { type: String, default: "" },          // رابط فيديو تعريفي (يوتيوب/رابط مباشر)
 
     // موقع التدريب على الخريطة (يُملأ تلقائيًا من المدينة، ويمكن ضبطه يدويًا لاحقًا)
     location: { lat: { type: Number, default: null }, lng: { type: Number, default: null } },
