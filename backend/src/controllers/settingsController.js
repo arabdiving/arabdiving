@@ -10,7 +10,7 @@ const getSettings = async () => {
 const readSettings = async (req, res) => {
   try {
     const s = await getSettings();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, directContactEnabled: s.directContactEnabled !== false, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {}, travelWidgets: s.travelWidgets || [] } });
+    res.json({ success: true, settings: { siteMode: s.siteMode || "full", commentsEnabled: s.commentsEnabled, directContactEnabled: s.directContactEnabled !== false, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {}, travelWidgets: s.travelWidgets || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -26,6 +26,10 @@ const updateSettings = async (req, res) => {
     // مفتاح التواصل المباشر العام (مدربون + مراكز)
     if (typeof req.body.directContactEnabled === "boolean") {
       s.directContactEnabled = req.body.directContactEnabled;
+    }
+    // طبيعة الموقع: كامل / يحل مشكلة
+    if (["full", "focus"].includes(req.body.siteMode)) {
+      s.siteMode = req.body.siteMode;
     }
     if (Array.isArray(req.body.hiddenPages)) {
       s.hiddenPages = req.body.hiddenPages.map((x) => String(x));
@@ -154,7 +158,7 @@ const updateSettings = async (req, res) => {
       s.markModified("branding");
     }
     await s.save();
-    res.json({ success: true, settings: { commentsEnabled: s.commentsEnabled, directContactEnabled: s.directContactEnabled !== false, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {}, travelWidgets: s.travelWidgets || [] } });
+    res.json({ success: true, settings: { siteMode: s.siteMode || "full", commentsEnabled: s.commentsEnabled, directContactEnabled: s.directContactEnabled !== false, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {}, travelWidgets: s.travelWidgets || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

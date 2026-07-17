@@ -12,6 +12,7 @@ import HomePromoSection from "./components/home/HomePromoSection";
 import HomeMarketplace from "./components/home/HomeMarketplace";
 import RedSeaMap from "./components/RedSeaMap";
 import HomeSections from "./components/home/HomeSections";
+import FocusHome from "./components/home/FocusHome";
 import { API_BASE } from "./lib/api";
 import { ReactNode } from "react";
 
@@ -37,11 +38,12 @@ const DEFAULT_BLOCKS: HomeBlock[] = [
   { key: "page_cards",        visible: true,  order: 11 },
 ];
 
-async function getHomeData(): Promise<{ blocks: HomeBlock[]; promoImages: Record<string, string> }> {
+async function getHomeData(): Promise<{ blocks: HomeBlock[]; promoImages: Record<string, string>; siteMode: string }> {
   try {
     const res = await fetch(`${API_BASE}/api/settings`, { next: { revalidate: 60 } });
-    if (!res.ok) return { blocks: DEFAULT_BLOCKS, promoImages: {} };
+    if (!res.ok) return { blocks: DEFAULT_BLOCKS, promoImages: {}, siteMode: "full" };
     const data = await res.json();
+    const siteMode: string = data.settings?.siteMode === "focus" ? "focus" : "full";
     const promoImages: Record<string, string> = data.settings?.promoImages || {};
     const hb: HomeBlock[] = data.settings?.homeBlocks;
     if (hb && hb.length > 0) {
@@ -52,11 +54,11 @@ async function getHomeData(): Promise<{ blocks: HomeBlock[]; promoImages: Record
           .filter((d) => !dbKeys.has(d.key))
           .map((d) => ({ ...d, order: d.key === "sea_map" ? 0.5 : d.key === "sections_hub" ? 0.6 : hb.length + d.order })),
       ];
-      return { blocks: merged.sort((a, b) => a.order - b.order), promoImages };
+      return { blocks: merged.sort((a, b) => a.order - b.order), promoImages, siteMode };
     }
-    return { blocks: DEFAULT_BLOCKS, promoImages };
+    return { blocks: DEFAULT_BLOCKS, promoImages, siteMode };
   } catch {}
-  return { blocks: DEFAULT_BLOCKS, promoImages: {} };
+  return { blocks: DEFAULT_BLOCKS, promoImages: {}, siteMode: "full" };
 }
 
 function renderBlock(key: string, promoImages: Record<string, string> = {}) {
@@ -107,7 +109,9 @@ function renderBlock(key: string, promoImages: Record<string, string> = {}) {
 }
 
 export default async function Home() {
-  const { blocks, promoImages } = await getHomeData();
+  const { blocks, promoImages, siteMode } = await getHomeData();
+  // وضع «موقع يحل مشكلة»: رئيسية مختصرة — مدربون + مراكز + أدوات فقط
+  if (siteMode === "focus") return <FocusHome />;
   const visible = blocks.filter((b) => b.visible);
   const out: ReactNode[] = [];
   let run: HomeBlock[] = [];

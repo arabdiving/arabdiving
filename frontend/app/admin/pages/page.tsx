@@ -34,6 +34,7 @@ const PAGES: { href: string; label: string; locked?: boolean }[] = [
 export default function AdminPagesVisibility() {
   const [hidden, setHidden] = useState<string[]>([]);
   const [navStyle, setNavStyle] = useState("buttons");
+  const [siteMode, setSiteMode] = useState<"full" | "focus">("full");
   const [loaded, setLoaded] = useState(false);
   const [saving, setSaving] = useState(false);
   const [msg, setMsg] = useState("");
@@ -41,10 +42,21 @@ export default function AdminPagesVisibility() {
   useEffect(() => {
     fetch(`${API_BASE}/api/settings`)
       .then((r) => r.json())
-      .then((d) => { setHidden(d.settings?.hiddenPages || []); setNavStyle(d.settings?.navStyle || "buttons"); })
+      .then((d) => { setHidden(d.settings?.hiddenPages || []); setNavStyle(d.settings?.navStyle || "buttons"); setSiteMode(d.settings?.siteMode === "focus" ? "focus" : "full"); })
       .catch(() => {})
       .finally(() => setLoaded(true));
   }, []);
+
+  const saveMode = async (mode: "full" | "focus") => {
+    setSiteMode(mode); setMsg("");
+    try {
+      const res = await fetch(`${API_BASE}/api/settings`, { method: "PUT", headers: authHeaders(), body: JSON.stringify({ siteMode: mode }) });
+      const d = await res.json();
+      setMsg(d.success
+        ? (mode === "focus" ? "الموقع الآن «يحل مشكلة»: المدربون + المراكز + الأدوات فقط ✅" : "الموقع الآن كامل بكل صفحاته ✅")
+        : d.message || "تعذّر الحفظ");
+    } catch { setMsg("تعذّر الاتصال بالخادم"); }
+  };
 
   const isVisible = (href: string) => !hidden.includes(href);
   const toggle = (href: string) =>
@@ -65,6 +77,31 @@ export default function AdminPagesVisibility() {
     <div style={{ maxWidth: "620px" }}>
       <h1 style={{ color: "var(--navy)", marginBottom: "8px" }}>ظهور الصفحات</h1>
       <p style={{ color: "#666", marginBottom: "20px", fontSize: "15px" }}>تحكّم في إظهار أو إخفاء الصفحات من قائمة الموقع. الصفحات المخفيّة لا تظهر للزوّار في القائمة.</p>
+
+      {/* 🧭 طبيعة الموقع الآن */}
+      <div style={{ background: "white", borderRadius: "14px", padding: "18px", boxShadow: "0 6px 18px rgba(0,0,0,0.05)", marginBottom: "20px", border: siteMode === "focus" ? "2px solid #0891b2" : "1px solid #eef2f6" }}>
+        <label style={{ display: "block", fontWeight: 700, color: "var(--navy)", marginBottom: "4px" }}>🧭 طبيعة الموقع الآن</label>
+        <p style={{ color: "#888", fontSize: "13px", lineHeight: 1.8, marginBottom: "12px" }}>
+          «يحل مشكلة» = الموقع يقتصر على: دليل المدربين، مراكز الغوص، والأدوات (حاسبة الأوزان، خريطة مواقع الغوص، الاستبيانات).
+          القوائم والرئيسية تتقلص تلقائيًا، وأي صفحة أخرى تعود بالزائر للرئيسية.
+        </p>
+        <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+          <button onClick={() => saveMode("full")}
+            style={{ flex: "1 1 180px", padding: "14px", borderRadius: "12px", cursor: "pointer", fontFamily: "inherit", fontWeight: 700, fontSize: "14.5px",
+              border: siteMode === "full" ? "2px solid #059669" : "1px solid #d4dae3",
+              background: siteMode === "full" ? "#ecf7f0" : "white", color: "var(--navy)" }}>
+            🌐 موقع كامل{siteMode === "full" ? " ✓" : ""}
+            <div style={{ fontWeight: 400, fontSize: "12px", color: "#666", marginTop: "4px" }}>كل الصفحات والأقسام</div>
+          </button>
+          <button onClick={() => saveMode("focus")}
+            style={{ flex: "1 1 180px", padding: "14px", borderRadius: "12px", cursor: "pointer", fontFamily: "inherit", fontWeight: 700, fontSize: "14.5px",
+              border: siteMode === "focus" ? "2px solid #0891b2" : "1px solid #d4dae3",
+              background: siteMode === "focus" ? "#e0f7fa" : "white", color: "var(--navy)" }}>
+            🎯 موقع يحل مشكلة{siteMode === "focus" ? " ✓" : ""}
+            <div style={{ fontWeight: 400, fontSize: "12px", color: "#666", marginTop: "4px" }}>المدربون + المراكز + الأدوات فقط</div>
+          </button>
+        </div>
+      </div>
       <div style={{ background: "white", borderRadius: "12px", padding: "16px", boxShadow: "0 6px 18px rgba(0,0,0,0.05)", marginBottom: "20px" }}>
         <label style={{ display: "block", fontWeight: 700, color: "var(--navy)", marginBottom: "8px" }}>شكل قائمة التنقّل</label>
         <select value={navStyle} onChange={(e) => setNavStyle(e.target.value)} style={{ padding: "10px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "15px" }}>

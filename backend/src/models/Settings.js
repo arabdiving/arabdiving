@@ -26,6 +26,11 @@ const SettingsSchema = new mongoose.Schema(
       default: [],
     },
 
+    // طبيعة الموقع الآن:
+    // full  = الموقع الكامل بكل صفحاته
+    // focus = «موقع يحل مشكلة»: دليل المدربين + مراكز الغوص + الأدوات (حاسبة الأوزان، خريطة المواقع، الاستبيانات) فقط
+    siteMode: { type: String, enum: ["full", "focus"], default: "full" },
+
     // مفتاح عام: السماح بعرض وسائل التواصل المباشر للمدربين والمراكز.
     // مفتوح الآن كوسيلة جذب — يمكن إغلاقه لاحقًا ليمر التواصل عبر المنصة.
     directContactEnabled: { type: Boolean, default: true },

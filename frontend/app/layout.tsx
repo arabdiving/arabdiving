@@ -7,6 +7,7 @@ import "./globals.css";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import VoiceAccessibilityIntro from "./components/VoiceAccessibilityIntro";
+import SiteModeGuard from "./components/SiteModeGuard";
 import { API_BASE } from "./lib/api";
 import ChatWidget from "./components/ChatWidget";
 import PwaRegister from "./components/PwaRegister";
@@ -101,6 +102,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         )}
 
         <ThemeStyle />
+        <SiteModeGuard />
         <Navbar />
 
         {children}

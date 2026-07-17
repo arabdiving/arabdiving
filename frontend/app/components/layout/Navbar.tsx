@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { API_BASE } from "@/app/lib/api";
 import { usePathname } from "next/navigation";
 import { DEFAULT_SECTIONS, Section, pageMeta } from "@/app/lib/sections";
+import { FOCUS_NAV_MAIN, FOCUS_NAV_TOOLS } from "@/app/lib/siteMode";
 
 interface CurrentUser { name?: string; role?: string; }
 interface MItem { href: string; label: string; }
@@ -77,6 +78,7 @@ export default function Navbar() {
   const [unread, setUnread] = useState(0);
   const [navStyle, setNavStyle] = useState("buttons");
   const [navGroups, setNavGroups] = useState<any[]>([]);
+  const [siteMode, setSiteMode] = useState<"full" | "focus">("full");
   const [brand, setBrand] = useState(BRAND_DEFAULT);
   const [themeChoice, setThemeChoice] = useState("");
   const [openIdx, setOpenIdx] = useState<number | null>(null);
@@ -108,6 +110,7 @@ export default function Navbar() {
       .then((d) => {
         setHidden(d.settings?.hiddenPages || []);
         setNavStyle(d.settings?.navStyle || "buttons");
+        setSiteMode(d.settings?.siteMode === "focus" ? "focus" : "full");
         const dbGroups = d.settings?.navGroups || [];
         if (dbGroups.length) {
           setNavGroups(dbGroups);
@@ -160,8 +163,15 @@ export default function Navbar() {
       ? <span style={{ background: "#e11d48", color: "white", borderRadius: "20px", fontSize: "11px", padding: "1px 7px", marginInlineStart: "6px", fontWeight: 700 }}>{unread}</span>
       : null;
 
-  const deskMenu = buildDesktopMenu(navGroups, hidden);
-  const mobileMenu = buildMobileMenu(hidden);
+  // وضع «يحل مشكلة»: قوائم مختصرة — مدربون + مراكز + أدوات فقط (تتجاهل تخصيصات القوائم)
+  const focusDesk: MEntry[] = [
+    ...FOCUS_NAV_MAIN.map((l) => ({ label: l.label, href: l.href, items: [] as MItem[] })),
+    { label: "🧰 الأدوات", items: FOCUS_NAV_TOOLS },
+  ];
+  const focusMobile: MEntry[] = [...FOCUS_NAV_MAIN, ...FOCUS_NAV_TOOLS].map((l) => ({ label: l.label, href: l.href, items: [] as MItem[] }));
+
+  const deskMenu = siteMode === "focus" ? focusDesk : buildDesktopMenu(navGroups, hidden);
+  const mobileMenu = siteMode === "focus" ? focusMobile : buildMobileMenu(hidden);
 
   const authButtons = !user ? (
     <>
