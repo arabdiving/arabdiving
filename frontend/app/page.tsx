@@ -38,12 +38,13 @@ const DEFAULT_BLOCKS: HomeBlock[] = [
   { key: "page_cards",        visible: true,  order: 11 },
 ];
 
-async function getHomeData(): Promise<{ blocks: HomeBlock[]; promoImages: Record<string, string>; siteMode: string }> {
+async function getHomeData(): Promise<{ blocks: HomeBlock[]; promoImages: Record<string, string>; siteMode: string; focusBlocks: HomeBlock[] }> {
   try {
     const res = await fetch(`${API_BASE}/api/settings`, { next: { revalidate: 60 } });
-    if (!res.ok) return { blocks: DEFAULT_BLOCKS, promoImages: {}, siteMode: "full" };
+    if (!res.ok) return { blocks: DEFAULT_BLOCKS, promoImages: {}, siteMode: "full", focusBlocks: [] };
     const data = await res.json();
     const siteMode: string = data.settings?.siteMode === "focus" ? "focus" : "full";
+    const focusBlocks: HomeBlock[] = data.settings?.focusHomeBlocks || [];
     const promoImages: Record<string, string> = data.settings?.promoImages || {};
     const hb: HomeBlock[] = data.settings?.homeBlocks;
     if (hb && hb.length > 0) {
@@ -54,11 +55,11 @@ async function getHomeData(): Promise<{ blocks: HomeBlock[]; promoImages: Record
           .filter((d) => !dbKeys.has(d.key))
           .map((d) => ({ ...d, order: d.key === "sea_map" ? 0.5 : d.key === "sections_hub" ? 0.6 : hb.length + d.order })),
       ];
-      return { blocks: merged.sort((a, b) => a.order - b.order), promoImages, siteMode };
+      return { blocks: merged.sort((a, b) => a.order - b.order), promoImages, siteMode, focusBlocks };
     }
-    return { blocks: DEFAULT_BLOCKS, promoImages, siteMode };
+    return { blocks: DEFAULT_BLOCKS, promoImages, siteMode, focusBlocks };
   } catch {}
-  return { blocks: DEFAULT_BLOCKS, promoImages: {}, siteMode: "full" };
+  return { blocks: DEFAULT_BLOCKS, promoImages: {}, siteMode: "full", focusBlocks: [] };
 }
 
 function renderBlock(key: string, promoImages: Record<string, string> = {}) {
@@ -109,9 +110,9 @@ function renderBlock(key: string, promoImages: Record<string, string> = {}) {
 }
 
 export default async function Home() {
-  const { blocks, promoImages, siteMode } = await getHomeData();
-  // وضع «موقع يحل مشكلة»: رئيسية مختصرة — مدربون + مراكز + أدوات فقط
-  if (siteMode === "focus") return <FocusHome />;
+  const { blocks, promoImages, siteMode, focusBlocks } = await getHomeData();
+  // وضع «موقع يحل مشكلة»: رئيسية مختصرة ببلوكات مستقلة يتحكم فيها الأدمن
+  if (siteMode === "focus") return <FocusHome blocks={focusBlocks as any} promoImages={promoImages} />;
   const visible = blocks.filter((b) => b.visible);
   const out: ReactNode[] = [];
   let run: HomeBlock[] = [];

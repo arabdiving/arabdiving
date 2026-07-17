@@ -24,6 +24,23 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
   const { id } = use(params);
   const [ins, setIns] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  // نموذج «راسلني عبر الموقع»
+  const [cForm, setCForm] = useState({ name: "", contact: "", message: "" });
+  const [cState, setCState] = useState<"idle" | "sending" | "sent" | "error">("idle");
+  const [cMsg, setCMsg] = useState("");
+
+  const sendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setCState("sending"); setCMsg("");
+    try {
+      const res = await fetch(`${API_BASE}/api/instructors/${id}/message`, {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cForm),
+      });
+      const d = await res.json();
+      if (d.success) { setCState("sent"); setCMsg(d.message || "وصلت رسالتك ✅"); setCForm({ name: "", contact: "", message: "" }); }
+      else { setCState("error"); setCMsg(d.message || "تعذّر الإرسال"); }
+    } catch { setCState("error"); setCMsg("تعذّر الاتصال بالخادم"); }
+  };
 
   useEffect(() => {
     fetch(`${API_BASE}/api/instructors/${id}`)
@@ -68,6 +85,31 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
               </p>
               {ins.languages?.length > 0 && (
                 <p style={{ color: "rgba(255,255,255,0.45)", margin: "4px 0 0", fontSize: "13px" }}>🗣️ {ins.languages.join(" · ")}</p>
+              )}
+              {/* 🌐 السوشيال ميديا + الإيميل */}
+              {(ins.email || Object.values(ins.social || {}).some(Boolean)) && (
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap", marginTop: "10px" }}>
+                  {[
+                    { k: "facebook", icon: "📘", label: "فيسبوك" },
+                    { k: "instagram", icon: "📸", label: "انستجرام" },
+                    { k: "tiktok", icon: "🎵", label: "تيك توك" },
+                    { k: "youtube", icon: "▶️", label: "يوتيوب" },
+                    { k: "x", icon: "𝕏", label: "إكس" },
+                    { k: "linkedin", icon: "💼", label: "لينكدإن" },
+                  ].filter((s) => ins.social?.[s.k]).map((s) => (
+                    <a key={s.k} href={ins.social[s.k]} target="_blank" rel="noopener noreferrer"
+                      title={s.label}
+                      style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", borderRadius: "10px", padding: "7px 12px", fontSize: "14px", textDecoration: "none" }}>
+                      {s.icon}
+                    </a>
+                  ))}
+                  {ins.email && (
+                    <a href={`mailto:${ins.email}`} title="إيميل"
+                      style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", borderRadius: "10px", padding: "7px 12px", fontSize: "14px", textDecoration: "none" }}>
+                      ✉️
+                    </a>
+                  )}
+                </div>
               )}
             </div>
             {waHref && (
@@ -211,6 +253,35 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
             </div>
           </div>
         )}
+
+        {/* 📬 راسلني عبر الموقع — يصل لصندوق وارد المدرب دائمًا (حتى لو أخفى وسائل تواصله) */}
+        <div style={{ ...glass, borderRadius: "18px", padding: "22px" }}>
+          <h2 style={{ color: "#fff", fontSize: "18px", fontWeight: 800, marginBottom: "4px" }}>📬 راسل المدرب عبر الموقع</h2>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "12.5px", marginBottom: "16px" }}>
+            تصل رسالتك لصندوق وارد المدرب مباشرة — اترك وسيلة تواصل ليرد عليك.
+          </p>
+          {cState === "sent" ? (
+            <p style={{ background: "rgba(52,211,153,0.1)", border: "1px solid rgba(52,211,153,0.3)", borderRadius: "12px", padding: "14px 16px", color: "#34d399", fontWeight: 700, fontSize: "14px", margin: 0 }}>
+              ✅ {cMsg}
+            </p>
+          ) : (
+            <form onSubmit={sendMessage} style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: "12px" }}>
+                <input required value={cForm.name} onChange={(e) => setCForm({ ...cForm, name: e.target.value })} placeholder="اسمك *"
+                  style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", borderRadius: "11px", padding: "11px", fontFamily: "inherit", fontSize: "14px" }} />
+                <input value={cForm.contact} onChange={(e) => setCForm({ ...cForm, contact: e.target.value })} placeholder="إيميلك أو واتسابك (للرد عليك)" dir="ltr"
+                  style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", borderRadius: "11px", padding: "11px", fontFamily: "inherit", fontSize: "14px" }} />
+              </div>
+              <textarea required rows={3} maxLength={1500} value={cForm.message} onChange={(e) => setCForm({ ...cForm, message: e.target.value })} placeholder="رسالتك للمدرب... *"
+                style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", borderRadius: "11px", padding: "11px", fontFamily: "inherit", fontSize: "14px", resize: "vertical" }} />
+              {cState === "error" && <p style={{ color: "#f87171", fontSize: "13px", margin: 0 }}>{cMsg}</p>}
+              <button type="submit" disabled={cState === "sending"}
+                style={{ background: "linear-gradient(135deg,#0891b2,#06b6d4)", color: "#fff", border: "none", borderRadius: "12px", padding: "13px", fontWeight: 800, fontSize: "15px", cursor: "pointer", fontFamily: "inherit", opacity: cState === "sending" ? 0.6 : 1 }}>
+                {cState === "sending" ? "جارٍ الإرسال..." : "أرسل الرسالة 📨"}
+              </button>
+            </form>
+          )}
+        </div>
 
         {/* CTA للطالب: بطاقاتك */}
         <div style={{ ...glass, borderRadius: "18px", padding: "22px", borderColor: "rgba(201,149,42,0.3)" }}>

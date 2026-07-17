@@ -1,4 +1,5 @@
 const InstructorProfile = require("../models/InstructorProfile");
+const InstructorMessage = require("../models/InstructorMessage");
 const PartnerCenter = require("../models/PartnerCenter");
 const { getSettings } = require("./settingsController");
 
@@ -50,6 +51,8 @@ function publicProfile(p, showContactGlobal = true) {
     specialties: o.specialties || [], languages: o.languages || [],
     city: o.city, bio: o.bio,
     whatsapp: contactVisible ? (o.whatsapp || "") : "",
+    email: contactVisible ? (o.email || "") : "",
+    social: contactVisible ? (o.social || {}) : {},
     video: o.video || "",
     verified: !!o.verified,
     hasFingerprint: Boolean(o.fingerprint?.takenAt),
@@ -119,6 +122,15 @@ const upsertMyInstructorProfile = async (req, res) => {
       city: String(b.city || "").slice(0, 40),
       bio: String(b.bio || "").slice(0, 600),
       whatsapp: String(b.whatsapp || "").slice(0, 20),
+      email: String(b.email || "").slice(0, 120),
+      social: {
+        facebook:  String(b.social?.facebook || "").slice(0, 300),
+        instagram: String(b.social?.instagram || "").slice(0, 300),
+        tiktok:    String(b.social?.tiktok || "").slice(0, 300),
+        youtube:   String(b.social?.youtube || "").slice(0, 300),
+        x:         String(b.social?.x || "").slice(0, 300),
+        linkedin:  String(b.social?.linkedin || "").slice(0, 300),
+      },
       video: String(b.video || "").slice(0, 300),
       ...(typeof b.showWeakness === "boolean" ? { showWeakness: b.showWeakness } : {}),
       ...(typeof b.showContact === "boolean" ? { showContact: b.showContact } : {}),
@@ -242,7 +254,50 @@ const respondToCenter = async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
+/* ═══ رسائل «راسلني عبر الموقع» ═══ */
+
+// عام: زائر يرسل رسالة لمدرب (لا يتطلب تسجيل دخول)
+const sendMessageToInstructor = async (req, res) => {
+  try {
+    const ins = await InstructorProfile.findOne({ _id: req.params.id, active: true });
+    if (!ins) return res.status(404).json({ success: false, message: "المدرب غير موجود" });
+    const name = String(req.body.name || "").trim().slice(0, 80);
+    const message = String(req.body.message || "").trim().slice(0, 1500);
+    if (!name || !message) return res.status(400).json({ success: false, message: "الاسم والرسالة مطلوبان" });
+    await InstructorMessage.create({
+      instructor: ins._id,
+      name,
+      contact: String(req.body.contact || "").trim().slice(0, 120),
+      message,
+      fromUser: req.user?._id || undefined,
+    });
+    res.status(201).json({ success: true, message: "وصلت رسالتك للمدرب ✅ — سيرد عليك عبر وسيلة التواصل التي تركتها" });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+// خاص: صندوق وارد المدرب
+const getMyMessages = async (req, res) => {
+  try {
+    const me = await myProfile(req.user._id);
+    if (!me) return res.json({ success: true, messages: [], unread: 0 });
+    const messages = await InstructorMessage.find({ instructor: me._id }).sort({ createdAt: -1 }).limit(200);
+    const unread = messages.filter((m) => m.status === "new").length;
+    res.json({ success: true, messages, unread });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+// خاص: تعليم رسالة كمقروءة
+const markMessageRead = async (req, res) => {
+  try {
+    const me = await myProfile(req.user._id);
+    if (!me) return res.status(403).json({ success: false, message: "لا تملك بروفايل مدرب" });
+    await InstructorMessage.updateOne({ _id: req.params.msgId, instructor: me._id }, { $set: { status: "read" } });
+    res.json({ success: true });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
 module.exports = {
   listInstructors, getInstructor, getMyInstructorProfile, upsertMyInstructorProfile, saveFingerprint, saveFit,
   getMyCenters, requestJoinCenter, respondToCenter, publicProfile, contactAllowed,
+  sendMessageToInstructor, getMyMessages, markMessageRead,
 };

@@ -57,8 +57,23 @@ const BLOCK_REGISTRY: Record<string, { label: string; icon: string; desc: string
   instructors_promo: { label: "دليل المدربين",           icon: "🧑‍🏫", desc: "قسم ترويجي لدليل المدربين وبصماتهم /instructors" },
 };
 
+// بلوكات رئيسية وضع «موقع يحل مشكلة» — مستقلة تمامًا عن بلوكات الموقع الكامل
+const FOCUS_REGISTRY: Record<string, { label: string; icon: string; desc: string }> = {
+  focus_hero:        { label: "رسالة الموقع",        icon: "🎯", desc: "«اعرف مدربك ومركزك قبل أول غطسة» مع زرّي المدربين والمراكز" },
+  focus_gates:       { label: "بوابتا الدليلين",     icon: "🚪", desc: "بطاقتان كبيرتان: دليل المدربين ودليل المراكز" },
+  focus_tools:       { label: "شبكة الأدوات",        icon: "🧰", desc: "حاسبة الأوزان، خريطة المواقع، والاستبيانات الثلاثة" },
+  focus_map:         { label: "خريطة البحر الأحمر",  icon: "🗺️", desc: "خريطة الموقع التفاعلية" },
+  focus_instructors: { label: "بروموشن المدربين",    icon: "🧑‍🏫", desc: "قسم ترويجي لدليل المدربين وبصماتهم" },
+  focus_centers:     { label: "شبكة المراكز",        icon: "🤿", desc: "صف المراكز الشريكة المميزة" },
+};
+
+const DEFAULT_FOCUS: Block[] = Object.entries(FOCUS_REGISTRY).map(([key, cfg], i) => ({
+  key, label: cfg.label, visible: i < 3, order: i,
+}));
+
 export default function HomepageBlocksAdmin() {
   const [blocks, setBlocks] = useState<Block[]>([]);
+  const [focusBlocks, setFocusBlocks] = useState<Block[]>([]);
   const [promoImages, setPromoImages] = useState<Record<string, string>>({});
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
@@ -91,6 +106,15 @@ export default function HomepageBlocksAdmin() {
         const all = [...enriched, ...missing].sort((a, b) => a.order - b.order);
         setBlocks(all);
         setPromoImages(d.settings?.promoImages || {});
+
+        // بلوكات وضع «يحل مشكلة»: من القاعدة + المفقود من السجل
+        const fb: Block[] = d.settings?.focusHomeBlocks || [];
+        const fbKeys = new Set(fb.map((b: Block) => b.key));
+        const fAll = [
+          ...fb.map((b: Block, i: number) => ({ ...b, label: FOCUS_REGISTRY[b.key]?.label || b.key, order: typeof b.order === "number" ? b.order : i })),
+          ...DEFAULT_FOCUS.filter((b) => !fbKeys.has(b.key)).map((b, i) => ({ ...b, visible: false, order: fb.length + i })),
+        ].filter((b) => FOCUS_REGISTRY[b.key]).sort((a, b) => a.order - b.order);
+        setFocusBlocks(fAll.length ? fAll : DEFAULT_FOCUS);
       })
       .catch(() => setError("تعذّر تحميل الإعدادات"));
   }, []);
@@ -131,7 +155,11 @@ export default function HomepageBlocksAdmin() {
       const res = await fetch(`${API_BASE}/api/settings`, {
         method: "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ homeBlocks: payload, promoImages }),
+        body: JSON.stringify({
+          homeBlocks: payload,
+          focusHomeBlocks: focusBlocks.map((b, i) => ({ key: b.key, label: FOCUS_REGISTRY[b.key]?.label || b.label, visible: b.visible, order: i })),
+          promoImages,
+        }),
       });
       const data = await res.json();
       if (data.success) {
@@ -267,6 +295,40 @@ export default function HomepageBlocksAdmin() {
             })}
           </tbody>
         </table>
+      </div>
+
+      {/* 🎯 بلوكات وضع «موقع يحل مشكلة» */}
+      <div style={{ background: "#fff", borderRadius: "16px", border: "2px solid #a5e8f0", boxShadow: "0 4px 18px rgba(0,0,0,0.06)", marginBottom: "20px", overflow: "hidden" }}>
+        <div style={{ background: "#e0f7fa", padding: "14px 18px" }}>
+          <strong style={{ color: "var(--navy)", fontSize: "15px" }}>🎯 بلوكات وضع «موقع يحل مشكلة»</strong>
+          <p style={{ margin: "4px 0 0", color: "#0e7490", fontSize: "12.5px", lineHeight: 1.7 }}>
+            هذه البلوكات مستقلة تمامًا عن بلوكات الموقع الكامل بالأعلى — تظهر فقط عندما تكون طبيعة الموقع «يحل مشكلة» (من صفحة «ظهور الصفحات»).
+          </p>
+        </div>
+        {focusBlocks.map((b, i) => {
+          const reg = FOCUS_REGISTRY[b.key];
+          return (
+            <div key={b.key} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap", padding: "12px 18px", borderTop: "1px solid #eef2f6", background: b.visible ? "#fff" : "#f8fafc", opacity: b.visible ? 1 : 0.65 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+                <span style={{ fontSize: "22px" }}>{reg?.icon || "📦"}</span>
+                <div>
+                  <p style={{ margin: 0, color: "var(--navy)", fontWeight: 600, fontSize: "14px" }}>{reg?.label || b.key}</p>
+                  <p style={{ margin: 0, color: "#aaa", fontSize: "12px" }}>{reg?.desc}</p>
+                </div>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <button onClick={() => { const n = [...focusBlocks]; n[i] = { ...n[i], visible: !n[i].visible }; setFocusBlocks(n); setSaved(false); }}
+                  style={{ background: b.visible ? "#dcfce7" : "#f1f5f9", color: b.visible ? "#16a34a" : "#64748b", border: "none", borderRadius: "20px", padding: "6px 16px", cursor: "pointer", fontFamily: "inherit", fontWeight: 600, fontSize: "13px" }}>
+                  {b.visible ? "✅ ظاهر" : "⊘ مخفي"}
+                </button>
+                <button onClick={() => { if (i === 0) return; const n = [...focusBlocks]; [n[i - 1], n[i]] = [n[i], n[i - 1]]; setFocusBlocks(n.map((x, j) => ({ ...x, order: j }))); setSaved(false); }} disabled={i === 0}
+                  style={{ background: i === 0 ? "#f1f5f9" : "var(--navy)", color: i === 0 ? "#ccc" : "#fff", border: "none", borderRadius: "7px", width: "30px", height: "30px", cursor: i === 0 ? "default" : "pointer", fontSize: "13px" }}>↑</button>
+                <button onClick={() => { if (i === focusBlocks.length - 1) return; const n = [...focusBlocks]; [n[i], n[i + 1]] = [n[i + 1], n[i]]; setFocusBlocks(n.map((x, j) => ({ ...x, order: j }))); setSaved(false); }} disabled={i === focusBlocks.length - 1}
+                  style={{ background: i === focusBlocks.length - 1 ? "#f1f5f9" : "var(--navy)", color: i === focusBlocks.length - 1 ? "#ccc" : "#fff", border: "none", borderRadius: "7px", width: "30px", height: "30px", cursor: i === focusBlocks.length - 1 ? "default" : "pointer", fontSize: "13px" }}>↓</button>
+              </div>
+            </div>
+          );
+        })}
       </div>
 
       {/* Add block button */}

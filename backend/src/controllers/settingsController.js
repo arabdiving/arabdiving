@@ -10,7 +10,7 @@ const getSettings = async () => {
 const readSettings = async (req, res) => {
   try {
     const s = await getSettings();
-    res.json({ success: true, settings: { siteMode: s.siteMode || "full", commentsEnabled: s.commentsEnabled, directContactEnabled: s.directContactEnabled !== false, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {}, travelWidgets: s.travelWidgets || [] } });
+    res.json({ success: true, settings: { siteMode: s.siteMode || "full", commentsEnabled: s.commentsEnabled, directContactEnabled: s.directContactEnabled !== false, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], focusHomeBlocks: s.focusHomeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {}, travelWidgets: s.travelWidgets || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -99,6 +99,15 @@ const updateSettings = async (req, res) => {
         order:   typeof b.order === "number" ? b.order : i,
       }));
     }
+    // بلوكات رئيسية وضع «يحل مشكلة»
+    if (Array.isArray(req.body.focusHomeBlocks)) {
+      s.focusHomeBlocks = req.body.focusHomeBlocks.map((b, i) => ({
+        key:     String(b.key || "").slice(0, 60),
+        label:   String(b.label || "").slice(0, 120),
+        visible: b.visible !== false,
+        order:   typeof b.order === "number" ? b.order : i,
+      }));
+    }
     if (Array.isArray(req.body.sections)) {
       s.sections = req.body.sections.slice(0, 30).map((g) => ({
         slug: String(g.slug || "").slice(0, 40),
@@ -158,7 +167,7 @@ const updateSettings = async (req, res) => {
       s.markModified("branding");
     }
     await s.save();
-    res.json({ success: true, settings: { siteMode: s.siteMode || "full", commentsEnabled: s.commentsEnabled, directContactEnabled: s.directContactEnabled !== false, hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {}, travelWidgets: s.travelWidgets || [] } });
+    res.json({ success: true, settings: { siteMode: s.siteMode || "full", commentsEnabled: s.commentsEnabled, directContactEnabled: s.directContactEnabled !== false, focusHomeBlocks: s.focusHomeBlocks || [], hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {}, travelWidgets: s.travelWidgets || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

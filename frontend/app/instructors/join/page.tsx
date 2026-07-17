@@ -67,7 +67,10 @@ export default function InstructorJoinPage() {
   const [step, setStep] = useState<"info" | "survey" | "fit" | "result">("info");
   const [fitAnswers, setFitAnswers] = useState<Partial<Record<FitKey, string>>>({});
   const [authed, setAuthed] = useState<boolean | null>(null);
-  const [form, setForm] = useState<any>({ agency: "PADI", instructorNumber: "", rank: RANKS[1], sinceYear: "", specialties: [] as string[], languages: ["العربية"], city: "شرم الشيخ", bio: "", whatsapp: "", video: "", showWeakness: false, showContact: true });
+  const [form, setForm] = useState<any>({ agency: "PADI", instructorNumber: "", rank: RANKS[1], sinceYear: "", specialties: [] as string[], languages: ["العربية"], city: "شرم الشيخ", bio: "", whatsapp: "", email: "", social: {}, video: "", showWeakness: false, showContact: true });
+  // حالة اكتمال بروفايلي (لشريط الخطوات) + صندوق الوارد
+  const [done, setDone] = useState({ info: false, fingerprint: false, fit: false });
+  const [inbox, setInbox] = useState<any[]>([]);
   // عضويتي في مراكز الغوص (بموافقة الطرفين)
   const [centers, setCenters] = useState<any[]>([]);
   const [memberships, setMemberships] = useState<any[]>([]);
@@ -84,8 +87,17 @@ export default function InstructorJoinPage() {
     setAuthed(true);
     // تحميل البروفايل الحالي إن وجد
     fetch(`${API_BASE}/api/instructors/me`, { headers: H }).then((r) => r.json()).then((d) => {
-      if (d.profile) setForm((f: any) => ({ ...f, ...d.profile, sinceYear: d.profile.sinceYear || "" }));
+      if (d.profile) {
+        setForm((f: any) => ({ ...f, ...d.profile, sinceYear: d.profile.sinceYear || "" }));
+        setDone({
+          info: true,
+          fingerprint: Boolean(d.profile.fingerprint?.takenAt),
+          fit: Boolean(d.profile.fit?.takenAt),
+        });
+      }
     }).catch(() => {});
+    fetch(`${API_BASE}/api/instructors/me/messages`, { headers: H }).then((r) => r.json())
+      .then((d) => setInbox(d.messages || [])).catch(() => {});
     loadMemberships();
     fetch(`${API_BASE}/api/partner-centers`).then((r) => r.json()).then((d) => setCenters(d.data || [])).catch(() => {});
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -116,7 +128,7 @@ export default function InstructorJoinPage() {
     e.preventDefault(); setMsg("");
     const res = await fetch(`${API_BASE}/api/instructors/me`, { method: "PUT", headers: H, body: JSON.stringify({ ...form, sinceYear: Number(form.sinceYear) || null }) });
     const d = await res.json();
-    if (d.success) { setStep("survey"); window.scrollTo({ top: 0 }); } else setMsg(d.message || "تعذّر الحفظ");
+    if (d.success) { setDone((x) => ({ ...x, info: true })); setStep(done.fingerprint ? "info" : "survey"); if (!done.fingerprint) window.scrollTo({ top: 0 }); setMsg(done.fingerprint ? "تم حفظ بياناتك ✅" : ""); } else setMsg(d.message || "تعذّر الحفظ");
   };
 
   const allAnswered = QUESTIONS.every((_, i) => answers[i] !== undefined);
@@ -133,7 +145,7 @@ export default function InstructorJoinPage() {
 
     const res = await fetch(`${API_BASE}/api/instructors/me/fingerprint`, { method: "PUT", headers: H, body: JSON.stringify({ scores }) });
     const d = await res.json();
-    if (d.success) { setResult({ strengths: d.strengths || [], weakness: d.weakness || null, scores }); setStep("fit"); window.scrollTo({ top: 0 }); }
+    if (d.success) { setResult({ strengths: d.strengths || [], weakness: d.weakness || null, scores }); setDone((x) => ({ ...x, fingerprint: true })); setStep("fit"); window.scrollTo({ top: 0 }); }
     else setMsg(d.message || "تعذّر الحفظ");
   };
 
@@ -142,8 +154,13 @@ export default function InstructorJoinPage() {
   const submitFit = async () => {
     const res = await fetch(`${API_BASE}/api/instructors/me/fit`, { method: "PUT", headers: H, body: JSON.stringify(fitAnswers) });
     const d = await res.json();
-    if (d.success) { setStep("result"); window.scrollTo({ top: 0 }); }
+    if (d.success) { setDone((x) => ({ ...x, fit: true })); setStep("result"); window.scrollTo({ top: 0 }); }
     else setMsg(d.message || "تعذّر الحفظ");
+  };
+
+  const markRead = async (id: string) => {
+    await fetch(`${API_BASE}/api/instructors/me/messages/${id}/read`, { method: "PATCH", headers: H });
+    setInbox((m) => m.map((x) => (x._id === id ? { ...x, status: "read" } : x)));
   };
 
   if (authed === false) return (
@@ -165,6 +182,24 @@ export default function InstructorJoinPage() {
           {step === "info" ? "الخطوة 1 من 3 — بيانات اعتمادك وتخصصاتك" : step === "survey" ? "الخطوة 2 من 3 — بصمة المدرب (تقييم ذاتي علمي)" : step === "fit" ? "الخطوة 3 من 3 — من يناسبك؟ (اختيارات صريحة)" : "بروفايلك جاهز 🎉"}
         </p>
         {msg && <p style={{ color: "#f87171", textAlign: "center", marginBottom: "14px" }}>{msg}</p>}
+
+        {/* 🧭 شريط حالة بروفايلي — يوصلك مباشرة لأي خطوة ناقصة */}
+        {authed && done.info && step === "info" && (
+          <div style={{ ...glass, borderRadius: "16px", padding: "16px 18px", marginBottom: "18px", display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+            <span style={{ color: "rgba(255,255,255,0.65)", fontSize: "13px", fontWeight: 700 }}>حالة بروفايلك:</span>
+            <span style={{ background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.3)", color: "#34d399", borderRadius: "20px", padding: "6px 14px", fontSize: "12.5px", fontWeight: 700 }}>✅ البيانات</span>
+            {done.fingerprint ? (
+              <button onClick={() => { setStep("survey"); window.scrollTo({ top: 0 }); }} style={{ background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.3)", color: "#34d399", borderRadius: "20px", padding: "6px 14px", fontSize: "12.5px", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>✅ البصمة (إعادة)</button>
+            ) : (
+              <button onClick={() => { setStep("survey"); window.scrollTo({ top: 0 }); }} style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", border: "none", color: "#fff", borderRadius: "20px", padding: "7px 16px", fontSize: "12.5px", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 3px 12px rgba(201,149,42,0.4)" }}>🧬 ناقصة: استبيان البصمة — ابدأ الآن</button>
+            )}
+            {done.fit ? (
+              <button onClick={() => { setStep("fit"); window.scrollTo({ top: 0 }); }} style={{ background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.3)", color: "#34d399", borderRadius: "20px", padding: "6px 14px", fontSize: "12.5px", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>✅ من يناسبني (إعادة)</button>
+            ) : (
+              <button onClick={() => { setStep("fit"); window.scrollTo({ top: 0 }); }} style={{ background: "linear-gradient(135deg,#0891b2,#06b6d4)", border: "none", color: "#fff", borderRadius: "20px", padding: "7px 16px", fontSize: "12.5px", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", boxShadow: "0 3px 12px rgba(8,145,178,0.4)" }}>🤝 ناقص: استبيان «من يناسبني» — ابدأ الآن</button>
+            )}
+          </div>
+        )}
 
         {/* ═══ الخطوة 1: البيانات ═══ */}
         {step === "info" && (
@@ -199,6 +234,27 @@ export default function InstructorJoinPage() {
               <div>
                 <label style={lbl}>واتساب (للطلاب)</label>
                 <input value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} placeholder="+20..." style={field} dir="ltr" />
+              </div>
+              <div>
+                <label style={lbl}>الإيميل (للتواصل)</label>
+                <input type="email" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@example.com" style={field} dir="ltr" />
+              </div>
+            </div>
+
+            <div>
+              <label style={lbl}>🌐 حساباتك على السوشيال ميديا (اختياري — تظهر في بروفايلك)</label>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(200px,1fr))", gap: "10px" }}>
+                {[
+                  { k: "facebook", ph: "فيسبوك: https://facebook.com/..." },
+                  { k: "instagram", ph: "انستجرام: https://instagram.com/..." },
+                  { k: "tiktok", ph: "تيك توك: https://tiktok.com/@..." },
+                  { k: "youtube", ph: "يوتيوب: https://youtube.com/@..." },
+                  { k: "x", ph: "إكس/تويتر: https://x.com/..." },
+                  { k: "linkedin", ph: "لينكدإن: https://linkedin.com/in/..." },
+                ].map((s) => (
+                  <input key={s.k} value={form.social?.[s.k] || ""} placeholder={s.ph} style={field} dir="ltr"
+                    onChange={(e) => setForm({ ...form, social: { ...(form.social || {}), [s.k]: e.target.value } })} />
+                ))}
               </div>
             </div>
 
@@ -298,6 +354,43 @@ export default function InstructorJoinPage() {
                 أرسل طلب الانضمام
               </button>
             </div>
+          </div>
+        )}
+
+        {/* ═══ 📬 رسائلي — من زوار بروفايلي ═══ */}
+        {step === "info" && authed && done.info && (
+          <div style={{ ...glass, borderRadius: "18px", padding: "24px", marginTop: "18px" }}>
+            <h2 style={{ color: "#fff", fontSize: "17px", fontWeight: 800, marginBottom: "4px" }}>
+              📬 رسائلي {inbox.filter((m) => m.status === "new").length > 0 && (
+                <span style={{ background: "#e11d48", color: "#fff", borderRadius: "20px", fontSize: "12px", padding: "2px 10px", marginInlineStart: "6px" }}>
+                  {inbox.filter((m) => m.status === "new").length} جديدة
+                </span>
+              )}
+            </h2>
+            <p style={{ color: "rgba(255,255,255,0.5)", fontSize: "12.5px", marginBottom: "14px" }}>رسائل يرسلها الزوار من بروفايلك عبر الموقع — رد عليهم بوسيلة التواصل التي تركوها.</p>
+            {inbox.length === 0 ? (
+              <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "13.5px", margin: 0 }}>لا رسائل بعد — حين يراسلك زائر من بروفايلك ستجد رسالته هنا.</p>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                {inbox.map((m) => (
+                  <div key={m._id} style={{ background: m.status === "new" ? "rgba(34,211,238,0.07)" : "rgba(255,255,255,0.04)", border: `1px solid ${m.status === "new" ? "rgba(34,211,238,0.3)" : "rgba(255,255,255,0.1)"}`, borderRadius: "12px", padding: "13px 15px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", gap: "8px", flexWrap: "wrap", marginBottom: "6px" }}>
+                      <strong style={{ color: "#fff", fontSize: "14px" }}>
+                        {m.status === "new" ? "🔵 " : ""}{m.name}
+                        {m.contact && <span style={{ color: "#22d3ee", fontWeight: 400, fontSize: "12.5px", marginInlineStart: "8px" }} dir="ltr">{m.contact}</span>}
+                      </strong>
+                      <span style={{ color: "rgba(255,255,255,0.35)", fontSize: "11.5px" }}>{new Date(m.createdAt).toLocaleString("ar-EG")}</span>
+                    </div>
+                    <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "13.5px", lineHeight: 1.8, margin: 0, whiteSpace: "pre-wrap" }}>{m.message}</p>
+                    {m.status === "new" && (
+                      <button onClick={() => markRead(m._id)} style={{ background: "transparent", border: "none", color: "#22d3ee", fontSize: "12px", cursor: "pointer", fontFamily: "inherit", padding: "6px 0 0", fontWeight: 700 }}>
+                        ✓ تمت القراءة
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 

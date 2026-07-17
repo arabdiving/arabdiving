@@ -1,10 +1,25 @@
 import Link from "next/link";
+import RedSeaMap from "@/app/components/RedSeaMap";
+import HomeDiveCenters from "@/app/components/home/HomeDiveCenters";
+import HomePromoSection from "@/app/components/home/HomePromoSection";
 
 /*
-  الرئيسية المختصرة لوضع «موقع يحل مشكلة»:
-  رسالة واحدة واضحة + ثلاث بوابات: دليل المدربين، مراكز الغوص، الأدوات.
-  بأسلوب Dark Ocean (زجاج + خلفية عميقة) وتعمل مع الثيمين عبر متغيرات CSS.
+  الرئيسية المختصرة لوضع «موقع يحل مشكلة» — مبنية على بلوكات مستقلة
+  (settings.focusHomeBlocks) يتحكم فيها الأدمن من لوحة «الصفحة الرئيسية»:
+  focus_hero (الرسالة) · focus_gates (بوابتا المدربين والمراكز) · focus_tools (الأدوات)
+  · focus_map (خريطة البحر الأحمر) · focus_instructors (بروموشن المدربين) · focus_centers (شبكة المراكز)
 */
+
+export interface FocusBlock { key: string; visible: boolean; order: number; }
+
+export const DEFAULT_FOCUS_BLOCKS: FocusBlock[] = [
+  { key: "focus_hero",        visible: true,  order: 0 },
+  { key: "focus_gates",       visible: true,  order: 1 },
+  { key: "focus_tools",       visible: true,  order: 2 },
+  { key: "focus_map",         visible: false, order: 3 },
+  { key: "focus_instructors", visible: false, order: 4 },
+  { key: "focus_centers",     visible: false, order: 5 },
+];
 
 const glass: React.CSSProperties = {
   background: "var(--glass-bg,rgba(8,20,48,0.78))",
@@ -20,10 +35,8 @@ const TOOLS = [
   { href: "/survey", icon: "🧠", label: "استبيان التعلم", desc: "افهم طريقة تعلمك قبل أول دورة" },
 ];
 
-export default function FocusHome() {
+function FocusHero() {
   return (
-    <main style={{ background: "var(--bg-deep,#040d1a)", minHeight: "100vh" }}>
-      {/* الرسالة */}
       <section style={{ position: "relative", overflow: "hidden", background: "radial-gradient(ellipse at 50% 0%, #0a2a4a 0%, #040d1a 62%)", color: "#fff", padding: "70px 20px 50px", textAlign: "center" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(100,180,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(100,180,255,1) 1px,transparent 1px)", backgroundSize: "55px 55px", opacity: 0.04, pointerEvents: "none" }} />
         <div style={{ position: "relative", zIndex: 2, maxWidth: "760px", margin: "0 auto" }}>
@@ -44,8 +57,11 @@ export default function FocusHome() {
           </div>
         </div>
       </section>
+  );
+}
 
-      {/* البوابتان الرئيسيتان */}
+function FocusGates() {
+  return (
       <section style={{ maxWidth: "1100px", margin: "0 auto", padding: "40px 18px 10px", display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(300px,1fr))", gap: "18px" }}>
         <Link href="/instructors" style={{ ...glass, borderRadius: "20px", padding: "28px", textDecoration: "none", display: "block" }}>
           <div style={{ fontSize: "42px", marginBottom: "10px" }}>🧑‍🏫</div>
@@ -66,8 +82,11 @@ export default function FocusHome() {
           <span style={{ color: "#22d3ee", fontWeight: 800, fontSize: "13.5px", display: "inline-block", marginTop: "12px" }}>تصفح المراكز ←</span>
         </Link>
       </section>
+  );
+}
 
-      {/* الأدوات */}
+function FocusTools() {
+  return (
       <section style={{ maxWidth: "1100px", margin: "0 auto", padding: "26px 18px 70px" }}>
         <h2 style={{ color: "var(--ink,#fff)", fontSize: "22px", fontWeight: 900, textAlign: "center", marginBottom: "20px" }}>🧰 أدوات مجانية تجهّزك قبل السفر</h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(210px,1fr))", gap: "14px" }}>
@@ -80,6 +99,33 @@ export default function FocusHome() {
           ))}
         </div>
       </section>
+  );
+}
+
+export default function FocusHome({ blocks, promoImages = {} }: { blocks?: FocusBlock[]; promoImages?: Record<string, string> }) {
+  const list = (blocks && blocks.length ? blocks : DEFAULT_FOCUS_BLOCKS)
+    .filter((b) => b.visible)
+    .sort((a, b) => a.order - b.order);
+
+  const render = (key: string) => {
+    switch (key) {
+      case "focus_hero":        return <FocusHero key={key} />;
+      case "focus_gates":       return <FocusGates key={key} />;
+      case "focus_tools":       return <FocusTools key={key} />;
+      case "focus_map":         return <RedSeaMap key={key} embedded />;
+      case "focus_centers":     return <HomeDiveCenters key={key} />;
+      case "focus_instructors": return (
+        <div key={key} style={{ maxWidth: "1100px", margin: "0 auto", padding: "26px 20px" }}>
+          <HomePromoSection pageKey="instructors" image={promoImages["instructors_promo"]} />
+        </div>
+      );
+      default: return null;
+    }
+  };
+
+  return (
+    <main style={{ background: "var(--bg-deep,#040d1a)", minHeight: "100vh" }}>
+      {list.map((b) => render(b.key))}
     </main>
   );
 }

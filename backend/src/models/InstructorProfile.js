@@ -23,6 +23,16 @@ const InstructorProfileSchema = new mongoose.Schema(
     city: { type: String, default: "" },
     bio: { type: String, default: "" },
     whatsapp: { type: String, default: "" },
+    email: { type: String, default: "" },          // إيميل التواصل (يظهر حسب إعدادات الإظهار)
+    // روابط السوشيال ميديا — تظهر في البروفايل حسب إعدادات إظهار التواصل
+    social: {
+      facebook:  { type: String, default: "" },
+      instagram: { type: String, default: "" },
+      tiktok:    { type: String, default: "" },
+      youtube:   { type: String, default: "" },
+      x:         { type: String, default: "" }, // تويتر/X
+      linkedin:  { type: String, default: "" },
+    },
     showContact: { type: Boolean, default: true }, // المدرب يتحكم في إظهار وسائل تواصله (والأدمن له مفتاح عام)
     video: { type: String, default: "" },          // رابط فيديو تعريفي (يوتيوب/رابط مباشر)
 
