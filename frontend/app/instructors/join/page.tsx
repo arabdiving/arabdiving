@@ -1,0 +1,285 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import { API_BASE } from "@/app/lib/api";
+
+/*
+  انضمام المدرب — خطوتان:
+  1) بيانات الاعتماد: المنظمة، الرقم، الرتبة، منذ متى، التخصصات، اللغات، المدينة.
+  2) استبيان «بصمة المدرب»: 18 سؤالًا (6 محاور × 3) بصيغة TSES العلمية
+     «إلى أي مدى تستطيع...؟» — النتيجة: رادار، نقطتا تميّز علنيتان، ومجال تطوير خاص.
+*/
+
+const AXES: Record<string, { label: string; icon: string }> = {
+  planning:        { label: "التخطيط والبريفينج",          icon: "🎯" },
+  strategies:      { label: "استراتيجيات الشرح",           icon: "📚" },
+  management:      { label: "إدارة المجموعة والوعي الظرفي", icon: "🛡️" },
+  engagement:      { label: "التحفيز واحتواء الخوف",       icon: "❤️" },
+  watermanship:    { label: "الإتقان المائي والعرض",       icon: "🌊" },
+  professionalism: { label: "الاحترافية والتطوير",         icon: "📈" },
+};
+
+const QUESTIONS: { axis: string; text: string }[] = [
+  // 🎯 التخطيط والبريفينج (Danielson-1)
+  { axis: "planning", text: "التحضير لكل حصة بخطة واضحة الأهداف قبل الوصول للمركز؟" },
+  { axis: "planning", text: "تقديم بريفينج مختصر يفهمه المبتدئ تمامًا من المرة الأولى؟" },
+  { axis: "planning", text: "تقدير مستوى الطالب الحقيقي قبل النزول وتعديل خطتك عليه؟" },
+  // 📚 استراتيجيات الشرح (TSES-IS + PADI)
+  { axis: "strategies", text: "شرح نظرية معقدة (كالضغط والتشبع) بلغة يفهمها شخص عادي؟" },
+  { axis: "strategies", text: "تقديم نفس المهارة بطريقة مختلفة تمامًا عندما يتعثر الطالب؟" },
+  { axis: "strategies", text: "استخدام تشبيهات وقصص وأمثلة من حياة الطالب لتثبيت المعلومة؟" },
+  // 🛡️ إدارة المجموعة (TSES-CM + PADI IE)
+  { axis: "management", text: "السيطرة على مجموعة كاملة تحت الماء دون فقدان أحد من نظرك؟" },
+  { axis: "management", text: "ملاحظة مشكلة تتكوّن عند طالب قبل أن تتفاقم (وعي ظرفي)؟" },
+  { axis: "management", text: "اتخاذ قرار إلغاء أو تعديل الغطسة بحزم عند الشك — مهما كان الضغط؟" },
+  // ❤️ التحفيز واحتواء الخوف (TSES-SE)
+  { axis: "engagement", text: "تهدئة طالب خائف قبل النزول وتحويل خوفه لثقة؟" },
+  { axis: "engagement", text: "إعادة بناء ثقة طالب فشل في مهارة أمام زملائه؟" },
+  { axis: "engagement", text: "جعل الطالب الفاتر غير المتحمس يقع في حب الغوص؟" },
+  // 🌊 الإتقان المائي (PADI IE)
+  { axis: "watermanship", text: "أداء عرض توضيحي مثالي وبطيء لأي مهارة يفهمه الطالب بالنظر فقط؟" },
+  { axis: "watermanship", text: "الحفاظ على ثبات وطفو مثالي أثناء التدريس (أنت المثال الحي)؟" },
+  { axis: "watermanship", text: "التعامل بهدوء تام مع موقف طارئ حقيقي تحت الماء؟" },
+  // 📈 الاحترافية (Danielson-4)
+  { axis: "professionalism", text: "الالتزام الكامل بمعايير منظمتك حتى تحت ضغط الوقت والموسم؟" },
+  { axis: "professionalism", text: "طلب تغذية راجعة صادقة من طلابك والتعلّم منها فعلًا؟" },
+  { axis: "professionalism", text: "تطوير نفسك سنويًا بدورات وتخصصات ومهارات جديدة؟" },
+];
+
+const SCALE = [
+  { v: 1, l: "لا أستطيع" }, { v: 2, l: "بالكاد" }, { v: 3, l: "إلى حد ما" },
+  { v: 4, l: "أستطيع جيدًا" }, { v: 5, l: "أستطيع بامتياز" },
+];
+
+const AGENCIES = ["PADI", "SDI", "SSI", "CMAS", "NAUI", "أخرى"];
+const RANKS = ["مساعد مدرب (AI)", "مدرب (OWSI / Instructor)", "MSDT", "IDC Staff", "Master Instructor", "Course Director / IT"];
+const SPECIALTIES = ["نيتروكس", "غوص عميق", "حطام", "ليلي", "ملاحة", "إتقان الطفو", "تصوير تحت الماء", "إنقاذ وEFR", "أطفال", "ذوو الهمم (تكيّفي)", "سايد ماونت", "غوص تقني", "غوص حر"];
+const LANGS = ["العربية", "الإنجليزية", "الفرنسية", "الألمانية", "الروسية", "الإيطالية"];
+const CITIES = ["شرم الشيخ", "دهب", "الغردقة", "مرسى علم", "الجونة", "سفاجا", "نويبع", "أخرى"];
+
+const glass: React.CSSProperties = { background: "var(--glass-bg,rgba(8,20,48,0.78))", border: "1px solid var(--glass-border,rgba(255,255,255,0.08))", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" };
+const field: React.CSSProperties = { background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", borderRadius: "11px", padding: "11px", fontFamily: "inherit", fontSize: "14px", width: "100%", boxSizing: "border-box" };
+const lbl: React.CSSProperties = { display: "block", color: "rgba(255,255,255,0.6)", fontSize: "12.5px", fontWeight: 700, marginBottom: "5px" };
+
+export default function InstructorJoinPage() {
+  const [step, setStep] = useState<"info" | "survey" | "result">("info");
+  const [authed, setAuthed] = useState<boolean | null>(null);
+  const [form, setForm] = useState<any>({ agency: "PADI", instructorNumber: "", rank: RANKS[1], sinceYear: "", specialties: [] as string[], languages: ["العربية"], city: "شرم الشيخ", bio: "", whatsapp: "", showWeakness: false });
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [result, setResult] = useState<{ strengths: string[]; weakness: string | null; scores: Record<string, number> } | null>(null);
+  const [msg, setMsg] = useState("");
+
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const H: any = { "Content-Type": "application/json", ...(token ? { Authorization: `Bearer ${token}` } : {}) };
+
+  useEffect(() => {
+    if (!token) { setAuthed(false); return; }
+    setAuthed(true);
+    // تحميل البروفايل الحالي إن وجد
+    fetch(`${API_BASE}/api/instructors/me`, { headers: H }).then((r) => r.json()).then((d) => {
+      if (d.profile) setForm((f: any) => ({ ...f, ...d.profile, sinceYear: d.profile.sinceYear || "" }));
+    }).catch(() => {});
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const toggle = (key: "specialties" | "languages", v: string) =>
+    setForm((f: any) => ({ ...f, [key]: f[key].includes(v) ? f[key].filter((x: string) => x !== v) : [...f[key], v] }));
+
+  const saveInfo = async (e: React.FormEvent) => {
+    e.preventDefault(); setMsg("");
+    const res = await fetch(`${API_BASE}/api/instructors/me`, { method: "PUT", headers: H, body: JSON.stringify({ ...form, sinceYear: Number(form.sinceYear) || null }) });
+    const d = await res.json();
+    if (d.success) { setStep("survey"); window.scrollTo({ top: 0 }); } else setMsg(d.message || "تعذّر الحفظ");
+  };
+
+  const allAnswered = QUESTIONS.every((_, i) => answers[i] !== undefined);
+
+  const submitSurvey = async () => {
+    // متوسط كل محور
+    const sums: Record<string, { t: number; n: number }> = {};
+    QUESTIONS.forEach((q, i) => {
+      sums[q.axis] = sums[q.axis] || { t: 0, n: 0 };
+      sums[q.axis].t += answers[i] || 0; sums[q.axis].n += 1;
+    });
+    const scores: Record<string, number> = {};
+    Object.entries(sums).forEach(([a, { t, n }]) => { scores[a] = Math.round((t / n) * 10) / 10; });
+
+    const res = await fetch(`${API_BASE}/api/instructors/me/fingerprint`, { method: "PUT", headers: H, body: JSON.stringify({ scores }) });
+    const d = await res.json();
+    if (d.success) { setResult({ strengths: d.strengths || [], weakness: d.weakness || null, scores }); setStep("result"); window.scrollTo({ top: 0 }); }
+    else setMsg(d.message || "تعذّر الحفظ");
+  };
+
+  if (authed === false) return (
+    <main style={{ background: "var(--bg-deep,#040d1a)", minHeight: "80vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+      <div style={{ ...glass, borderRadius: "18px", padding: "34px", textAlign: "center", maxWidth: "440px" }}>
+        <div style={{ fontSize: "44px", marginBottom: "10px" }}>🧑‍🏫</div>
+        <h1 style={{ color: "#fff", fontSize: "22px", marginBottom: "10px" }}>انضم كمدرب</h1>
+        <p style={{ color: "rgba(255,255,255,0.6)", lineHeight: 1.8, marginBottom: "18px" }}>سجّل دخولك أولًا لإنشاء بروفايلك كمدرب غوص.</p>
+        <Link href="/login" style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "white", padding: "12px 28px", borderRadius: "11px", fontWeight: 800 }}>تسجيل الدخول</Link>
+      </div>
+    </main>
+  );
+
+  return (
+    <main style={{ background: "var(--bg-deep,#040d1a)", minHeight: "100vh", padding: "40px 16px 70px" }}>
+      <div style={{ maxWidth: "760px", margin: "0 auto" }}>
+        <h1 style={{ color: "#fff", fontSize: "clamp(24px,5vw,34px)", fontWeight: 900, textAlign: "center", marginBottom: "6px" }}>🧑‍🏫 بروفايل المدرب</h1>
+        <p style={{ color: "rgba(255,255,255,0.55)", textAlign: "center", marginBottom: "26px", lineHeight: 1.8 }}>
+          {step === "info" ? "الخطوة 1 من 2 — بيانات اعتمادك وتخصصاتك" : step === "survey" ? "الخطوة 2 من 2 — بصمة المدرب (تقييم ذاتي علمي)" : "بصمتك جاهزة 🎉"}
+        </p>
+        {msg && <p style={{ color: "#f87171", textAlign: "center", marginBottom: "14px" }}>{msg}</p>}
+
+        {/* ═══ الخطوة 1: البيانات ═══ */}
+        {step === "info" && (
+          <form onSubmit={saveInfo} style={{ ...glass, borderRadius: "18px", padding: "24px", display: "flex", flexDirection: "column", gap: "16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: "12px" }}>
+              <div>
+                <label style={lbl}>المنظمة</label>
+                <select value={form.agency} onChange={(e) => setForm({ ...form, agency: e.target.value })} style={field}>
+                  {AGENCIES.map((a) => <option key={a} value={a} style={{ color: "#0f172a" }}>{a}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={lbl}>رقم المدرب</label>
+                <input value={form.instructorNumber} onChange={(e) => setForm({ ...form, instructorNumber: e.target.value })} placeholder="مثال: 345678" style={field} dir="ltr" />
+              </div>
+              <div>
+                <label style={lbl}>الرتبة</label>
+                <select value={form.rank} onChange={(e) => setForm({ ...form, rank: e.target.value })} style={field}>
+                  {RANKS.map((r) => <option key={r} value={r} style={{ color: "#0f172a" }}>{r}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={lbl}>مدرب منذ سنة</label>
+                <input type="number" min={1960} max={new Date().getFullYear()} value={form.sinceYear} onChange={(e) => setForm({ ...form, sinceYear: e.target.value })} placeholder="2006" style={field} dir="ltr" required />
+              </div>
+              <div>
+                <label style={lbl}>المدينة</label>
+                <select value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} style={field}>
+                  {CITIES.map((c) => <option key={c} value={c} style={{ color: "#0f172a" }}>{c}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={lbl}>واتساب (للطلاب)</label>
+                <input value={form.whatsapp} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} placeholder="+20..." style={field} dir="ltr" />
+              </div>
+            </div>
+
+            <div>
+              <label style={lbl}>التخصصات التي تدرّبها</label>
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                {SPECIALTIES.map((s) => (
+                  <button type="button" key={s} onClick={() => toggle("specialties", s)}
+                    style={{ background: form.specialties.includes(s) ? "linear-gradient(135deg,#0891b2,#06b6d4)" : "rgba(255,255,255,0.07)", color: "#fff", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "20px", padding: "7px 14px", fontSize: "13px", cursor: "pointer", fontFamily: "inherit", fontWeight: form.specialties.includes(s) ? 700 : 400 }}>
+                    {s}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label style={lbl}>اللغات</label>
+              <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                {LANGS.map((l) => (
+                  <button type="button" key={l} onClick={() => toggle("languages", l)}
+                    style={{ background: form.languages.includes(l) ? "linear-gradient(135deg,#c9952a,#e8a830)" : "rgba(255,255,255,0.07)", color: "#fff", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "20px", padding: "7px 14px", fontSize: "13px", cursor: "pointer", fontFamily: "inherit", fontWeight: form.languages.includes(l) ? 700 : 400 }}>
+                    {l}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label style={lbl}>نبذة قصيرة عنك (تظهر في بروفايلك)</label>
+              <textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={3} maxLength={600} placeholder="من أنت كمدرب؟ ما فلسفتك في التعليم؟" style={{ ...field, resize: "vertical" }} />
+            </div>
+
+            <button type="submit" style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "white", border: "none", borderRadius: "12px", padding: "14px", fontSize: "16px", fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
+              التالي: بصمة المدرب ←
+            </button>
+          </form>
+        )}
+
+        {/* ═══ الخطوة 2: الاستبيان ═══ */}
+        {step === "survey" && (
+          <div style={{ ...glass, borderRadius: "18px", padding: "24px" }}>
+            <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "13.5px", lineHeight: 1.9, marginBottom: "20px" }}>
+              مبني على مقاييس علمية (TSES وإطار Danielson ومعايير تقييم مدربي الغوص). أجب بصدق —
+              <b style={{ color: "#fbbf24" }}> أقوى محورين يظهران علنًا كنقاط تميّزك، وأضعف محور يبقى لك وحدك</b> كمجال تطوير.
+              السؤال دائمًا: «إلى أي مدى تستطيع…؟»
+            </p>
+            {QUESTIONS.map((q, i) => (
+              <div key={i} style={{ marginBottom: "20px", paddingBottom: "18px", borderBottom: i < QUESTIONS.length - 1 ? "1px solid rgba(255,255,255,0.07)" : "none" }}>
+                <div style={{ color: "#fff", fontSize: "14.5px", fontWeight: 600, lineHeight: 1.7, marginBottom: "10px" }}>
+                  <span style={{ color: "#22d3ee", marginInlineEnd: "6px" }}>{AXES[q.axis].icon}</span>
+                  {i + 1}. {q.text}
+                </div>
+                <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                  {SCALE.map((o) => (
+                    <button key={o.v} onClick={() => setAnswers({ ...answers, [i]: o.v })}
+                      style={{ flex: 1, minWidth: "76px", padding: "9px 6px", borderRadius: "9px", fontSize: "12.5px", cursor: "pointer", fontFamily: "inherit",
+                        border: answers[i] === o.v ? "2px solid #22d3ee" : "1px solid rgba(255,255,255,0.15)",
+                        background: answers[i] === o.v ? "rgba(34,211,238,0.18)" : "rgba(255,255,255,0.05)",
+                        color: "#fff", fontWeight: answers[i] === o.v ? 800 : 400 }}>
+                      {o.l}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ))}
+            <button onClick={submitSurvey} disabled={!allAnswered}
+              style={{ width: "100%", background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "white", border: "none", borderRadius: "12px", padding: "14px", fontSize: "16px", fontWeight: 800, cursor: "pointer", fontFamily: "inherit", opacity: allAnswered ? 1 : 0.4 }}>
+              اعرض بصمتي 🧬
+            </button>
+          </div>
+        )}
+
+        {/* ═══ النتيجة ═══ */}
+        {step === "result" && result && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "18px" }}>
+            <div style={{ ...glass, borderRadius: "18px", padding: "24px" }}>
+              <h2 style={{ color: "#fff", fontSize: "19px", fontWeight: 800, marginBottom: "16px" }}>🧬 بصمتك التدريبية</h2>
+              {Object.entries(AXES).map(([a, meta]) => {
+                const v = result.scores[a] || 0;
+                const pct = Math.round(((v - 1) / 4) * 100);
+                const isStrength = result.strengths.includes(a);
+                return (
+                  <div key={a} style={{ marginBottom: "14px" }}>
+                    <div style={{ display: "flex", justifyContent: "space-between", fontSize: "13.5px", marginBottom: "5px" }}>
+                      <span style={{ color: "#fff", fontWeight: 700 }}>{meta.icon} {meta.label} {isStrength && <span style={{ color: "#fbbf24" }}>⭐ تميّز</span>}</span>
+                      <span style={{ color: "rgba(255,255,255,0.55)" }}>{v}/5</span>
+                    </div>
+                    <div style={{ height: "9px", background: "rgba(255,255,255,0.08)", borderRadius: "5px", overflow: "hidden" }}>
+                      <div style={{ height: "100%", width: `${pct}%`, background: isStrength ? "linear-gradient(90deg,#c9952a,#e8a830)" : "linear-gradient(90deg,#0891b2,#22d3ee)" }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {result.weakness && (
+              <div style={{ ...glass, borderRadius: "18px", padding: "22px", borderColor: "rgba(251,191,36,0.3)" }}>
+                <h3 style={{ color: "#fbbf24", fontSize: "16px", fontWeight: 800, marginBottom: "8px" }}>🔒 لك وحدك — مجال تطويرك</h3>
+                <p style={{ color: "rgba(255,255,255,0.75)", lineHeight: 1.9, fontSize: "14px", margin: 0 }}>
+                  أدنى محاورك: <b>{AXES[result.weakness].icon} {AXES[result.weakness].label}</b>.
+                  هذا لا يظهر لأحد — إلا إذا فعّلت «إظهار مجال تطويري» من بروفايلك (شفافية يقدّرها الطلاب كثيرًا).
+                </p>
+              </div>
+            )}
+
+            <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
+              <Link href="/instructors" style={{ flex: 1, textAlign: "center", background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "white", borderRadius: "12px", padding: "13px", fontWeight: 800, textDecoration: "none" }}>
+                شاهد دليل المدربين ←
+              </Link>
+              <button onClick={() => { setStep("survey"); setAnswers({}); }} style={{ flex: 1, background: "rgba(255,255,255,0.08)", color: "#fff", border: "1px solid rgba(255,255,255,0.15)", borderRadius: "12px", padding: "13px", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                ↺ أعد الاستبيان
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}

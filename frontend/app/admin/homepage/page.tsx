@@ -54,6 +54,7 @@ const BLOCK_REGISTRY: Record<string, { label: string; icon: string; desc: string
   training_fit_promo:{ label: "استبيان التوافق التدريبي", icon: "🧭", desc: "قسم ترويجي لاستبيان التوافق العملي /training-fit" },
   standards_promo:   { label: "معايير اعتماد المراكز",   icon: "🛡️", desc: "قسم ترويجي لصفحة الميثاق المعلن /standards" },
   travel_promo:      { label: "رحلتك: طيران وفنادق",     icon: "✈️", desc: "قسم ترويجي لصفحة حجز الطيران والفنادق /travel" },
+  instructors_promo: { label: "دليل المدربين",           icon: "🧑‍🏫", desc: "قسم ترويجي لدليل المدربين وبصماتهم /instructors" },
 };
 
 export default function HomepageBlocksAdmin() {

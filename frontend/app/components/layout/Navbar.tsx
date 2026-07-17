@@ -21,6 +21,7 @@ const NAV_MAIN: MItem[] = [
 ];
 
 const NAV_MORE: MItem[] = [
+  { href: "/instructors", label: "دليل المدربين" },
   { href: "/family-booking", label: "دليل مراكز الغوص" },
   { href: "/standards", label: "معايير اعتماد المراكز" },
   { href: "/retreats", label: "باقات خاصة" },
