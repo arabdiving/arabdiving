@@ -47,7 +47,14 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
   useEffect(() => {
     fetch(`${API_BASE}/api/instructors/${encodeURIComponent(id)}`)
       .then((r) => r.json())
-      .then((d) => setIns(d.instructor || null))
+      .then((d) => {
+        setIns(d.instructor || null);
+        // لو وصل الزائر بالرابط الرقمي القديم والمدرب له اسم — نستبدل العنوان بالاسم تلقائيًا
+        const slug = d.instructor?.slug;
+        if (slug && slug !== id) {
+          try { window.history.replaceState(null, "", `/instructors/${encodeURIComponent(slug)}`); } catch {}
+        }
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, [id]);
