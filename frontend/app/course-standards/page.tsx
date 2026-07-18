@@ -70,8 +70,11 @@ export default function CourseStandardsPage() {
             اعرف حقك قبل أن تدفع — وقارن به أي عرض يُقدَّم لك.
           </p>
           <div style={{ display: "flex", gap: "10px", justifyContent: "center", flexWrap: "wrap" }}>
-            <a href="#open-water" style={{ background: "linear-gradient(135deg,#0891b2,#06b6d4)", color: "white", padding: "12px 26px", borderRadius: "12px", fontWeight: 800, fontSize: "14.5px" }}>🤿 الأوبن ووتر (ISO 24801-2)</a>
-            <a href="#advanced" style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "white", padding: "12px 26px", borderRadius: "12px", fontWeight: 800, fontSize: "14.5px" }}>🚀 الأدفانس</a>
+            <a href="#open-water" style={{ background: "linear-gradient(135deg,#0891b2,#06b6d4)", color: "white", padding: "11px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13.5px" }}>🤿 الأوبن ووتر</a>
+            <a href="#advanced" style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "white", padding: "11px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13.5px" }}>🚀 الأدفانس</a>
+            <a href="#rescue" style={{ background: "linear-gradient(135deg,#dc2626,#f87171)", color: "white", padding: "11px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13.5px" }}>🛟 الريسكيو</a>
+            <a href="#divemaster" style={{ background: "linear-gradient(135deg,#7c3aed,#a78bfa)", color: "white", padding: "11px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13.5px" }}>🎖️ الدايف ماستر</a>
+            <a href="#instructor" style={{ background: "linear-gradient(135deg,#059669,#34d399)", color: "white", padding: "11px 20px", borderRadius: "12px", fontWeight: 800, fontSize: "13.5px" }}>🧑‍🏫 المدرب</a>
           </div>
         </div>
       </section>
@@ -183,6 +186,132 @@ export default function CourseStandardsPage() {
             مرافقًا يختم البطاقات. وبعده، المستوى الدولي التالي الحقيقي في السلّم: الإنقاذ ثم قائد الغوص (ISO 24801-3).
           </div>
 
+        </section>
+
+        {/* ════ الريسكيو ════ */}
+        <section id="rescue" style={{ scrollMarginTop: "90px" }}>
+          <p style={{ color: "#f87171", fontWeight: 800, fontSize: "13px", letterSpacing: "1px", marginBottom: "6px" }}>مدمج في ISO 24801-3 — بوابة الاحتراف</p>
+          <h2 style={{ color: "var(--ink,#fff)", fontSize: "clamp(22px,4.5vw,30px)", fontWeight: 900, marginBottom: "10px" }}>🛟 كورس الريسكيو (الإنقاذ) — نقطة التحول</h2>
+
+          <div style={{ ...glass, borderRadius: "16px", padding: "20px", marginBottom: "18px", borderColor: "rgba(248,113,113,0.3)" }}>
+            <p style={{ color: "rgba(255,255,255,0.75)", fontSize: "14px", lineHeight: 2.1, margin: 0 }}>
+              مثل الأدفانس، الريسكيو <b style={{ color: "#fff" }}>ليس مستوى أيزو مستقلًا</b> — لكن الأيزو لم يتجاهله:
+              أدمج كفاءات الإنقاذ كاملة <b style={{ color: "#f87171" }}>كشرط إلزامي داخل المستوى 3 (قائد الغوص)</b>.
+              أي أن المدارس حين صممت «كورس الريسكيو» المستقل كانت تفصل هذا الجزء الإلزامي لتدرّسه مبكرًا —
+              وهو بإجماع المدربين الكورس الذي يحوّلك من غواص يهتم بنفسه إلى غواص ينتبه لكل من حوله.
+            </p>
+          </div>
+
+          <h3 style={{ color: "#fff", fontSize: "17px", fontWeight: 800, margin: "0 0 12px" }}>ما الذي ينص عليه المعيار في مهارات الإنقاذ؟ (البند 9.3–9.5)</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(280px,1fr))", gap: "8px", marginBottom: "16px" }}>
+            {[
+              "التعرف على حالات الطوارئ (نفاد الهواء، فقدان الاستجابة)",
+              "تقنيات البحث الأساسية تحت الماء عن غواص مفقود",
+              "انتشال مصاب من العمق بشكل محكوم (دون إيذائه بالصعود)",
+              "إجراءات السطح الفعالة وإخراج المصاب من الماء",
+              "إدارة موقف الطوارئ والتنسيق مع خدمات الإسعاف",
+              "تنفيذ إنقاذ كامل واحد على الأقل في مياه مفتوحة أمام المقيّم",
+            ].map((s) => (
+              <div key={s} style={{ ...glass, borderRadius: "10px", padding: "10px 14px", color: "rgba(255,255,255,0.75)", fontSize: "13px", lineHeight: 1.7 }}>🛟 {s}</div>
+            ))}
+          </div>
+          <ul style={{ margin: "0 0 18px", paddingInlineStart: "20px", color: "rgba(255,255,255,0.65)", fontSize: "13.5px", lineHeight: 2.1 }}>
+            <li>ويُلزم المعيار معه: شهادة <b style={{ color: "#fff" }}>إسعافات أولية وإنعاش قلبي رئوي (CPR)</b> سارية.</li>
+            <li>وتدريبًا نظريًا وعمليًا على <b style={{ color: "#fff" }}>إعطاء الأكسجين في الطوارئ</b>.</li>
+          </ul>
+          <div style={{ background: "rgba(201,149,42,0.1)", border: "1px solid rgba(201,149,42,0.3)", borderRadius: "14px", padding: "18px 20px", color: "#fbbf24", fontSize: "14px", lineHeight: 2 }}>
+            💡 <b>نصيحة الناصح الأمين:</b> الريسكيو أفضل استثمار في سلّم الغوص كله — حتى لو لم تنوِ الاحتراف أبدًا.
+            ستغوص مع أصدقائك وعائلتك، والكورس الجيد <b>مرهق عمدًا</b>: سيناريوهات هلع حقيقية وبحث وسحب —
+            فاحذر «ريسكيو مريحًا» يُنهى في نصف يوم.
+          </div>
+        </section>
+
+        {/* ════ الدايف ماستر ════ */}
+        <section id="divemaster" style={{ scrollMarginTop: "90px" }}>
+          <p style={{ color: "#a78bfa", fontWeight: 800, fontSize: "13px", letterSpacing: "1px", marginBottom: "6px" }}>ISO 24801-3:2014 — المستوى 3 «قائد الغوص»</p>
+          <h2 style={{ color: "var(--ink,#fff)", fontSize: "clamp(22px,4.5vw,30px)", fontWeight: 900, marginBottom: "10px" }}>🎖️ الدايف ماستر — أول درجات الاحتراف</h2>
+          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "14.5px", lineHeight: 2, marginBottom: "18px" }}>
+            هنا نعود لمستوى أيزو رسمي كامل. «قائد الغوص» مؤهل ليخطط وينظم ويقود غواصين مؤهلين في المياه المفتوحة —
+            و<b style={{ color: "#fff" }}>الحد الأدنى لسن القيادة 18 عامًا</b>. وانتبه لنقطة ينص عليها المعيار حرفيًا:
+            قائد الغوص <b style={{ color: "#a78bfa" }}>يساعد في ضبط الطلاب ورفع الأمان، لكن لا يجوز له تدريس أو تقييم
+            أي مهارة</b> — التدريس حصريًا للمدرب المؤهل بمعيار 24802.
+          </p>
+
+          <h3 style={{ color: "#fff", fontSize: "17px", fontWeight: 800, margin: "0 0 12px" }}>🔢 أرقام الخبرة الملزمة قبل الشهادة</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: "12px", marginBottom: "18px" }}>
+            {[
+              { n: "60", l: "غطسة مسجلة كحد أدنى", d: "أو 50 غطسة بإجمالي 25 ساعة تحت الماء" },
+              { n: "40", l: "غطسة بعد الأوبن ووتر", d: "على الأقل — الخبرة الحديثة لا القديمة" },
+              { n: "30", l: "غطسة بظروف متنوعة", d: "رؤية ضعيفة، تيارات، مياه باردة — تنويع إلزامي" },
+              { n: "18", l: "عامًا حد أدنى للقيادة", d: "ولا قيادة قبل استيفاء كل الكفاءات" },
+            ].map((r) => (
+              <div key={r.l} style={{ ...glass, borderRadius: "14px", padding: "18px 14px", textAlign: "center" }}>
+                <div style={{ color: "#a78bfa", fontSize: "30px", fontWeight: 900 }}>{r.n}</div>
+                <div style={{ color: "#fff", fontWeight: 800, fontSize: "13px", margin: "4px 0" }}>{r.l}</div>
+                <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "11.5px", lineHeight: 1.7 }}>{r.d}</div>
+              </div>
+            ))}
+          </div>
+
+          <h3 style={{ color: "#fff", fontSize: "17px", fontWeight: 800, margin: "0 0 12px" }}>🧩 ما الذي يجب أن يتقنه؟</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: "12px", marginBottom: "18px" }}>
+            {[
+              { icon: "📚", t: "نظري موسّع (19 محورًا)", d: "من إجراءات الغوص الليلي والعميق والتيارات حتى إجراءات الغواص المفقود والقوانين المحلية" },
+              { icon: "🏅", t: "مهاراته الشخصية بدرجة «إتقان»", d: "كل مهارات الأوبن ووتر تُعاد بأعلى درجة تمكن وبهدوء تام — فهو القدوة تحت الماء" },
+              { icon: "🔽", t: "إتقان العميق والملاحة", d: "تخطيط وتنفيذ غطسات عميقة (التخدير، الاستهلاك، توقفات الصعود) وملاحة بالأجهزة والمعالم" },
+              { icon: "🧑‍✈️", t: "مهارات القيادة الكاملة", d: "اختيار الموقع، خطة الطوارئ، البريفينج، ضبط النزول والصعود، مراقبة هواء وتوتر المجموعة، الدي-بريفينج" },
+              { icon: "🛟", t: "الإنقاذ والإسعاف والأكسجين", d: "كل قسم الريسكيو أعلاه شرط إلزامي داخل هذا المستوى" },
+              { icon: "🤿", t: "قيادة التجارب الاستكشافية", d: "ملحق خاص: بعد تدريب إضافي يقود من جرّبوا الغوص التعريفي بنسبة 2:1 وحتى 12م فقط" },
+            ].map((x) => (
+              <div key={x.t} style={{ ...glass, borderRadius: "14px", padding: "16px" }}>
+                <div style={{ fontSize: "24px", marginBottom: "4px" }}>{x.icon}</div>
+                <div style={{ color: "#fff", fontWeight: 800, fontSize: "14px", marginBottom: "4px" }}>{x.t}</div>
+                <div style={{ color: "rgba(255,255,255,0.55)", fontSize: "12.5px", lineHeight: 1.8 }}>{x.d}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ background: "rgba(201,149,42,0.1)", border: "1px solid rgba(201,149,42,0.3)", borderRadius: "14px", padding: "18px 20px", color: "#fbbf24", fontSize: "14px", lineHeight: 2 }}>
+            💡 <b>سؤال الناصح الأمين:</b> قبل أي برنامج دايف ماستر اسأل: «كم غطسة في سجلي الآن؟ وهل البرنامج سيغطيني
+            بغطسات ظروف متنوعة فعلًا؟» — دايف ماستر تخرّج كله في نفس الموقع الهادئ لم يستوفِ روح المعيار حتى لو استوفى عدّه.
+          </div>
+        </section>
+
+        {/* ════ المدرب ════ */}
+        <section id="instructor" style={{ scrollMarginTop: "90px" }}>
+          <p style={{ color: "#34d399", fontWeight: 800, fontSize: "13px", letterSpacing: "1px", marginBottom: "6px" }}>ISO 24802-1 و ISO 24802-2 — معيارا المدربين</p>
+          <h2 style={{ color: "var(--ink,#fff)", fontSize: "clamp(22px,4.5vw,30px)", fontWeight: 900, marginBottom: "10px" }}>🧑‍🏫 المدرب — حين يصبح التعليم مسؤولية</h2>
+          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "14.5px", lineHeight: 2, marginBottom: "18px" }}>
+            للمدربين معياران مستقلان بمستويين: <b style={{ color: "#fff" }}>المستوى 1 (24802-1)</b> — مدرب مساعد يعلّم
+            النظري ومهارات المياه المحصورة تحت إشراف مدرب كامل، و<b style={{ color: "#fff" }}>المستوى 2 (24802-2)</b> —
+            المدرب الكامل (OWSI) المخوّل وحده بإدارة كورسات كاملة وتقييم الطلاب ومنح الشهادات. وفي مصر، تشترط غرفة
+            الغوص CDWS أن قائد الغطسات التعريفية في المياه المفتوحة يكون مدرب مستوى 2 حصريًا.
+          </p>
+
+          <h3 style={{ color: "#fff", fontSize: "17px", fontWeight: 800, margin: "0 0 12px" }}>ما الذي يشترطه المعيار في المدرب الكامل؟</h3>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(230px,1fr))", gap: "12px", marginBottom: "18px" }}>
+            {[
+              { icon: "🎖️", t: "أن يكون قائد غوص أولًا", d: "كل كفاءات المستوى 3 (بما فيها الإنقاذ والإسعاف والأكسجين) شرط مسبق — وخبرة عملية موثقة تشترط فيها المدارس عادة ما بين 60 و100 غطسة مسجلة" },
+              { icon: "📖", t: "علوم نظرية بمستوى معلّم", d: "لا يكفي أن يعرف — يجب أن يشرح الفيزياء والفسيولوجيا والديكو بطرق يفهمها المبتدئ" },
+              { icon: "🎓", t: "مهارات تدريس موثقة", d: "تحضير الدروس، العروض التوضيحية البطيئة المثالية تحت الماء، تصحيح الأخطاء، وإدارة صفوف حقيقية" },
+              { icon: "🛡️", t: "إشراف وإدارة أمان", d: "نسب طلاب ملزمة، التحكم في المجموعة بالمياه المحصورة والمفتوحة، وقرار إلغاء الحصة بيده وحده" },
+              { icon: "🛟", t: "طوارئ بمستوى محترف", d: "إنقاذ وإسعاف وأكسجين — تُختبر مجددًا في سياق تدريسي: إنقاذ طالبك أنت" },
+              { icon: "⚖️", t: "تقييم مستقل", d: "الاعتماد النهائي عبر تقييم موثق لدى منظمته (ومدرّبو المدربين لهم اشتراطات أعلى) — ثم تدقيق خارجي على المنظمة نفسها عبر EUF/الأيزو" },
+            ].map((x) => (
+              <div key={x.t} style={{ ...glass, borderRadius: "14px", padding: "16px" }}>
+                <div style={{ fontSize: "24px", marginBottom: "4px" }}>{x.icon}</div>
+                <div style={{ color: "#fff", fontWeight: 800, fontSize: "14px", marginBottom: "4px" }}>{x.t}</div>
+                <div style={{ color: "rgba(255,255,255,0.55)", fontSize: "12.5px", lineHeight: 1.8 }}>{x.d}</div>
+              </div>
+            ))}
+          </div>
+
+          <div style={{ background: "rgba(52,211,153,0.08)", border: "1px solid rgba(52,211,153,0.25)", borderRadius: "14px", padding: "18px 20px", color: "rgba(255,255,255,0.75)", fontSize: "14px", lineHeight: 2, marginBottom: "18px" }}>
+            🧬 <b style={{ color: "#34d399" }}>وهنا تبدأ رسالة موقعنا:</b> المعيار يضمن أن كل مدرب معتمد تجاوز
+            <b style={{ color: "#fff" }}> الحد الأدنى</b> — لكنه لا يخبرك بأسلوبه: هل يصبر على الخائف؟ هل يبدع مع
+            الأطفال؟ هل يحب التحدي مع المتقدمين؟ هذا بالضبط ما تكشفه «البصمة التدريبية» واستبيان «من يناسبه» لكل
+            مدرب على منصتنا.
+          </div>
+
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap" }}>
             <Link href="/instructors" style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "white", padding: "13px 26px", borderRadius: "12px", fontWeight: 800, fontSize: "14.5px" }}>🧬 اختر مدربك ببصمته التدريبية</Link>
             <Link href="/standards" style={{ ...glass, color: "#22d3ee", padding: "13px 26px", borderRadius: "12px", fontWeight: 800, fontSize: "14.5px" }}>🛡️ معايير اعتمادنا للمراكز</Link>
@@ -191,8 +320,9 @@ export default function CourseStandardsPage() {
 
         {/* المصدر */}
         <p style={{ color: "rgba(255,255,255,0.35)", fontSize: "12px", lineHeight: 1.9, textAlign: "center", margin: 0 }}>
-          المرجع: نص المعيار الدولي ISO 24801-2:2014 (المعتمد لدى غرفة الغوص المصرية CDWS) وسلسلة ISO 24801/24802/24803.
-          الأرقام المذكورة هي الحد الأدنى — المدارس والمدربون الجيدون يقدمون أكثر منها، لا أقل.
+          المراجع: نصوص المعايير الدولية ISO 24801-2:2014 وISO 24801-3:2014 وسلسلة ISO 24802 (النسخ المعتمدة لدى
+          غرفة الغوص المصرية CDWS) واشتراطات CDWS المحلية. الأرقام المذكورة هي الحد الأدنى —
+          المدارس والمدربون الجيدون يقدمون أكثر منها، لا أقل.
         </p>
       </div>
     </main>
