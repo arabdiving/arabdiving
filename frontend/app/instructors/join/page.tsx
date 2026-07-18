@@ -53,7 +53,8 @@ const SCALE = [
   { v: 4, l: "أستطيع جيدًا" }, { v: 5, l: "أستطيع بامتياز" },
 ];
 
-const AGENCIES = ["PADI", "SDI", "SSI", "CMAS", "NAUI", "أخرى"];
+// ترتيب أبجدي محايد — الناصح الأمين لا يقدّم منظمة على أخرى
+const AGENCIES = ["CMAS", "NAUI", "PADI", "RAID", "SDI", "SSI", "TDI", "أخرى"];
 const RANKS = ["مساعد مدرب (AI)", "مدرب (OWSI / Instructor)", "MSDT", "IDC Staff", "Master Instructor", "Course Director / IT"];
 const SPECIALTIES = ["نيتروكس", "غوص عميق", "حطام", "ليلي", "ملاحة", "إتقان الطفو", "تصوير تحت الماء", "إنقاذ وEFR", "أطفال", "ذوو الهمم (تكيّفي)", "سايد ماونت", "غوص تقني", "غوص حر"];
 const LANGS = ["العربية", "الإنجليزية", "الفرنسية", "الألمانية", "الروسية", "الإيطالية"];
@@ -67,7 +68,7 @@ export default function InstructorJoinPage() {
   const [step, setStep] = useState<"info" | "survey" | "fit" | "result">("info");
   const [fitAnswers, setFitAnswers] = useState<Partial<Record<FitKey, string>>>({});
   const [authed, setAuthed] = useState<boolean | null>(null);
-  const [form, setForm] = useState<any>({ agency: "PADI", instructorNumber: "", rank: RANKS[1], sinceYear: "", specialties: [] as string[], languages: ["العربية"], city: "شرم الشيخ", bio: "", whatsapp: "", email: "", social: {}, video: "", showWeakness: false, showContact: true });
+  const [form, setForm] = useState<any>({ agency: "", instructorNumber: "", rank: RANKS[1], sinceYear: "", specialties: [] as string[], languages: ["العربية"], city: "شرم الشيخ", bio: "", whatsapp: "", email: "", social: {}, video: "", showWeakness: false, showContact: true });
   // حالة اكتمال بروفايلي (لشريط الخطوات) + صندوق الوارد + الموافقة المبدئية
   const [done, setDone] = useState({ info: false, fingerprint: false, fit: false });
   const [inbox, setInbox] = useState<any[]>([]);
@@ -246,7 +247,8 @@ export default function InstructorJoinPage() {
             <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: "12px" }}>
               <div>
                 <label style={lbl}>المنظمة</label>
-                <select value={form.agency} onChange={(e) => setForm({ ...form, agency: e.target.value })} style={field}>
+                <select required value={form.agency} onChange={(e) => setForm({ ...form, agency: e.target.value })} style={field}>
+                  <option value="" style={{ color: "#0f172a" }}>اختر منظمتك...</option>
                   {AGENCIES.map((a) => <option key={a} value={a} style={{ color: "#0f172a" }}>{a}</option>)}
                 </select>
               </div>

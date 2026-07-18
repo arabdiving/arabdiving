@@ -14,7 +14,7 @@ const InstructorProfileSchema = new mongoose.Schema(
     slug: { type: String, default: "", index: true },
 
     // بيانات الاعتماد
-    agency: { type: String, default: "PADI" },          // PADI | SDI | SSI | CMAS | NAUI | أخرى
+    agency: { type: String, default: "" },              // CMAS | NAUI | PADI | RAID | SDI | SSI | TDI | أخرى (بلا افتراضي — حياد)
     instructorNumber: { type: String, default: "" },     // رقم المدرب لدى المنظمة
     rank: { type: String, default: "" },                 // OWSI | MSDT | IDC Staff | Course Director ...
     sinceYear: { type: Number, default: null },          // سنة أن أصبح مدربًا — تُحسب الخبرة منها

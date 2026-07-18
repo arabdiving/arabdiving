@@ -147,7 +147,7 @@ const upsertMyInstructorProfile = async (req, res) => {
   try {
     const b = req.body || {};
     const fields = {
-      agency: String(b.agency || "PADI").slice(0, 20),
+      agency: String(b.agency || "").slice(0, 20), // بلا افتراضي — الحياد أولًا
       instructorNumber: String(b.instructorNumber || "").slice(0, 40),
       rank: String(b.rank || "").slice(0, 60),
       sinceYear: b.sinceYear ? Math.max(1960, Math.min(new Date().getFullYear(), Number(b.sinceYear))) : null,
