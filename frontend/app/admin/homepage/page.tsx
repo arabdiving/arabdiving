@@ -59,7 +59,9 @@ const BLOCK_REGISTRY: Record<string, { label: string; icon: string; desc: string
 
 // بلوكات رئيسية وضع «موقع يحل مشكلة» — مستقلة تمامًا عن بلوكات الموقع الكامل
 const FOCUS_REGISTRY: Record<string, { label: string; icon: string; desc: string }> = {
-  focus_hero:        { label: "رسالة الموقع",        icon: "🎯", desc: "«اعرف مدربك ومركزك قبل أول غطسة» مع زرّي المدربين والمراكز" },
+  focus_hero:        { label: "رسالة الموقع",        icon: "🎯", desc: "الأسئلة الثلاثة («أحسن مدرسة؟ أحسن مدرب؟ أحسن مكان؟») والإجابة الصادقة" },
+  focus_iso:         { label: "الأيزو يوحّد الجودة",  icon: "📏", desc: "الحقيقة الأولى: كل المدارس المعتمدة تستوفي ISO 24801/24802/24803" },
+  focus_bias:        { label: "سيكولوجيا التعصب",     icon: "🧠", desc: "الحقيقة الثانية: لماذا يقسم البعض أن مدرسته الأفضل؟ + أمثلة من التاريخ" },
   focus_gates:       { label: "بوابتا الدليلين",     icon: "🚪", desc: "بطاقتان كبيرتان: دليل المدربين ودليل المراكز" },
   focus_tools:       { label: "شبكة الأدوات",        icon: "🧰", desc: "حاسبة الأوزان، خريطة المواقع، والاستبيانات الثلاثة" },
   focus_map:         { label: "خريطة البحر الأحمر",  icon: "🗺️", desc: "خريطة الموقع التفاعلية" },
@@ -68,7 +70,7 @@ const FOCUS_REGISTRY: Record<string, { label: string; icon: string; desc: string
 };
 
 const DEFAULT_FOCUS: Block[] = Object.entries(FOCUS_REGISTRY).map(([key, cfg], i) => ({
-  key, label: cfg.label, visible: i < 3, order: i,
+  key, label: cfg.label, visible: i < 5, order: i, // أول 5 ظاهرة: الرسالة، الأيزو، التعصب، البوابتان، الأدوات
 }));
 
 export default function HomepageBlocksAdmin() {

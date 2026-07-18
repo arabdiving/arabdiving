@@ -110,11 +110,13 @@ const SettingsSchema = new mongoose.Schema(
       ],
       default: [
         { key: "focus_hero",        label: "focus_hero",        visible: true, order: 0 },
-        { key: "focus_gates",       label: "focus_gates",       visible: true, order: 1 },
-        { key: "focus_tools",       label: "focus_tools",       visible: true, order: 2 },
-        { key: "focus_map",         label: "focus_map",         visible: false, order: 3 },
-        { key: "focus_instructors", label: "focus_instructors", visible: false, order: 4 },
-        { key: "focus_centers",     label: "focus_centers",     visible: false, order: 5 },
+        { key: "focus_iso",         label: "focus_iso",         visible: true, order: 1 },
+        { key: "focus_bias",        label: "focus_bias",        visible: true, order: 2 },
+        { key: "focus_gates",       label: "focus_gates",       visible: true, order: 3 },
+        { key: "focus_tools",       label: "focus_tools",       visible: true, order: 4 },
+        { key: "focus_map",         label: "focus_map",         visible: false, order: 5 },
+        { key: "focus_instructors", label: "focus_instructors", visible: false, order: 6 },
+        { key: "focus_centers",     label: "focus_centers",     visible: false, order: 7 },
       ],
     },
 
