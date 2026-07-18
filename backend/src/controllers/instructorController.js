@@ -70,7 +70,8 @@ function publicProfile(p, showContactGlobal = true) {
 /* ── عام: قائمة المدربين (فلاتر: city, agency, specialty) ── */
 const listInstructors = async (req, res) => {
   try {
-    const q = { active: true };
+    // المعتمدون فقط (القديم بلا حقل الحالة يُعامل كمعتمد)
+    const q = { active: true, applicationStatus: { $nin: ["pending", "rejected"] } };
     if (req.query.city) q.city = req.query.city;
     if (req.query.agency) q.agency = req.query.agency;
     if (req.query.specialty) q.specialties = req.query.specialty;
@@ -89,7 +90,9 @@ const getInstructor = async (req, res) => {
       InstructorProfile.findById(req.params.id).populate("user", "name profileImage"),
       contactAllowed(),
     ]);
-    if (!p || !p.active) return res.status(404).json({ success: false, message: "المدرب غير موجود" });
+    if (!p || !p.active || ["pending", "rejected"].includes(p.applicationStatus)) {
+      return res.status(404).json({ success: false, message: "المدرب غير موجود" });
+    }
     const centers = await PartnerCenter.find(
       { active: true, team: { $elemMatch: { instructor: p._id, status: "approved" } } },
       "name city image slug"
@@ -132,10 +135,17 @@ const upsertMyInstructorProfile = async (req, res) => {
         linkedin:  String(b.social?.linkedin || "").slice(0, 300),
       },
       video: String(b.video || "").slice(0, 300),
+      // صور الكارنيه (وش وضهر — حتى 8 صور لأكثر من كارنيه) — للإدارة فقط
+      ...(Array.isArray(b.cardImages) ? { cardImages: b.cardImages.slice(0, 8).map((u) => String(u).slice(0, 300)) } : {}),
       ...(typeof b.showWeakness === "boolean" ? { showWeakness: b.showWeakness } : {}),
       ...(typeof b.showContact === "boolean" ? { showContact: b.showContact } : {}),
       active: true,
     };
+    // المرفوض الذي يعدّل صوره ويحفظ يعود لطابور المراجعة تلقائيًا
+    const existing = await InstructorProfile.findOne({ user: req.user._id }, "applicationStatus");
+    if (existing?.applicationStatus === "rejected" && Array.isArray(b.cardImages) && b.cardImages.length) {
+      fields.applicationStatus = "pending";
+    }
     // موقع الخريطة: تلقائي من المدينة (أو إحداثيات صريحة إن أُرسلت)
     if (b.location?.lat && b.location?.lng) {
       fields.location = { lat: Number(b.location.lat), lng: Number(b.location.lng) };
@@ -254,6 +264,43 @@ const respondToCenter = async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
+/* ═══ إدارة: الموافقة المبدئية على طلبات المدربين ═══ */
+
+// أدمن: كل الطلبات مع صور الكارنيه (الأحدث أولًا، المعلقة في الصدارة)
+const adminListApplications = async (req, res) => {
+  try {
+    const list = await InstructorProfile.find({})
+      .populate("user", "name email profileImage")
+      .sort({ createdAt: -1 });
+    const order = { pending: 0, rejected: 1, approved: 2 };
+    const apps = list
+      .map((p) => ({
+        _id: p._id,
+        user: p.user,
+        agency: p.agency, instructorNumber: p.instructorNumber, rank: p.rank,
+        sinceYear: p.sinceYear, city: p.city,
+        cardImages: p.cardImages || [],
+        applicationStatus: p.applicationStatus || "approved", // القديم بلا حقل = معتمد
+        verified: !!p.verified,
+        createdAt: p.createdAt,
+      }))
+      .sort((a, b) => (order[a.applicationStatus] ?? 3) - (order[b.applicationStatus] ?? 3));
+    res.json({ success: true, applications: apps });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
+// أدمن: موافقة مبدئية / رفض / توثيق
+const adminSetApplicationStatus = async (req, res) => {
+  try {
+    const p = await InstructorProfile.findById(req.params.id);
+    if (!p) return res.status(404).json({ success: false, message: "الطلب غير موجود" });
+    if (["pending", "approved", "rejected"].includes(req.body.status)) p.applicationStatus = req.body.status;
+    if (typeof req.body.verified === "boolean") p.verified = req.body.verified;
+    await p.save();
+    res.json({ success: true, applicationStatus: p.applicationStatus, verified: p.verified });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+};
+
 /* ═══ رسائل «راسلني عبر الموقع» ═══ */
 
 // عام: زائر يرسل رسالة لمدرب (لا يتطلب تسجيل دخول)
@@ -300,4 +347,5 @@ module.exports = {
   listInstructors, getInstructor, getMyInstructorProfile, upsertMyInstructorProfile, saveFingerprint, saveFit,
   getMyCenters, requestJoinCenter, respondToCenter, publicProfile, contactAllowed,
   sendMessageToInstructor, getMyMessages, markMessageRead,
+  adminListApplications, adminSetApplicationStatus,
 };

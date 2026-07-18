@@ -1,11 +1,16 @@
 const express = require("express");
 const router = express.Router();
 const { protect } = require("../middleware/authMiddleware");
+const { adminOnly } = require("../middleware/adminMiddleware");
 const {
   listInstructors, getInstructor, getMyInstructorProfile, upsertMyInstructorProfile, saveFingerprint, saveFit,
   getMyCenters, requestJoinCenter, respondToCenter,
   sendMessageToInstructor, getMyMessages, markMessageRead,
+  adminListApplications, adminSetApplicationStatus,
 } = require("../controllers/instructorController");
+
+router.get("/admin/applications", protect, adminOnly, adminListApplications);
+router.patch("/admin/applications/:id", protect, adminOnly, adminSetApplicationStatus);
 
 router.get("/me", protect, getMyInstructorProfile);
 router.put("/me", protect, upsertMyInstructorProfile);

@@ -65,6 +65,12 @@ const InstructorProfileSchema = new mongoose.Schema(
     },
     showWeakness: { type: Boolean, default: false }, // هل يعرض مجال تطويره علنًا؟ (شجاعة تُحترم)
 
+    // الموافقة المبدئية: المتدرب يقدّم طلب انضمام بصور كارنيه المدرب (وش وضهر — وأكثر من كارنيه)
+    // pending = قيد مراجعة الإدارة | approved = معتمد (يظهر في الدليل) | rejected = مرفوض
+    // ملاحظة: البروفايلات القديمة بلا هذا الحقل تُعامل كمعتمدة (للتوافق الرجعي)
+    applicationStatus: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
+    cardImages: { type: [String], default: [] }, // صور الكارنيهات — تظهر للإدارة فقط، لا تُعرض علنًا أبدًا
+
     verified: { type: Boolean, default: false },     // توثيق الإدارة (بعد التحقق من رقم المدرب)
     active: { type: Boolean, default: true },
   },

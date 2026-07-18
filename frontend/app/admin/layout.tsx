@@ -13,6 +13,7 @@ const links = [
   { href: "/admin/sections", label: "الأقسام", icon: "🗂️" },
   { href: "/admin/dive-sites", label: "مواقع الغوص", icon: "🤿" },
   { href: "/admin/partner-centers", label: "المراكز الشريكة", icon: "🏝️" },
+  { href: "/admin/instructors", label: "طلبات المدربين", icon: "🧑‍🏫" },
   { href: "/admin/products", label: "متجر المنتجات", icon: "🛒" },
   { href: "/admin/courses", label: "الدورات", icon: "🎓" },
   { href: "/admin/bookings", label: "الحجوزات", icon: "🎟️" },

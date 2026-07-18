@@ -20,6 +20,7 @@ export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
   const [sizeProfile, setSizeProfile] = useState<any>(null);
   const [entries, setEntries] = useState<DiveEntry[]>([]);
+  const [insStatus, setInsStatus] = useState<"none" | "pending" | "approved" | "rejected">("none"); // حالتي كمدرب
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -31,11 +32,17 @@ export default function ProfilePage() {
       fetch(`${API_BASE}/api/users/profile`, { headers }).then((r) => r.json()),
       fetch(`${API_BASE}/api/logbook/my`, { headers }).then((r) => r.json()),
       fetch(`${API_BASE}/api/size-profiles/me`, { headers }).then((r) => r.json()).catch(() => ({})),
+      fetch(`${API_BASE}/api/instructors/me`, { headers }).then((r) => r.json()).catch(() => ({})),
     ])
-      .then(([profile, logbook, sp]) => {
+      .then(([profile, logbook, sp, ins]) => {
         if (profile?.user) setUser(profile.user); else setError("تعذّر تحميل الملف الشخصي.");
         setEntries(logbook?.entries || []);
         if (sp?.profile) setSizeProfile(sp.profile);
+        // حالة المدرب: لا بروفايل = متدرب | pending = قيد المراجعة | معتمد (أو قديم بلا حقل) = مدرب
+        if (ins?.profile) {
+          const st = ins.profile.applicationStatus;
+          setInsStatus(st === "pending" ? "pending" : st === "rejected" ? "rejected" : "approved");
+        }
       })
       .catch(() => setError("تعذّر الاتصال بالخادم."))
       .finally(() => setLoading(false));
@@ -79,7 +86,19 @@ export default function ProfilePage() {
               {user.personality?.dominant && <span style={chip}>🧠 {({ red: "🔴 قائد", yellow: "🟡 مبدع", green: "🟢 مسالم", blue: "🔵 محلّل" } as any)[user.personality.dominant]}</span>}
             </div>
           </div>
-          <Link href="/profile/edit" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "11px 22px", borderRadius: "11px", fontWeight: 700, height: "fit-content" }}>✏️ تعديل الملف</Link>
+          <div style={{ display: "flex", flexDirection: "column", gap: "10px", height: "fit-content" }}>
+            <Link href="/profile/edit" style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff", padding: "11px 22px", borderRadius: "11px", fontWeight: 700, textAlign: "center" }}>✏️ تعديل الملف</Link>
+            {/* زر المدرب — حسب حالتك: معتمد = تعديل ملف مدرب | لا بروفايل = انضم كمدرب | قيد المراجعة/مرفوض = الحالة */}
+            {insStatus === "approved" ? (
+              <Link href="/instructors/join" style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "#fff", padding: "11px 22px", borderRadius: "11px", fontWeight: 800, textAlign: "center", boxShadow: "0 3px 12px rgba(201,149,42,0.4)" }}>🧑‍🏫 تعديل ملف مدرب</Link>
+            ) : insStatus === "pending" ? (
+              <Link href="/instructors/join" style={{ background: "rgba(251,191,36,0.12)", border: "1px solid rgba(251,191,36,0.35)", color: "#fbbf24", padding: "11px 22px", borderRadius: "11px", fontWeight: 700, textAlign: "center", fontSize: "13.5px" }}>⏳ طلب المدرب قيد المراجعة</Link>
+            ) : insStatus === "rejected" ? (
+              <Link href="/instructors/join" style={{ background: "rgba(248,113,113,0.12)", border: "1px solid rgba(248,113,113,0.35)", color: "#f87171", padding: "11px 22px", borderRadius: "11px", fontWeight: 700, textAlign: "center", fontSize: "13.5px" }}>✋ راجع طلب المدرب</Link>
+            ) : (
+              <Link href="/instructors/join" style={{ background: "linear-gradient(135deg,#0891b2,#06b6d4)", color: "#fff", padding: "11px 22px", borderRadius: "11px", fontWeight: 800, textAlign: "center", boxShadow: "0 3px 12px rgba(8,145,178,0.4)" }}>🤿 انضم كمدرب</Link>
+            )}
+          </div>
         </div>
       </div>
 

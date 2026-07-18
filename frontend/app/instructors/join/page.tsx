@@ -68,9 +68,26 @@ export default function InstructorJoinPage() {
   const [fitAnswers, setFitAnswers] = useState<Partial<Record<FitKey, string>>>({});
   const [authed, setAuthed] = useState<boolean | null>(null);
   const [form, setForm] = useState<any>({ agency: "PADI", instructorNumber: "", rank: RANKS[1], sinceYear: "", specialties: [] as string[], languages: ["العربية"], city: "شرم الشيخ", bio: "", whatsapp: "", email: "", social: {}, video: "", showWeakness: false, showContact: true });
-  // حالة اكتمال بروفايلي (لشريط الخطوات) + صندوق الوارد
+  // حالة اكتمال بروفايلي (لشريط الخطوات) + صندوق الوارد + الموافقة المبدئية
   const [done, setDone] = useState({ info: false, fingerprint: false, fit: false });
   const [inbox, setInbox] = useState<any[]>([]);
+  const [appStatus, setAppStatus] = useState<string>(""); // pending | approved | rejected | "" (قديم = معتمد)
+  const [uploading, setUploading] = useState(false);
+
+  // رفع صور الكارنيه (وش وضهر — أكثر من كارنيه)
+  const uploadCards = async (files: FileList | null) => {
+    if (!files?.length) return;
+    setUploading(true);
+    try {
+      for (const file of Array.from(files)) {
+        const fd = new FormData(); fd.append("image", file);
+        const res = await fetch(`${API_BASE}/api/upload`, { method: "POST", headers: token ? { Authorization: `Bearer ${token}` } : {}, body: fd });
+        const d = await res.json();
+        if (d.success && d.url) setForm((f: any) => ({ ...f, cardImages: [...(f.cardImages || []), d.url].slice(0, 8) }));
+        else setMsg(d.message || "تعذّر رفع الصورة");
+      }
+    } finally { setUploading(false); }
+  };
   // عضويتي في مراكز الغوص (بموافقة الطرفين)
   const [centers, setCenters] = useState<any[]>([]);
   const [memberships, setMemberships] = useState<any[]>([]);
@@ -94,6 +111,7 @@ export default function InstructorJoinPage() {
           fingerprint: Boolean(d.profile.fingerprint?.takenAt),
           fit: Boolean(d.profile.fit?.takenAt),
         });
+        setAppStatus(d.profile.applicationStatus || "");
       }
     }).catch(() => {});
     fetch(`${API_BASE}/api/instructors/me/messages`, { headers: H }).then((r) => r.json())
@@ -126,6 +144,13 @@ export default function InstructorJoinPage() {
 
   const saveInfo = async (e: React.FormEvent) => {
     e.preventDefault(); setMsg("");
+    // صور الكارنيه مطلوبة للموافقة المبدئية (إلا للمعتمدين بالفعل)
+    const needsCards = !done.info || appStatus === "pending" || appStatus === "rejected";
+    if (needsCards && !(form.cardImages || []).length) {
+      setMsg("🪪 أضف صور كارنيه المدرب (وش وضهر) — مطلوبة للموافقة المبدئية");
+      window.scrollTo({ top: 0 });
+      return;
+    }
     const res = await fetch(`${API_BASE}/api/instructors/me`, { method: "PUT", headers: H, body: JSON.stringify({ ...form, sinceYear: Number(form.sinceYear) || null }) });
     const d = await res.json();
     if (d.success) { setDone((x) => ({ ...x, info: true })); setStep(done.fingerprint ? "info" : "survey"); if (!done.fingerprint) window.scrollTo({ top: 0 }); setMsg(done.fingerprint ? "تم حفظ بياناتك ✅" : ""); } else setMsg(d.message || "تعذّر الحفظ");
@@ -182,6 +207,20 @@ export default function InstructorJoinPage() {
           {step === "info" ? "الخطوة 1 من 3 — بيانات اعتمادك وتخصصاتك" : step === "survey" ? "الخطوة 2 من 3 — بصمة المدرب (تقييم ذاتي علمي)" : step === "fit" ? "الخطوة 3 من 3 — من يناسبك؟ (اختيارات صريحة)" : "بروفايلك جاهز 🎉"}
         </p>
         {msg && <p style={{ color: "#f87171", textAlign: "center", marginBottom: "14px" }}>{msg}</p>}
+
+        {/* 🪪 حالة الموافقة المبدئية */}
+        {authed && done.info && step === "info" && (
+          appStatus === "pending" ? (
+            <div style={{ background: "rgba(251,191,36,0.1)", border: "1px solid rgba(251,191,36,0.3)", borderRadius: "14px", padding: "14px 18px", marginBottom: "16px", color: "#fbbf24", fontSize: "13.5px", lineHeight: 1.8 }}>
+              ⏳ <b>طلبك قيد المراجعة</b> — الإدارة تتحقق من صور الكارنيه. أكمل الاستبيانات في الأثناء،
+              وسيظهر بروفايلك في الدليل فور الموافقة المبدئية.
+            </div>
+          ) : appStatus === "rejected" ? (
+            <div style={{ background: "rgba(248,113,113,0.1)", border: "1px solid rgba(248,113,113,0.3)", borderRadius: "14px", padding: "14px 18px", marginBottom: "16px", color: "#f87171", fontSize: "13.5px", lineHeight: 1.8 }}>
+              ✋ لم تتم الموافقة على طلبك — راجع وضوح صور الكارنيه وأعد رفعها ثم احفظ، أو تواصل مع الإدارة.
+            </div>
+          ) : null
+        )}
 
         {/* 🧭 شريط حالة بروفايلي — يوصلك مباشرة لأي خطوة ناقصة */}
         {authed && done.info && step === "info" && (
@@ -285,6 +324,28 @@ export default function InstructorJoinPage() {
             <div>
               <label style={lbl}>نبذة قصيرة عنك (تظهر في بروفايلك)</label>
               <textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })} rows={3} maxLength={600} placeholder="من أنت كمدرب؟ ما فلسفتك في التعليم؟" style={{ ...field, resize: "vertical" }} />
+            </div>
+
+            <div>
+              <label style={lbl}>🪪 صور كارنيه المدرب — وش وضهر (مطلوبة للموافقة المبدئية، حتى 8 صور لأكثر من كارنيه)</label>
+              <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "12px", lineHeight: 1.7, margin: "0 0 10px" }}>
+                تظهر للإدارة فقط للتحقق — لا تُعرض في بروفايلك العام أبدًا.
+              </p>
+              <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", alignItems: "center" }}>
+                {(form.cardImages || []).map((u: string, i: number) => (
+                  <div key={i} style={{ position: "relative" }}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={/^https?:\/\//.test(u) ? u : `/images/${u}`} alt="" style={{ width: "92px", height: "60px", objectFit: "cover", borderRadius: "9px", border: "1px solid rgba(255,255,255,0.2)" }} />
+                    <button type="button" onClick={() => setForm((f: any) => ({ ...f, cardImages: f.cardImages.filter((_: string, j: number) => j !== i) }))}
+                      style={{ position: "absolute", top: "-7px", insetInlineEnd: "-7px", background: "#e11d48", color: "#fff", border: "none", borderRadius: "50%", width: "20px", height: "20px", fontSize: "11px", cursor: "pointer", lineHeight: 1 }}>✕</button>
+                  </div>
+                ))}
+                <label style={{ background: "rgba(255,255,255,0.07)", border: "1px dashed rgba(255,255,255,0.3)", color: "rgba(255,255,255,0.7)", borderRadius: "11px", padding: "18px 20px", fontSize: "13px", cursor: "pointer", fontWeight: 700 }}>
+                  📷 أضف صور الكارنيه
+                  <input type="file" accept="image/*" multiple hidden onChange={(e) => uploadCards(e.target.files)} />
+                </label>
+                {uploading && <span style={{ color: "#fbbf24", fontSize: "12.5px" }}>جارٍ الرفع...</span>}
+              </div>
             </div>
 
             <div>
