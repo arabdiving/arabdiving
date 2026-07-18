@@ -40,6 +40,7 @@ const IG = {
 };
 
 const TOOLS = [
+  { href: "/course-standards", icon: "📏", label: "معايير الكورسات", desc: "حقك في الأوبن ووتر والأدفانس حسب الأيزو" },
   { href: "/weight-calculator", icon: "⚖️", label: "حاسبة الأوزان", desc: "وزن الرصاص المناسب لجسمك وبدلتك" },
   { href: "/dive-sites", icon: "🗺️", label: "خريطة مواقع الغوص", desc: "أفضل مواقع البحر الأحمر بالتفصيل" },
   { href: "/quiz", icon: "🎨", label: "اكتشف نمطك", desc: "نظام الألوان — اعرف أسلوبك في التعلم" },
@@ -124,6 +125,11 @@ function FocusIso() {
           💡 خلاصة عملية: سؤال «أي مدرسة أفضل؟» يشبه سؤال «أي عداد كهرباء يقيس أدق؟» — كلها معايرة على نفس المرجع.
           السؤال الأذكى: <b style={{ color: "#FCAF45" }}>«أي مدرب وأي مركز أفضل لي أنا؟»</b>
         </p>
+        <div style={{ textAlign: "center", marginTop: "14px" }}>
+          <Link href="/course-standards" style={{ background: IG.gradBtn2, color: "white", padding: "12px 26px", borderRadius: "12px", fontWeight: 800, fontSize: "14px", display: "inline-block", boxShadow: "0 4px 16px rgba(64,93,230,0.4)" }}>
+            📏 اقرأ حقك بالتفصيل: معايير الأوبن ووتر والأدفانس ←
+          </Link>
+        </div>
       </section>
   );
 }

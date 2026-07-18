@@ -15,6 +15,7 @@ export const FOCUS_ALLOWED: string[] = [
   "/store",                // صفحات المراكز العامة
   "/weight-calculator",    // أداة: حاسبة الأوزان
   "/dive-sites",           // أداة: خريطة مواقع الغوص
+  "/course-standards",     // معايير الأوبن ووتر والأدفانس الدولية
   "/quiz",                 // استبيان: اكتشف نمطك
   "/training-fit",         // استبيان: التوافق التدريبي
   "/survey",               // استبيان: التعلم
@@ -36,6 +37,7 @@ export const FOCUS_NAV_MAIN = [
 ];
 
 export const FOCUS_NAV_TOOLS = [
+  { href: "/course-standards", label: "📏 معايير الكورسات الدولية" },
   { href: "/weight-calculator", label: "⚖️ حاسبة الأوزان" },
   { href: "/dive-sites", label: "🗺️ خريطة مواقع الغوص" },
   { href: "/quiz", label: "🎨 اكتشف نمطك" },
