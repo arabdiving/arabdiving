@@ -199,7 +199,7 @@ export default function BookingWizard({ params }: { params: Promise<{ id: string
           <div style={{ color: "var(--navy)", fontWeight: 800, fontSize: "15px", marginBottom: "8px" }}>🧑‍🏫 مدربو المركز (بموافقة الطرفين)</div>
           <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
             {team.map((t: any) => (
-              <Link key={t._id} href={`/instructors/${t._id}`}
+              <Link key={t._id} href={`/instructors/${t.slug || t._id}`}
                 style={{ display: "flex", alignItems: "center", gap: "8px", background: "rgba(6,182,212,0.1)", border: "1px solid rgba(6,182,212,0.3)", borderRadius: "30px", padding: "6px 14px 6px 8px", textDecoration: "none" }}>
                 {siteImageSrc(t.user?.profileImage) ? (
                   // eslint-disable-next-line @next/next/no-img-element

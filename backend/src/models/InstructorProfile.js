@@ -10,6 +10,9 @@ const InstructorProfileSchema = new mongoose.Schema(
   {
     user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true, unique: true },
 
+    // رابط بالاسم بدل الرقم: /instructors/ابراهيم-المكاوى — يتولد من اسم المدرب
+    slug: { type: String, default: "", index: true },
+
     // بيانات الاعتماد
     agency: { type: String, default: "PADI" },          // PADI | SDI | SSI | CMAS | NAUI | أخرى
     instructorNumber: { type: String, default: "" },     // رقم المدرب لدى المنظمة

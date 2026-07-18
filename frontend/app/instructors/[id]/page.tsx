@@ -21,7 +21,9 @@ const AXES: Record<string, { label: string; icon: string; desc: string }> = {
 const glass: React.CSSProperties = { background: "var(--glass-bg,rgba(8,20,48,0.78))", border: "1px solid var(--glass-border,rgba(255,255,255,0.08))", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" };
 
 export default function InstructorProfilePage({ params }: { params: Promise<{ id: string }> }) {
-  const { id } = use(params);
+  const { id: rawId } = use(params);
+  // الرابط قد يكون اسمًا عربيًا مُرمّزًا (٪..) — نفكه ثم نعيد ترميزه عند الطلب من الخادم
+  const id = (() => { try { return decodeURIComponent(rawId); } catch { return rawId; } })();
   const [ins, setIns] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   // نموذج «راسلني عبر الموقع»
@@ -33,7 +35,7 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
     e.preventDefault();
     setCState("sending"); setCMsg("");
     try {
-      const res = await fetch(`${API_BASE}/api/instructors/${id}/message`, {
+      const res = await fetch(`${API_BASE}/api/instructors/${encodeURIComponent(id)}/message`, {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(cForm),
       });
       const d = await res.json();
@@ -43,7 +45,7 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
   };
 
   useEffect(() => {
-    fetch(`${API_BASE}/api/instructors/${id}`)
+    fetch(`${API_BASE}/api/instructors/${encodeURIComponent(id)}`)
       .then((r) => r.json())
       .then((d) => setIns(d.instructor || null))
       .catch(() => {})

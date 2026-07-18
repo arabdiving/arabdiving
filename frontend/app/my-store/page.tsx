@@ -208,7 +208,7 @@ export default function MyStorePage() {
               {team.map((t) => (
                 <div key={t.instructor._id} style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px", flexWrap: "wrap", border: "1px solid #e8edf2", borderRadius: "12px", padding: "12px 14px" }}>
                   <div>
-                    <Link href={`/instructors/${t.instructor._id}`} style={{ color: "var(--navy)", fontWeight: 700, fontSize: "14.5px" }}>
+                    <Link href={`/instructors/${t.instructor.slug || t.instructor._id}`} style={{ color: "var(--navy)", fontWeight: 700, fontSize: "14.5px" }}>
                       🧑‍🏫 {t.instructor.user?.name || "مدرب"} {t.instructor.verified ? "✅" : ""}
                     </Link>
                     <div style={{ fontSize: "12.5px", color: "#666", marginTop: "2px" }}>{t.instructor.agency} · {t.instructor.rank} · 📍 {t.instructor.city}</div>

@@ -1,6 +1,33 @@
+const mongoose = require("mongoose");
 const InstructorProfile = require("../models/InstructorProfile");
 const InstructorMessage = require("../models/InstructorMessage");
 const PartnerCenter = require("../models/PartnerCenter");
+
+// توليد سلاج من اسم المدرب (عربي أو لاتيني): «ابراهيم المكاوى» → «ابراهيم-المكاوى»
+function slugifyName(name) {
+  return String(name || "").trim()
+    .replace(/[^؀-ۿa-zA-Z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .slice(0, 60);
+}
+
+// سلاج فريد لبروفايل: الاسم، وإن كان محجوزًا لمدرب آخر يُلحق برقم قصير
+async function uniqueSlugFor(profileId, name) {
+  const base = slugifyName(name);
+  if (!base) return "";
+  const clash = await InstructorProfile.findOne({ slug: base, _id: { $ne: profileId } }, "_id");
+  return clash ? `${base}-${String(profileId).slice(-4)}` : base;
+}
+
+// إيجاد بروفايل بالسلاج (الاسم) أو بالمعرّف الرقمي — الروابط القديمة تبقى شغالة
+async function findByIdOrSlug(idOrSlug) {
+  if (mongoose.isValidObjectId(idOrSlug)) {
+    const byId = await InstructorProfile.findById(idOrSlug);
+    if (byId) return byId;
+  }
+  return InstructorProfile.findOne({ slug: idOrSlug });
+}
 const { getSettings } = require("./settingsController");
 
 // المفتاح العام: هل التواصل المباشر مسموح على مستوى المنصة؟
@@ -45,6 +72,7 @@ function publicProfile(p, showContactGlobal = true) {
   const contactVisible = showContactGlobal && o.showContact !== false;
   return {
     _id: o._id,
+    slug: o.slug || "",
     user: o.user, // populated: name, profileImage
     agency: o.agency, rank: o.rank, sinceYear: o.sinceYear,
     yearsExp: o.sinceYear ? Math.max(0, new Date().getFullYear() - o.sinceYear) : null,
@@ -83,15 +111,18 @@ const listInstructors = async (req, res) => {
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
-/* ── عام: بروفايل مدرب (+ مراكزه المعتمدة بموافقة الطرفين) ── */
+/* ── عام: بروفايل مدرب بالاسم أو بالمعرّف (+ مراكزه المعتمدة) ── */
 const getInstructor = async (req, res) => {
   try {
-    const [p, allowed] = await Promise.all([
-      InstructorProfile.findById(req.params.id).populate("user", "name profileImage"),
-      contactAllowed(),
-    ]);
-    if (!p || !p.active || ["pending", "rejected"].includes(p.applicationStatus)) {
+    const [found, allowed] = await Promise.all([findByIdOrSlug(req.params.id), contactAllowed()]);
+    if (!found || !found.active || ["pending", "rejected"].includes(found.applicationStatus)) {
       return res.status(404).json({ success: false, message: "المدرب غير موجود" });
+    }
+    const p = await found.populate("user", "name profileImage");
+    // تعبئة سلاج البروفايلات القديمة تلقائيًا عند أول زيارة
+    if (!p.slug && p.user?.name) {
+      p.slug = await uniqueSlugFor(p._id, p.user.name);
+      if (p.slug) p.save().catch(() => {});
     }
     const centers = await PartnerCenter.find(
       { active: true, team: { $elemMatch: { instructor: p._id, status: "approved" } } },
@@ -157,6 +188,11 @@ const upsertMyInstructorProfile = async (req, res) => {
       { $set: fields, $setOnInsert: { user: req.user._id } },
       { upsert: true, new: true }
     );
+    // سلاج بالاسم للرابط: /instructors/اسم-المدرب
+    if (!p.slug && req.user.name) {
+      const slug = await uniqueSlugFor(p._id, req.user.name);
+      if (slug) { p.slug = slug; await p.save(); }
+    }
     res.json({ success: true, profile: p });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
@@ -276,6 +312,7 @@ const adminListApplications = async (req, res) => {
     const apps = list
       .map((p) => ({
         _id: p._id,
+        slug: p.slug || "",
         user: p.user,
         agency: p.agency, instructorNumber: p.instructorNumber, rank: p.rank,
         sinceYear: p.sinceYear, city: p.city,
@@ -306,8 +343,8 @@ const adminSetApplicationStatus = async (req, res) => {
 // عام: زائر يرسل رسالة لمدرب (لا يتطلب تسجيل دخول)
 const sendMessageToInstructor = async (req, res) => {
   try {
-    const ins = await InstructorProfile.findOne({ _id: req.params.id, active: true });
-    if (!ins) return res.status(404).json({ success: false, message: "المدرب غير موجود" });
+    const ins = await findByIdOrSlug(req.params.id);
+    if (!ins || !ins.active) return res.status(404).json({ success: false, message: "المدرب غير موجود" });
     const name = String(req.body.name || "").trim().slice(0, 80);
     const message = String(req.body.message || "").trim().slice(0, 1500);
     if (!name || !message) return res.status(400).json({ success: false, message: "الاسم والرسالة مطلوبان" });

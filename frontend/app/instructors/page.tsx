@@ -173,7 +173,7 @@ export default function InstructorsPage() {
                   ? [FIT_DISPLAY.level[ins.fit.level]?.suits, FIT_DISPLAY.age[ins.fit.age]?.suits].filter(Boolean)
                   : [];
                 return (
-                  <Link key={ins._id} href={`/instructors/${ins._id}`}
+                  <Link key={ins._id} href={`/instructors/${ins.slug || ins._id}`}
                     style={{ ...glass, borderRadius: "18px", padding: "20px", textDecoration: "none", display: "flex", flexDirection: "column", gap: "12px", transition: "transform .2s" }}
                     onMouseEnter={(e) => { e.currentTarget.style.transform = "translateY(-4px)"; }}
                     onMouseLeave={(e) => { e.currentTarget.style.transform = "translateY(0)"; }}>

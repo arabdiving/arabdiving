@@ -109,7 +109,7 @@ export default function AdminInstructorApplications() {
                       style={{ background: a.verified ? "#f1f5f9" : "#eef4fa", color: a.verified ? "#64748b" : "#0d6cb0", border: "1px solid #d4dae3", borderRadius: "9px", padding: "9px 18px", fontWeight: 700, fontSize: "13px", cursor: "pointer", fontFamily: "inherit" }}>
                       {a.verified ? "إلغاء التوثيق" : "توثيق ✅ (بعد التحقق من الرقم)"}
                     </button>
-                    <Link href={`/instructors/${a._id}`} style={{ color: "var(--mid)", fontSize: "13px", padding: "9px 6px", fontWeight: 700 }}>عرض البروفايل ←</Link>
+                    <Link href={`/instructors/${a.slug || a._id}`} style={{ color: "var(--mid)", fontSize: "13px", padding: "9px 6px", fontWeight: 700 }}>عرض البروفايل ←</Link>
                   </div>
                 </div>
               );
