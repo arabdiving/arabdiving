@@ -70,11 +70,19 @@ export default function InstructorsPage() {
     return m;
   }, [list]);
 
-  // إسقاط الإحداثيات على صندوق الخريطة (خليج العقبة والبحر الأحمر: lat 24.5-29.5, lng 33-35.5)
-  const project = (c: { lat: number; lng: number }) => ({
-    x: ((c.lng - 33) / 2.5) * 100,
-    y: ((29.5 - c.lat) / 5) * 100,
-  });
+  // مواقع المدن على الخريطة — مضبوطة يدويًا لتطابق شكل الساحل المصري:
+  // سيناء وخليج العقبة أعلى اليمين، وساحل البر الرئيسي (الجونة ← مرسى علم) قطر مائل نازل جنوبًا
+  const MAP_POS: Record<string, { x: number; y: number }> = {
+    "نويبع":     { x: 72, y: 12 },
+    "دهب":       { x: 66, y: 26 },
+    "شرم الشيخ": { x: 57, y: 40 },
+    "الجونة":    { x: 28, y: 46 },
+    "الغردقة":   { x: 33, y: 56 },
+    "سفاجا":     { x: 40, y: 67 },
+    "مرسى علم":  { x: 52, y: 86 },
+  };
+  const project = (name: string, c: { lat: number; lng: number }) =>
+    MAP_POS[name] || { x: ((c.lng - 33) / 2.5) * 100, y: ((29.5 - c.lat) / 5) * 100 };
 
   const chip = (active: boolean): React.CSSProperties => ({
     background: active ? "#0891b2" : "rgba(255,255,255,0.07)", color: "#fff",
@@ -117,7 +125,7 @@ export default function InstructorsPage() {
             <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(100,180,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(100,180,255,1) 1px,transparent 1px)", backgroundSize: "40px 40px", opacity: 0.05 }} />
             <span style={{ position: "absolute", top: "8px", insetInlineStart: "12px", color: "rgba(255,255,255,0.3)", fontSize: "11px" }}>البحر الأحمر وخليج العقبة</span>
             {Object.entries(CITY_COORDS).map(([name, c]) => {
-              const p = project(c);
+              const p = project(name, c);
               const count = cityCounts[name] || 0;
               const active = city === name;
               return (

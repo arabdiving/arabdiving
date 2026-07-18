@@ -361,7 +361,7 @@ export default function InstructorJoinPage() {
             </label>
 
             <button type="submit" style={{ background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "white", border: "none", borderRadius: "12px", padding: "14px", fontSize: "16px", fontWeight: 800, cursor: "pointer", fontFamily: "inherit" }}>
-              التالي: بصمة المدرب ←
+              {done.fingerprint ? "💾 حفظ بياناتي" : "💾 احفظ وتابع: بصمة المدرب ←"}
             </button>
           </form>
         )}
