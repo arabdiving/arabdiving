@@ -32,6 +32,9 @@ const dmRoutes = require("./routes/dmRoutes");
 const ogPreviewRoutes = require("./routes/ogPreviewRoutes");
 const travelRoutes = require("./routes/travelRoutes");
 const instructorRoutes = require("./routes/instructorRoutes");
+const newsletterRoutes = require("./routes/newsletterRoutes");
+const emailAdminRoutes = require("./routes/emailAdminRoutes");
+const { startAutomation } = require("./lib/emailAutomation");
 
 const app = express();
 
@@ -100,10 +103,17 @@ app.use("/api/instructors", instructorRoutes);
 app.use("/api/dm", dmRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/og-preview", ogPreviewRoutes);
+app.use("/api/newsletter", newsletterRoutes);
+app.use("/api/email-admin", emailAdminRoutes);
 app.use("/uploads", express.static("uploads"));
+
+// صفحات البريد الجاهزة: نموذج الاشتراك + لوحة تحكم الإيميلات
+app.use("/email", express.static(require("path").join(__dirname, "public/email")));
 
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  // تشغيل محرّك أتمتة تسلسل الترحيب
+  startAutomation();
 });

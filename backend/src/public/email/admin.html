@@ -1,0 +1,199 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>لوحة تحكم البريد — ArabDiving</title>
+  <style>
+    * { box-sizing:border-box; }
+    body { margin:0; font-family:Tahoma,Arial,sans-serif; background:#eef3f7; color:#1a2b3c; }
+    header { background:#0b6ea8; color:#fff; padding:16px 22px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }
+    header h1 { font-size:18px; margin:0; }
+    .wrap { max-width:960px; margin:0 auto; padding:20px; }
+    .tabs { display:flex; gap:6px; flex-wrap:wrap; margin-bottom:16px; }
+    .tabs button { background:#fff; border:1.5px solid #d6e0e8; padding:9px 16px; border-radius:20px; cursor:pointer; font-family:inherit; font-size:14px; }
+    .tabs button.active { background:#0b6ea8; color:#fff; border-color:#0b6ea8; }
+    .panel { background:#fff; border-radius:14px; padding:22px; box-shadow:0 4px 20px rgba(0,0,0,.05); display:none; }
+    .panel.active { display:block; }
+    .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:12px; }
+    .stat { background:#f4f8fb; border-radius:12px; padding:16px; text-align:center; }
+    .stat b { display:block; font-size:26px; color:#0b6ea8; }
+    .stat span { font-size:12.5px; color:#5a6b7a; }
+    label { display:block; font-size:13px; font-weight:bold; margin:12px 0 5px; }
+    input, select, textarea { width:100%; padding:10px; border:1.5px solid #d6e0e8; border-radius:9px; font-family:inherit; font-size:14px; }
+    textarea { min-height:150px; resize:vertical; }
+    button.act { background:#0b6ea8; color:#fff; border:0; padding:11px 22px; border-radius:9px; font-size:15px; font-weight:bold; cursor:pointer; margin-top:12px; }
+    button.act:hover { background:#095a8a; }
+    table { width:100%; border-collapse:collapse; margin-top:12px; font-size:13px; }
+    th, td { padding:9px; border-bottom:1px solid #eef; text-align:right; }
+    th { color:#5a6b7a; font-size:12px; }
+    .badge { padding:2px 8px; border-radius:20px; font-size:11px; }
+    .b-confirmed { background:#e6f7ee; color:#0a7a43; }
+    .b-pending { background:#fff4e0; color:#b8860b; }
+    .b-unsub { background:#fdeaea; color:#c0392b; }
+    .msg { margin-top:12px; padding:10px; border-radius:9px; font-size:13.5px; display:none; }
+    .msg.ok { background:#e6f7ee; color:#0a7a43; } .msg.err { background:#fdeaea; color:#c0392b; }
+    .hint { font-size:12px; color:#7a8a99; line-height:1.7; }
+    .dry { background:#fff4e0; color:#b8860b; padding:8px 14px; border-radius:8px; font-size:12.5px; }
+    .row { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .step { border:1.5px solid #e3ebf1; border-radius:10px; padding:14px; margin-top:12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🤿 لوحة تحكم البريد</h1>
+    <div>
+      <input id="token" placeholder="ألصق توكن الأدمن (JWT)" style="width:260px;padding:8px;border-radius:8px;border:0;font-size:12px;" />
+      <button class="act" style="margin:0;padding:8px 14px;" onclick="saveToken()">حفظ</button>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div id="dryBadge" class="dry" style="display:none;margin-bottom:14px;">
+      ⚠️ وضع المحاكاة (DRY_RUN): لم تُضبط بيانات SMTP بعد — الرسائل تُسجَّل ولا تُرسَل فعلياً. أضف بيانات SMTP في ملف .env لتفعيل الإرسال.
+    </div>
+
+    <div class="tabs">
+      <button class="active" onclick="tab('stats',this)">الإحصاءات</button>
+      <button onclick="tab('subs',this)">المشتركون</button>
+      <button onclick="tab('news',this)">نشرة جماعية</button>
+      <button onclick="tab('seq',this)">تسلسل الترحيب</button>
+      <button onclick="tab('custom',this)">إيميل مخصّص</button>
+    </div>
+
+    <!-- الإحصاءات -->
+    <div class="panel active" id="p-stats">
+      <div class="cards" id="statCards"><span class="hint">اضغط "تحديث" بعد حفظ التوكن.</span></div>
+      <button class="act" onclick="loadStats()">تحديث</button>
+    </div>
+
+    <!-- المشتركون -->
+    <div class="panel" id="p-subs">
+      <div class="row">
+        <select id="fStatus"><option value="">كل الحالات</option><option value="confirmed">مؤكَّد</option><option value="pending">معلّق</option><option value="unsubscribed">ملغى</option></select>
+        <select id="fRole"><option value="">كل الأدوار</option><option value="instructor">مدرّب</option><option value="trainee">متدرّب</option><option value="general">عام</option></select>
+      </div>
+      <button class="act" onclick="loadSubs()">عرض</button>
+      <div id="subsTable"></div>
+    </div>
+
+    <!-- نشرة جماعية -->
+    <div class="panel" id="p-news">
+      <label>اسم داخلي للحملة</label>
+      <input id="cTitle" placeholder="نشرة يوليو" />
+      <label>عنوان الإيميل</label>
+      <input id="cSubject" placeholder="🌊 أفضل مواقع الغوص هذا الشهر" />
+      <div class="row">
+        <div><label>الجمهور (الدور)</label>
+          <select id="cRole"><option value="all">الجميع</option><option value="trainee">المتدرّبون</option><option value="instructor">المدرّبون</option><option value="general">عام</option></select>
+        </div>
+        <div><label>اللغة</label>
+          <select id="cLocale"><option value="all">الكل</option><option value="ar">عربي</option><option value="en">إنجليزي</option></select>
+        </div>
+      </div>
+      <label>المحتوى (HTML — يدعم {{name}})</label>
+      <textarea id="cHtml" placeholder="<h2>مرحباً {{name}}</h2><p>...</p>"></textarea>
+      <p class="hint">يُرسَل للمشتركين <b>المؤكَّدين فقط</b>. يُضاف تلقائياً تذييل الهوية ورابط إلغاء الاشتراك.</p>
+      <button class="act" onclick="createAndSend()">إنشاء وإرسال الآن</button>
+      <div class="msg" id="newsMsg"></div>
+    </div>
+
+    <!-- تسلسل الترحيب -->
+    <div class="panel" id="p-seq">
+      <p class="hint">خطوات تُرسَل تلقائياً بعد تأكيد الاشتراك، حسب التأخير بالساعات. يعالجها المحرّك كل دقيقة.</p>
+      <label><input type="checkbox" id="seqEnabled" style="width:auto;"> التسلسل مُفعّل</label>
+      <div id="stepsBox"></div>
+      <button class="act" style="background:#5a6b7a;" onclick="addStep()">+ إضافة خطوة</button>
+      <button class="act" onclick="saveSeq()">حفظ التسلسل</button>
+      <div class="msg" id="seqMsg"></div>
+    </div>
+
+    <!-- إيميل مخصّص -->
+    <div class="panel" id="p-custom">
+      <label>بريد المشترك</label>
+      <input id="xEmail" placeholder="user@example.com" />
+      <label>العنوان</label>
+      <input id="xSubject" placeholder="رسالة خاصة لك" />
+      <label>المحتوى (HTML — يدعم {{name}})</label>
+      <textarea id="xHtml" placeholder="<p>مرحباً {{name}}...</p>"></textarea>
+      <button class="act" onclick="sendCustom()">إرسال</button>
+      <div class="msg" id="customMsg"></div>
+    </div>
+  </div>
+
+  <script>
+    let TOKEN = localStorage.getItem('adminToken') || '';
+    document.getElementById('token').value = TOKEN;
+    function saveToken(){ TOKEN = document.getElementById('token').value.trim(); localStorage.setItem('adminToken', TOKEN); loadStats(); }
+    function H(){ return { 'Content-Type':'application/json', 'Authorization':'Bearer '+TOKEN }; }
+    function tab(id, el){ document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active')); document.getElementById('p-'+id).classList.add('active'); document.querySelectorAll('.tabs button').forEach(b=>b.classList.remove('active')); el.classList.add('active'); if(id==='seq') loadSeq(); }
+    function show(el,msg,ok){ el.textContent=msg; el.className='msg '+(ok?'ok':'err'); el.style.display='block'; }
+
+    async function loadStats(){
+      try{
+        const r = await fetch('/api/email-admin/stats',{headers:H()}); const j = await r.json();
+        if(!j.success){ document.getElementById('statCards').innerHTML='<span class="hint" style="color:#c0392b">'+(j.message||'خطأ')+'</span>'; return; }
+        document.getElementById('dryBadge').style.display = j.dryRun ? 'block':'none';
+        const d=j.data;
+        document.getElementById('statCards').innerHTML =
+          card(d.total,'إجمالي')+card(d.confirmed,'مؤكَّد')+card(d.pending,'معلّق')+card(d.unsubscribed,'ملغى')+card(d.instructors,'مدرّبون')+card(d.trainees,'متدرّبون');
+      }catch(e){ document.getElementById('statCards').innerHTML='<span class="hint">تعذّر الاتصال</span>'; }
+    }
+    function card(n,l){ return '<div class="stat"><b>'+n+'</b><span>'+l+'</span></div>'; }
+
+    async function loadSubs(){
+      const s=document.getElementById('fStatus').value, ro=document.getElementById('fRole').value;
+      const r=await fetch('/api/email-admin/subscribers?status='+s+'&role='+ro,{headers:H()}); const j=await r.json();
+      if(!j.success){ document.getElementById('subsTable').innerHTML='<p class="hint">'+j.message+'</p>'; return; }
+      let h='<table><tr><th>البريد</th><th>الاسم</th><th>الدور</th><th>الحالة</th></tr>';
+      j.data.forEach(s=>{ h+='<tr><td>'+s.email+'</td><td>'+(s.name||'-')+'</td><td>'+s.role+'</td><td><span class="badge '+badge(s.status)+'">'+s.status+'</span></td></tr>'; });
+      h+='</table><p class="hint">المجموع: '+j.total+'</p>';
+      document.getElementById('subsTable').innerHTML=h;
+    }
+    function badge(s){ return s==='confirmed'?'b-confirmed':s==='pending'?'b-pending':'b-unsub'; }
+
+    async function createAndSend(){
+      const body={ title:cTitle.value, subject:cSubject.value, html:cHtml.value, audience:{ role:cRole.value, locale:cLocale.value } };
+      const c=await fetch('/api/email-admin/campaigns',{method:'POST',headers:H(),body:JSON.stringify(body)}); const cj=await c.json();
+      if(!cj.success){ show(newsMsg,cj.message,false); return; }
+      const s=await fetch('/api/email-admin/campaigns/'+cj.data._id+'/send',{method:'POST',headers:H()}); const sj=await s.json();
+      show(newsMsg, sj.success?(sj.message+(sj.dryRun?' (وضع محاكاة)':'')):sj.message, sj.success);
+    }
+
+    async function sendCustom(){
+      const body={ email:xEmail.value.trim(), subject:xSubject.value, html:xHtml.value };
+      const r=await fetch('/api/email-admin/send-custom',{method:'POST',headers:H(),body:JSON.stringify(body)}); const j=await r.json();
+      show(customMsg, j.success?('تم الإرسال'+(j.dryRun?' (وضع محاكاة)':'')):j.message, j.success);
+    }
+
+    let steps=[];
+    async function loadSeq(){
+      const r=await fetch('/api/email-admin/sequence',{headers:H()}); const j=await r.json();
+      if(!j.success) return; document.getElementById('seqEnabled').checked=j.data.enabled; steps=j.data.steps||[]; renderSteps();
+    }
+    function renderSteps(){
+      document.getElementById('stepsBox').innerHTML = steps.map((s,i)=>`
+        <div class="step">
+          <div class="row">
+            <div><label>الترتيب</label><input type="number" value="${s.order}" onchange="steps[${i}].order=+this.value"></div>
+            <div><label>التأخير (ساعات)</label><input type="number" value="${s.delayHours}" onchange="steps[${i}].delayHours=+this.value"></div>
+          </div>
+          <label>العنوان</label><input value="${(s.subject||'').replace(/"/g,'&quot;')}" onchange="steps[${i}].subject=this.value">
+          <label>المحتوى (HTML)</label><textarea onchange="steps[${i}].html=this.value">${s.html||''}</textarea>
+          <label>الدور</label>
+          <select onchange="steps[${i}].role=this.value">
+            ${['all','trainee','instructor','general'].map(r=>`<option value="${r}" ${s.role===r?'selected':''}>${r}</option>`).join('')}
+          </select>
+          <button class="act" style="background:#c0392b;padding:7px 14px;" onclick="steps.splice(${i},1);renderSteps()">حذف</button>
+        </div>`).join('');
+    }
+    function addStep(){ steps.push({order:steps.length+1,delayHours:0,subject:'',html:'',role:'all',active:true}); renderSteps(); }
+    async function saveSeq(){
+      const r=await fetch('/api/email-admin/sequence',{method:'PUT',headers:H(),body:JSON.stringify({enabled:document.getElementById('seqEnabled').checked,steps})}); const j=await r.json();
+      show(seqMsg, j.success?'تم الحفظ':j.message, j.success);
+    }
+
+    if(TOKEN) loadStats();
+  </script>
+</body>
+</html>
