@@ -6,7 +6,8 @@
 const APP_URL = process.env.APP_URL || "http://localhost:5000";
 const SENDER_NAME = process.env.MAIL_SENDER_NAME || "ArabDiving";
 const SENDER_ADDRESS =
-  process.env.MAIL_SENDER_ADDRESS || "ArabDiving — البحر الأحمر، مصر / السعودية";
+  process.env.MAIL_SENDER_ADDRESS ||
+  "ArabDiving — info@arabdiving.com — البحر الأحمر، مصر / السعودية";
 
 // دمج متغيّرات بسيطة مثل {{name}} داخل النص
 function render(str, vars = {}) {

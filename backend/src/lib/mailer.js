@@ -19,7 +19,9 @@ const {
   SMTP_PORT = 587,
   SMTP_USER,
   SMTP_PASS,
-  MAIL_FROM = "ArabDiving <no-reply@arabdiving.com>",
+  MAIL_FROM = "ArabDiving <info@arabdiving.com>",
+  // عنوان الردود — تذهب إليه رسائل من يضغط Reply (صندوق حقيقي)
+  MAIL_REPLY_TO = "info@arabdiving.com",
 } = process.env;
 
 const DRY_RUN = !(SMTP_HOST && SMTP_USER && SMTP_PASS);
@@ -38,13 +40,13 @@ if (!DRY_RUN) {
  * إرسال رسالة واحدة.
  * @returns {Promise<{ok:boolean, dryRun?:boolean, id?:string, error?:string}>}
  */
-async function sendMail({ to, subject, html, from = MAIL_FROM, headers = {} }) {
+async function sendMail({ to, subject, html, from = MAIL_FROM, replyTo = MAIL_REPLY_TO, headers = {} }) {
   if (DRY_RUN) {
-    console.log(`✉️  [DRY_RUN] → ${to} | ${subject}`);
+    console.log(`✉️  [DRY_RUN] → ${to} | ${subject} | reply-to: ${replyTo}`);
     return { ok: true, dryRun: true };
   }
   try {
-    const info = await transporter.sendMail({ from, to, subject, html, headers });
+    const info = await transporter.sendMail({ from, to, replyTo, subject, html, headers });
     return { ok: true, id: info.messageId };
   } catch (error) {
     console.error(`✉️  فشل الإرسال إلى ${to}:`, error.message);
