@@ -9,6 +9,7 @@
     "seed": "node src/seed.js",
     "seed-courses": "node src/seedCourses.js",
     "seed-welcome": "node src/seedWelcomeSequence.js",
+    "mail-test": "node src/testMail.js",
     "make-admin": "node src/makeAdmin.js"
   },
   "keywords": [],
