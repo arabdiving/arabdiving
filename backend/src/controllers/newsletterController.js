@@ -178,4 +178,64 @@ const health = async (req, res) => {
   });
 };
 
-module.exports = { subscribe, confirm, unsubscribe, health };
+// ── GET /api/newsletter/selftest?to=...&key=... ─────────────
+// تشخيص شامل بفتح رابط في المتصفح فقط — بلا نموذج ولا جافاسكريبت ولا CORS:
+// 1) يكتب مشتركًا تجريبيًا في القاعدة (يثبت أن الكتابة تعمل)
+// 2) يرسل رسالة فعلية عبر SMTP ويعيد رد الخادم نصًا (يكشف سبب رفض Brevo إن وُجد)
+// محمي بمفتاح: MAIL_TEST_KEY في متغيرات البيئة (أو JWT_SECRET كاحتياطي).
+const selftest = async (req, res) => {
+  const expected = process.env.MAIL_TEST_KEY || process.env.JWT_SECRET;
+  if (!expected || req.query.key !== expected) {
+    return res.status(403).json({ success: false, message: "مفتاح غير صحيح — أضف ?key=<MAIL_TEST_KEY>" });
+  }
+  const to = String(req.query.to || "").trim();
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
+    return res.status(400).json({ success: false, message: "أضف ?to=بريدك" });
+  }
+
+  const out = { to, steps: {} };
+
+  // 1) اختبار الكتابة في قاعدة البيانات
+  try {
+    const probe = await Subscriber.findOneAndUpdate(
+      { email: `selftest+${Date.now()}@arabdiving.com` },
+      { $set: { name: "اختبار ذاتي", status: "unsubscribed", source: "selftest" } },
+      { upsert: true, new: true, setDefaultsOnInsert: true }
+    );
+    out.steps.database = { ok: true, wroteId: String(probe._id) };
+    await Subscriber.deleteOne({ _id: probe._id }); // تنظيف فوري
+  } catch (e) {
+    out.steps.database = { ok: false, error: e.message };
+  }
+
+  // 2) اختبار اتصال SMTP (verify)
+  try {
+    const { verify } = require("../lib/mailer");
+    out.steps.smtpConnection = await verify();
+  } catch (e) {
+    out.steps.smtpConnection = { ok: false, error: e.message };
+  }
+
+  // 3) إرسال فعلي — هنا يظهر سبب الرفض الحقيقي إن رفض Brevo المرسِل
+  const r = await sendMail({
+    to,
+    subject: "اختبار إرسال ArabDiving ✅",
+    html: `<div dir="rtl" style="font-family:Tahoma,Arial;padding:20px">
+      <h2 style="color:#0b6ea8">وصلت الرسالة — النظام يعمل 🎉</h2>
+      <p>هذه رسالة اختبار من خادم ArabDiving عبر Brevo.</p>
+      <p style="color:#7a8a99;font-size:13px">الوقت: ${new Date().toISOString()}</p></div>`,
+  });
+  out.steps.send = r;
+
+  out.verdict = !out.steps.database?.ok
+    ? "❌ مشكلة في قاعدة البيانات"
+    : r.dryRun
+    ? "⚠️ النظام في وضع المحاكاة — متغيرات SMTP ناقصة على الخادم"
+    : r.ok
+    ? "✅ أُرسلت فعليًا — افحص بريدك (وSpam) ثم سجلات Brevo"
+    : `❌ رفض SMTP: ${r.error}`;
+
+  return res.json({ success: true, ...out });
+};
+
+module.exports = { subscribe, confirm, unsubscribe, health, selftest };
