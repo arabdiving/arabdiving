@@ -60,6 +60,22 @@ git commit -m "ArabDiving"
    NODE_ENV       = production
    ```
    > حساب Cloudinary مجاني من https://cloudinary.com (لرفع الصور من لوحة الأدمن).
+
+   **متغيّرات نظام البريد (إلزامية وإلا لن تُرسَل أي رسائل):**
+   ```
+   APP_URL        = https://arabdiving-api.onrender.com   ← رابط الـ backend المنشور (ليس localhost)
+   SMTP_HOST      = smtp-relay.brevo.com
+   SMTP_PORT      = 587
+   SMTP_USER      = <Brevo SMTP login>
+   SMTP_PASS      = <Brevo SMTP key>
+   MAIL_FROM      = ArabDiving <info@arabdiving.com>
+   MAIL_REPLY_TO  = info@arabdiving.com
+   MAIL_SENDER_NAME    = ArabDiving
+   MAIL_SENDER_ADDRESS = ArabDiving — info@arabdiving.com
+   ```
+   > ⚠️ ملف `backend/.env` **لا يُرفع** إلى GitHub (مُتجاهَل في `.gitignore`) — لذلك يجب إضافة هذه القيم يدويًا في تبويب Environment على Render. بدونها يعمل النظام في وضع المحاكاة ولن يصل أي بريد.
+   >
+   > ⚠️ `APP_URL` مهم جدًا: منه تُبنى روابط تأكيد الاشتراك وإلغائه داخل الرسائل. لو تُرك `localhost` ستصل الرسائل بروابط معطّلة.
 4. انشر، وستحصل على رابط مثل: `https://arabdiving-api.onrender.com`. افتحه؛ يجب أن ترى `{"message":"ArabDiving API Running"}`.
 
 > ملاحظة: الخطة المجانية في Render «تنام» بعد فترة خمول وتستيقظ خلال ثوانٍ عند أول طلب — طبيعي للبداية.

@@ -1,5 +1,5 @@
 const Subscriber = require("../models/Subscriber");
-const { sendMail } = require("../lib/mailer");
+const { sendMail, isDryRun } = require("../lib/mailer");
 const { build, APP_URL } = require("../lib/emailTemplates");
 
 // صفحة نتيجة بسيطة (تأكيد/إلغاء) تُعرض في المتصفّح
@@ -66,7 +66,14 @@ const subscribe = async (req, res) => {
       });
     }
 
-    // إرسال بريد التأكيد (Double Opt-in)
+    // نرد على المتصفح فوراً — الاشتراك محفوظ بالفعل.
+    // إرسال بريد التأكيد يتم في الخلفية حتى لا يعلّق الطلب لو كان SMTP بطيئاً أو معطّلاً.
+    res.json({
+      success: true,
+      message: "تم التسجيل! أرسلنا لك بريد تأكيد — افتحه واضغط زر التأكيد لإكمال الاشتراك.",
+    });
+
+    // ── إرسال بريد التأكيد (Double Opt-in) في الخلفية ──
     const confirmUrl = `${APP_URL}/api/newsletter/confirm?token=${sub.confirmToken}`;
     const html = build({
       subscriber: sub,
@@ -79,12 +86,15 @@ const subscribe = async (req, res) => {
         </p>
         <p style="color:#7a8a99;font-size:13px;">إن لم تطلب هذا الاشتراك، تجاهل هذه الرسالة ولن يصلك أي بريد آخر.</p>`,
     });
-    await sendMail({ to: sub.email, subject: "أكّد اشتراكك في ArabDiving 🤿", html });
 
-    return res.json({
-      success: true,
-      message: "تم التسجيل! أرسلنا لك بريد تأكيد — افتحه واضغط زر التأكيد لإكمال الاشتراك.",
-    });
+    sendMail({ to: sub.email, subject: "أكّد اشتراكك في ArabDiving 🤿", html })
+      .then((r) => {
+        if (r.ok) console.log(`✅ بريد تأكيد أُرسل إلى ${sub.email}${r.dryRun ? " (وضع محاكاة)" : ""}`);
+        else console.error(`❌ فشل إرسال بريد التأكيد إلى ${sub.email}: ${r.error}`);
+      })
+      .catch((e) => console.error(`❌ استثناء أثناء إرسال بريد التأكيد إلى ${sub.email}:`, e.message));
+
+    return;
   } catch (error) {
     return res.status(500).json({ success: false, message: error.message });
   }
@@ -130,4 +140,36 @@ const unsubscribe = async (req, res) => {
   }
 };
 
-module.exports = { subscribe, confirm, unsubscribe };
+// ── GET /api/newsletter/health ──────────────────────────────
+// فحص تشخيصي: يكشف هل السيرفر يرى إعدادات البريد وقاعدة البيانات
+// (يعرض حالة فقط — لا يكشف أي كلمات مرور أو مفاتيح).
+const health = async (req, res) => {
+  const mongoose = require("mongoose");
+  const dbStates = ["مفصول", "متصل", "جارٍ الاتصال", "جارٍ الفصل"];
+  let subscriberCount = null;
+  let dbError = null;
+  try {
+    subscriberCount = await Subscriber.estimatedDocumentCount();
+  } catch (e) {
+    dbError = e.message;
+  }
+  res.json({
+    success: true,
+    database: {
+      state: dbStates[mongoose.connection.readyState] || "غير معروف",
+      subscribers: subscriberCount,
+      error: dbError,
+    },
+    mail: {
+      dryRun: isDryRun(), // true = لن تُرسَل رسائل فعلية
+      smtpHost: process.env.SMTP_HOST || null,
+      smtpPort: process.env.SMTP_PORT || null,
+      smtpUserSet: !!process.env.SMTP_USER,
+      smtpPassSet: !!process.env.SMTP_PASS,
+      mailFrom: process.env.MAIL_FROM || null,
+      appUrl: APP_URL,
+    },
+  });
+};
+
+module.exports = { subscribe, confirm, unsubscribe, health };

@@ -80,13 +80,24 @@
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(data)
         });
-        const json = await res.json();
-        msg.textContent = json.message;
-        msg.className = 'msg ' + (json.success ? 'ok' : 'err');
+
+        // نقرأ النص أولاً: لو رد الخادم ليس JSON (صفحة خطأ مثلاً) نعرضه كما هو
+        const raw = await res.text();
+        let json = null;
+        try { json = JSON.parse(raw); } catch (_) {}
+
+        if (json) {
+          msg.textContent = json.message;
+          msg.className = 'msg ' + (json.success ? 'ok' : 'err');
+          if (json.success) form.reset();
+        } else {
+          msg.textContent = 'رد غير متوقع من الخادم (HTTP ' + res.status + '): ' + raw.slice(0, 200);
+          msg.className = 'msg err';
+        }
         msg.style.display = 'block';
-        if (json.success) form.reset();
       } catch (err) {
-        msg.textContent = 'حدث خطأ، حاول مرة أخرى.';
+        // فشل الاتصال نفسه (شبكة / مهلة / CORS)
+        msg.textContent = 'تعذّر الاتصال بالخادم: ' + err.message;
         msg.className = 'msg err';
         msg.style.display = 'block';
       } finally {
