@@ -1,5 +1,5 @@
 const Subscriber = require("../models/Subscriber");
-const { sendMail, isDryRun, transportMode } = require("../lib/mailer");
+const { sendMail, isDryRun, transportMode, apiKeyDiagnostics } = require("../lib/mailer");
 const { build, APP_URL } = require("../lib/emailTemplates");
 
 // صفحة نتيجة بسيطة (تأكيد/إلغاء) تُعرض في المتصفّح
@@ -244,8 +244,19 @@ const selftest = async (req, res) => {
   out.steps.send = r;
 
   out.mode = transportMode();
+  out.apiKey = apiKeyDiagnostics();
 
   const timedOut = /timeout|ETIMEDOUT|ECONNREFUSED/i.test(r.error || "");
+  const badKey = /key not found|unauthorized|401/i.test(r.error || "");
+  if (badKey) {
+    return res.json({
+      success: true,
+      ...out,
+      verdict: out.apiKey.looksLikeApiKey
+        ? "❌ بريفو رفض المفتاح — تأكد أنه لم يُحذف/يُعاد توليده، وأن حسابك مفعّل"
+        : `❌ ${out.apiKey.note}`,
+    });
+  }
   out.verdict = !out.steps.database?.ok
     ? "❌ مشكلة في قاعدة البيانات"
     : r.dryRun

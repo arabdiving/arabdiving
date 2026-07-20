@@ -121,6 +121,32 @@ function transportMode() {
   return USE_API ? "brevo-api (HTTPS)" : USE_SMTP ? `smtp (${SMTP_HOST}:${SMTP_PORT})` : "dry-run";
 }
 
+/**
+ * تشخيص شكل المفتاح دون كشف قيمته.
+ * بريفو له نوعان مختلفان تمامًا ولا يعمل أحدهما مكان الآخر:
+ *   xkeysib-…   = مفتاح API v3   ← المطلوب هنا (تبويب API Keys)
+ *   xsmtpsib-…  = مفتاح SMTP     ← يصلح لـ SMTP_PASS فقط، ويعطي "Key not found" على الواجهة
+ */
+function apiKeyDiagnostics() {
+  const k = String(BREVO_API_KEY || "");
+  if (!k) return { set: false };
+  const prefix = k.slice(0, 9);
+  const isApi = k.startsWith("xkeysib-");
+  const isSmtp = k.startsWith("xsmtpsib-");
+  return {
+    set: true,
+    length: k.length,
+    prefix, // أول 9 أحرف فقط — لا يكشف السر
+    looksLikeApiKey: isApi,
+    hasWhitespace: /\s/.test(k),
+    note: isApi
+      ? "الشكل صحيح (مفتاح API v3)"
+      : isSmtp
+      ? "⚠️ هذا مفتاح SMTP وليس مفتاح API — بريفو يرفضه بـ«Key not found». أنشئ مفتاحًا من تبويب API Keys (يبدأ بـ xkeysib-)."
+      : "⚠️ الشكل غير معتاد — مفتاح API يبدأ بـ xkeysib- . تأكد من نسخه كاملًا بلا مسافات.",
+  };
+}
+
 // التحقق من جاهزية الاتصال (يُستدعى في التشخيص)
 async function verify() {
   if (DRY_RUN) return { ok: true, dryRun: true };
@@ -146,4 +172,4 @@ async function verify() {
   }
 }
 
-module.exports = { sendMail, isDryRun, verify, transportMode, MAIL_FROM };
+module.exports = { sendMail, isDryRun, verify, transportMode, apiKeyDiagnostics, MAIL_FROM };
