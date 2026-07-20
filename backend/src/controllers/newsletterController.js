@@ -184,9 +184,23 @@ const health = async (req, res) => {
 // 2) يرسل رسالة فعلية عبر SMTP ويعيد رد الخادم نصًا (يكشف سبب رفض Brevo إن وُجد)
 // محمي بمفتاح: MAIL_TEST_KEY في متغيرات البيئة (أو JWT_SECRET كاحتياطي).
 const selftest = async (req, res) => {
-  const expected = process.env.MAIL_TEST_KEY || process.env.JWT_SECRET;
-  if (!expected || req.query.key !== expected) {
-    return res.status(403).json({ success: false, message: "مفتاح غير صحيح — أضف ?key=<MAIL_TEST_KEY>" });
+  // المفتاح: MAIL_TEST_KEY المخصص، أو JWT_SECRET كاحتياطي. نتجاهل المسافات الزائدة.
+  const expected = String(process.env.MAIL_TEST_KEY || process.env.JWT_SECRET || "").trim();
+  const given = String(req.query.key || "").trim();
+  if (!expected || given !== expected) {
+    return res.status(403).json({
+      success: false,
+      message: "مفتاح غير صحيح",
+      hint: {
+        mailTestKeySet: !!process.env.MAIL_TEST_KEY,
+        jwtSecretSet: !!process.env.JWT_SECRET,
+        expectedLength: expected.length,   // طول المفتاح المتوقع (لا قيمته)
+        youSentLength: given.length,       // طول ما أرسلته — قارن الرقمين
+        note: !process.env.MAIL_TEST_KEY
+          ? "لم تُضف MAIL_TEST_KEY في ريندر بعد — النظام يقارن بـ JWT_SECRET حاليًا. أضف MAIL_TEST_KEY ثم أعد النشر."
+          : "MAIL_TEST_KEY موجود — تأكد أنك تنسخه حرفيًا (بلا مسافات)، وأن الخدمة أُعيد نشرها بعد إضافته.",
+      },
+    });
   }
   const to = String(req.query.to || "").trim();
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(to)) {
