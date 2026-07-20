@@ -1,5 +1,5 @@
 const Subscriber = require("../models/Subscriber");
-const { sendMail, isDryRun } = require("../lib/mailer");
+const { sendMail, isDryRun, transportMode } = require("../lib/mailer");
 const { build, APP_URL } = require("../lib/emailTemplates");
 
 // صفحة نتيجة بسيطة (تأكيد/إلغاء) تُعرض في المتصفّح
@@ -162,6 +162,8 @@ const health = async (req, res) => {
     },
     mail: {
       dryRun: isDryRun(), // true = لن تُرسَل رسائل فعلية
+      mode: transportMode(), // brevo-api (HTTPS) | smtp | dry-run
+      brevoApiKeySet: !!process.env.BREVO_API_KEY,
       smtpHost: process.env.SMTP_HOST || null,
       smtpPort: process.env.SMTP_PORT || null,
       smtpUserSet: !!process.env.SMTP_USER,
@@ -241,13 +243,18 @@ const selftest = async (req, res) => {
   });
   out.steps.send = r;
 
+  out.mode = transportMode();
+
+  const timedOut = /timeout|ETIMEDOUT|ECONNREFUSED/i.test(r.error || "");
   out.verdict = !out.steps.database?.ok
     ? "❌ مشكلة في قاعدة البيانات"
     : r.dryRun
-    ? "⚠️ النظام في وضع المحاكاة — متغيرات SMTP ناقصة على الخادم"
+    ? "⚠️ وضع المحاكاة — لا BREVO_API_KEY ولا بيانات SMTP على الخادم"
     : r.ok
-    ? "✅ أُرسلت فعليًا — افحص بريدك (وSpam) ثم سجلات Brevo"
-    : `❌ رفض SMTP: ${r.error}`;
+    ? `✅ أُرسلت فعليًا عبر ${out.mode} — افحص بريدك (وSpam) ثم سجلات Brevo`
+    : timedOut && out.mode.startsWith("smtp")
+    ? "❌ منافذ SMTP محجوبة على هذه الاستضافة (Render المجاني يحجب 25/465/587). الحل: أضف BREVO_API_KEY لتتحول للإرسال عبر HTTPS."
+    : `❌ فشل الإرسال (${out.mode}): ${r.error}`;
 
   return res.json({ success: true, ...out });
 };
