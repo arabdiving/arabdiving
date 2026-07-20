@@ -169,6 +169,11 @@ const health = async (req, res) => {
       mailFrom: process.env.MAIL_FROM || null,
       appUrl: APP_URL,
     },
+    cors: {
+      // يجب أن يتضمّن المسموح به أصل هذا الخادم نفسه لتعمل طلبات POST
+      corsOrigin: process.env.CORS_ORIGIN || null,
+      selfOriginAllowed: !!process.env.APP_URL,
+    },
   });
 };
 

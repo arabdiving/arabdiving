@@ -53,6 +53,15 @@ const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:3000")
   .map((o) => o.trim())
   .filter(Boolean);
 
+// السماح دائماً بأصل الخادم نفسه (APP_URL).
+// المتصفح يرسل ترويسة Origin مع طلبات POST حتى من نفس الموقع،
+// لذلك الصفحات التي يخدمها هذا الخادم (مثل /email/subscribe.html)
+// تحتاج أن يكون أصلها ضمن القائمة المسموح بها.
+if (process.env.APP_URL) {
+  const self = process.env.APP_URL.trim().replace(/\/$/, "");
+  if (self && !allowedOrigins.includes(self)) allowedOrigins.push(self);
+}
+
 app.use(
   cors({
     origin: (origin, callback) => {
