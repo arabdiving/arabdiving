@@ -48,27 +48,21 @@ app.disable("x-powered-by");
 app.use(securityHeaders);
 
 // CORS: only allow configured origins (comma-separated in CORS_ORIGIN).
-const allowedOrigins = (process.env.CORS_ORIGIN || "http://localhost:3000")
-  .split(",")
-  .map((o) => o.trim())
-  .filter(Boolean);
-
-// السماح دائماً بأصل الخادم نفسه (APP_URL).
-// المتصفح يرسل ترويسة Origin مع طلبات POST حتى من نفس الموقع،
-// لذلك الصفحات التي يخدمها هذا الخادم (مثل /email/subscribe.html)
-// تحتاج أن يكون أصلها ضمن القائمة المسموح بها.
-if (process.env.APP_URL) {
-  const self = process.env.APP_URL.trim().replace(/\/$/, "");
-  if (self && !allowedOrigins.includes(self)) allowedOrigins.push(self);
-}
+const { buildAllowedOrigins } = require("./lib/corsOrigins");
+const allowedOrigins = buildAllowedOrigins();
+console.log("🌐 الأصول المسموح بها (CORS):", allowedOrigins.join(" | "));
 
 app.use(
   cors({
     origin: (origin, callback) => {
       // Allow non-browser clients (curl, mobile apps) with no Origin header.
       if (!origin) return callback(null, true);
-      if (allowedOrigins.includes(origin)) return callback(null, true);
-      return callback(new Error("Not allowed by CORS"));
+      const clean = origin.replace(/\/$/, "");
+      if (allowedOrigins.includes(clean)) return callback(null, true);
+      // نسجّل الأصل المرفوض بوضوح، ونرفض بهدوء (بدون رمي استثناء)
+      // حتى لا يتحوّل الرفض إلى خطأ 500 غامض.
+      console.warn(`🚫 CORS رفض الأصل: "${origin}" — المسموح: ${allowedOrigins.join(" | ")}`);
+      return callback(null, false);
     },
     credentials: true,
   })

@@ -170,9 +170,10 @@ const health = async (req, res) => {
       appUrl: APP_URL,
     },
     cors: {
-      // يجب أن يتضمّن المسموح به أصل هذا الخادم نفسه لتعمل طلبات POST
-      corsOrigin: process.env.CORS_ORIGIN || null,
-      selfOriginAllowed: !!process.env.APP_URL,
+      // القائمة الفعلية المحسوبة — يجب أن تتضمّن أصل هذا الخادم لتعمل طلبات POST
+      allowedOrigins: require("../lib/corsOrigins").buildAllowedOrigins(),
+      // الأصل الذي أرسله متصفحك في هذا الطلب (يساعد على كشف عدم التطابق)
+      yourOrigin: req.headers.origin || "(لم يُرسَل — طلب مباشر)",
     },
   });
 };
