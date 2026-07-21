@@ -64,13 +64,14 @@ const FOCUS_REGISTRY: Record<string, { label: string; icon: string; desc: string
   focus_bias:        { label: "سيكولوجيا التعصب",     icon: "🧠", desc: "الحقيقة الثانية: لماذا يقسم البعض أن مدرسته الأفضل؟ + أمثلة من التاريخ" },
   focus_gates:       { label: "بوابتا الدليلين",     icon: "🚪", desc: "بطاقتان كبيرتان: دليل المدربين ودليل المراكز" },
   focus_tools:       { label: "شبكة الأدوات",        icon: "🧰", desc: "حاسبة الأوزان، خريطة المواقع، والاستبيانات الثلاثة" },
+  focus_community:   { label: "مجتمع الغواصين",      icon: "💬", desc: "آخر منشورات المجتمع + زر الدخول والمشاركة" },
   focus_map:         { label: "خريطة البحر الأحمر",  icon: "🗺️", desc: "خريطة الموقع التفاعلية" },
   focus_instructors: { label: "بروموشن المدربين",    icon: "🧑‍🏫", desc: "قسم ترويجي لدليل المدربين وبصماتهم" },
   focus_centers:     { label: "شبكة المراكز",        icon: "🤿", desc: "صف المراكز الشريكة المميزة" },
 };
 
 const DEFAULT_FOCUS: Block[] = Object.entries(FOCUS_REGISTRY).map(([key, cfg], i) => ({
-  key, label: cfg.label, visible: i < 5, order: i, // أول 5 ظاهرة: الرسالة، الأيزو، التعصب، البوابتان، الأدوات
+  key, label: cfg.label, visible: i < 6, order: i, // ظاهرة افتراضيًا: الرسالة، الأيزو، التعصب، البوابتان، الأدوات، المجتمع
 }));
 
 export default function HomepageBlocksAdmin() {

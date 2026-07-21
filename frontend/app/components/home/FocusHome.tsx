@@ -2,6 +2,7 @@ import Link from "next/link";
 import RedSeaMap from "@/app/components/RedSeaMap";
 import HomeDiveCenters from "@/app/components/home/HomeDiveCenters";
 import HomePromoSection from "@/app/components/home/HomePromoSection";
+import HomeCommunityFeed from "@/app/components/home/HomeCommunityFeed";
 
 /*
   الرئيسية المختصرة لوضع «موقع يحل مشكلة» — بهوية لونية مستوحاة من انستجرام:
@@ -17,9 +18,10 @@ export const DEFAULT_FOCUS_BLOCKS: FocusBlock[] = [
   { key: "focus_bias",        visible: true,  order: 2 },
   { key: "focus_gates",       visible: true,  order: 3 },
   { key: "focus_tools",       visible: true,  order: 4 },
-  { key: "focus_map",         visible: false, order: 5 },
-  { key: "focus_instructors", visible: false, order: 6 },
-  { key: "focus_centers",     visible: false, order: 7 },
+  { key: "focus_community",   visible: true,  order: 5 },
+  { key: "focus_map",         visible: false, order: 6 },
+  { key: "focus_instructors", visible: false, order: 7 },
+  { key: "focus_centers",     visible: false, order: 8 },
 ];
 
 // 🎨 لوحة انستجرام
@@ -43,6 +45,7 @@ const TOOLS = [
   { href: "/course-standards", icon: "📏", label: "معايير الكورسات", desc: "حقك في الأوبن ووتر والأدفانس حسب الأيزو" },
   { href: "/weight-calculator", icon: "⚖️", label: "حاسبة الأوزان", desc: "وزن الرصاص المناسب لجسمك وبدلتك" },
   { href: "/dive-sites", icon: "🗺️", label: "خريطة مواقع الغوص", desc: "أفضل مواقع البحر الأحمر بالتفصيل" },
+  { href: "/community", icon: "💬", label: "مجتمع الغواصين", desc: "اسأل من جرّب قبلك وشارك تجربتك" },
   { href: "/quiz", icon: "🎨", label: "اكتشف نمطك", desc: "نظام الألوان — اعرف أسلوبك في التعلم" },
   { href: "/training-fit", icon: "🤝", label: "استبيان التوافق", desc: "أي مدرب يناسب شخصيتك؟" },
   { href: "/survey", icon: "🧠", label: "استبيان التعلم", desc: "افهم طريقة تعلمك قبل أول دورة" },
@@ -287,6 +290,22 @@ export default function FocusHome({ blocks, promoImages = {} }: { blocks?: Focus
       case "focus_bias":        return <FocusBias key={key} />;
       case "focus_gates":       return <FocusGates key={key} />;
       case "focus_tools":       return <FocusTools key={key} />;
+      case "focus_community":   return (
+        <section key={key} style={{ maxWidth: "1100px", margin: "0 auto", padding: "10px 18px 30px" }}>
+          <h2 style={{ fontSize: "22px", fontWeight: 900, textAlign: "center", marginBottom: "6px" }}>
+            <span style={{ background: IG.grad, WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent" }}>💬 مجتمع الغواصين العرب</span>
+          </h2>
+          <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px", lineHeight: 1.9, textAlign: "center", maxWidth: "620px", margin: "0 auto 18px" }}>
+            اسأل قبل رحلتك، شارك تجربتك بعدها — وخذ رأي من جرّب قبلك.
+          </p>
+          <HomeCommunityFeed />
+          <div style={{ textAlign: "center", marginTop: "14px" }}>
+            <Link href="/community" style={{ background: IG.gradBtn, color: "white", padding: "12px 28px", borderRadius: "12px", fontWeight: 800, fontSize: "14.5px", display: "inline-block", boxShadow: "0 4px 16px rgba(225,48,108,0.4)" }}>
+              💬 ادخل المجتمع وشارك ←
+            </Link>
+          </div>
+        </section>
+      );
       case "focus_map":         return <RedSeaMap key={key} embedded />;
       case "focus_centers":     return <HomeDiveCenters key={key} />;
       case "focus_instructors": return (

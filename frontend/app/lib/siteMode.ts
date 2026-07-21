@@ -13,6 +13,7 @@ export const FOCUS_ALLOWED: string[] = [
   "/instructors",          // دليل المدربين + الانضمام + البروفايلات
   "/family-booking",       // دليل مراكز الغوص + الحجز
   "/store",                // صفحات المراكز العامة
+  "/community",            // مجتمع الغواصين (المنشورات وصفحاتها المنفردة)
   "/weight-calculator",    // أداة: حاسبة الأوزان
   "/dive-sites",           // أداة: خريطة مواقع الغوص
   "/course-standards",     // معايير الأوبن ووتر والأدفانس الدولية
@@ -34,6 +35,7 @@ export const FOCUS_NAV_MAIN = [
   { href: "/", label: "الرئيسية" },
   { href: "/instructors", label: "دليل المدربين 🧑‍🏫" },
   { href: "/family-booking", label: "مراكز الغوص 🏛️" },
+  { href: "/community", label: "المجتمع 💬" },
 ];
 
 export const FOCUS_NAV_TOOLS = [
