@@ -199,8 +199,35 @@ async function enrollInNewsletter({ email, name = "", ip = "", userAgent = "" })
   }
 }
 
+/* ── 6) حساب أنشأه الأدمن: بيانات الدخول + إلزام تغيير كلمة المرور ── */
+function sendAdminCreatedAccountEmail(user, tempPassword, opts = {}) {
+  if (!user?.email) return;
+  const isInstructor = !!opts.instructor;
+  const html = wrapService(`
+    <h2 style="color:#0b6ea8;">تم إنشاء حسابك في ${SENDER_NAME} 🤿</h2>
+    <p>مرحبًا ${user.name || ""}،</p>
+    <p>أنشأت إدارة المنصة حسابًا لك. هذه بيانات دخولك:</p>
+    <div style="background:#f4f7fa;border:1px solid #dbe4ee;border-radius:10px;padding:16px;margin:16px 0;font-size:14px;line-height:2;">
+      <div>📧 <b>البريد:</b> <span dir="ltr">${user.email}</span></div>
+      <div>🔑 <b>كلمة المرور المؤقتة:</b> <span dir="ltr" style="background:#fff;border:1px solid #dbe4ee;border-radius:6px;padding:2px 10px;font-family:monospace;">${tempPassword}</span></div>
+    </div>
+    <div style="background:#fff7e6;border:1px solid #f0d9a8;border-radius:10px;padding:12px 16px;font-size:13.5px;">
+      ⚠️ <b>مهم:</b> كلمة المرور هذه مؤقتة — سيطلب منك النظام تغييرها عند أول تسجيل دخول. لا تشاركها مع أحد.
+    </div>
+    <p style="text-align:center;margin:24px 0;">
+      <a href="${SITE_URL}/login" style="background:#0b6ea8;color:#fff;text-decoration:none;padding:14px 34px;border-radius:10px;font-weight:bold;">تسجيل الدخول الآن</a>
+    </p>
+    ${isInstructor ? `<p><b>وبما أنك مدرب:</b> أكمل بروفايلك من
+      <a href="${SITE_URL}/instructors/join" style="color:#0b6ea8;">صفحة ملف المدرب</a> —
+      البيانات، ثم استبيان البصمة التدريبية، ثم «من يناسبني». وارفع صور الكارنيه للتوثيق.</p>` : ""}
+    <p style="color:#7a8a99;font-size:13px;">لأي استفسار رُدّ على هذه الرسالة مباشرة.</p>`);
+  sendMail({ to: user.email, subject: `بيانات دخولك إلى ${SENDER_NAME} 🔑`, html })
+    .then(log(`حساب أدمن ${user.email}`)).catch((e) => console.error("📧 حساب أدمن:", e.message));
+}
+
 module.exports = {
   sendWelcomeEmail,
+  sendAdminCreatedAccountEmail,
   sendInstructorDecisionEmail,
   sendFingerprintResultEmail,
   sendFitResultEmail,

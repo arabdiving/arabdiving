@@ -94,11 +94,14 @@ res.status(200).json({
   success: true,
   message: "Login successful",
   token,
+  // الواجهة تحوّل لصفحة تغيير كلمة المرور إن كانت مؤقتة
+  mustChangePassword: !!user.mustChangePassword,
   user: {
     id: user._id,
     name: user.name,
     email: user.email,
     role: user.role,
+    mustChangePassword: !!user.mustChangePassword,
   },
 });
   } catch (error) {
@@ -109,7 +112,35 @@ res.status(200).json({
   }
 };
 
+// ── PUT /api/auth/change-password (يتطلب تسجيل دخول) ──
+// يغيّر كلمة المرور ويخفض علم الإلزام. يُستخدم في أول دخول للحسابات المنشأة من الإدارة.
+const changePassword = async (req, res) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    if (!newPassword || String(newPassword).length < 6) {
+      return res.status(400).json({ success: false, message: "كلمة المرور الجديدة يجب أن تكون 6 أحرف على الأقل" });
+    }
+    const user = await User.findById(req.user._id);
+    if (!user) return res.status(404).json({ success: false, message: "المستخدم غير موجود" });
+
+    const ok = await bcrypt.compare(String(currentPassword || ""), user.password);
+    if (!ok) return res.status(400).json({ success: false, message: "كلمة المرور الحالية غير صحيحة" });
+
+    if (await bcrypt.compare(String(newPassword), user.password)) {
+      return res.status(400).json({ success: false, message: "اختر كلمة مرور مختلفة عن الحالية" });
+    }
+
+    user.password = await bcrypt.hash(String(newPassword), 10);
+    user.mustChangePassword = false;
+    await user.save();
+    res.json({ success: true, message: "تم تغيير كلمة المرور بنجاح ✅" });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
 module.exports = {
+  changePassword,
   registerUser,
   loginUser,
 };

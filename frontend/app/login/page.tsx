@@ -27,7 +27,8 @@ export default function LoginPage() {
       if (data.success) {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        window.location.href = "/profile";
+        // كلمة مرور مؤقتة من الإدارة → تغييرها إلزامي قبل أي شيء
+        window.location.href = data.mustChangePassword ? "/change-password" : "/profile";
       } else {
         setMessage(data.message || "بيانات الدخول غير صحيحة");
       }

@@ -34,17 +34,30 @@ const createUser = async (req, res) => {
       return res.status(400).json({ success: false, message: "البريد مستخدم بالفعل" });
     }
     const hashed = await bcrypt.hash(password, 10);
+    // الحساب المنشأ من الإدارة: كلمة المرور مؤقتة ويجب تغييرها عند أول دخول
+    // (إلا إذا أُلغي ذلك صراحة بـ mustChangePassword: false)
+    const forceChange = req.body.mustChangePassword !== false;
     const user = await User.create({
       name,
       email: email.toLowerCase(),
       password: hashed,
       role: role === "admin" ? "admin" : "member",
+      mustChangePassword: forceChange,
       personality: { role: ["teacher", "student", "both"].includes(surveyRole) ? surveyRole : "", dominant: "" },
     });
     res.status(201).json({
       success: true,
-      user: { _id: user._id, name: user.name, email: user.email, role: user.role },
+      user: { _id: user._id, name: user.name, email: user.email, role: user.role, mustChangePassword: user.mustChangePassword },
     });
+
+    // 📧 بعد الرد: أرسل له بيانات الدخول (ما لم يُطلب عدم الإرسال)
+    if (req.body.sendEmail !== false) {
+      try {
+        const { sendAdminCreatedAccountEmail } = require("../lib/notifyEmails");
+        sendAdminCreatedAccountEmail(user, password, { instructor: surveyRole === "teacher" || req.body.instructor === true });
+      } catch (e) { console.error("📧 حساب أدمن:", e.message); }
+    }
+    return;
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

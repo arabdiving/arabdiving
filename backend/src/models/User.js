@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+// mustChangePassword: يُرفع للحسابات التي أنشأها الأدمن بكلمة مرور مؤقتة،
+// فيُجبر صاحبها على تغييرها عند أول دخول ثم يُخفض تلقائيًا.
 const UserSchema = new mongoose.Schema(
   {
     name: {
@@ -104,6 +106,9 @@ following: [
       enum: ["member", "admin"],
       default: "member",
     },
+
+    // إجبار تغيير كلمة المرور عند أول دخول (للحسابات المنشأة من لوحة الإدارة)
+    mustChangePassword: { type: Boolean, default: false },
   },
   {
     timestamps: true,

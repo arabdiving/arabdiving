@@ -15,7 +15,7 @@ interface U {
 export default function AdminUsers() {
   const [users, setUsers] = useState<U[]>([]);
   const [msg, setMsg] = useState("");
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "member", surveyRole: "" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "member", surveyRole: "", sendEmail: true, mustChangePassword: true });
 
   const [editing, setEditing] = useState<U | null>(null);
   const [edit, setEdit] = useState({ name: "", email: "", role: "member", password: "", country: "", city: "", surveyRole: "" });
@@ -33,7 +33,11 @@ export default function AdminUsers() {
     setMsg("");
     const res = await fetch(`${API_BASE}/api/admin/users`, { method: "POST", headers: authHeaders(), body: JSON.stringify(form) });
     const d = await res.json();
-    if (d.success) { setForm({ name: "", email: "", password: "", role: "member", surveyRole: "" }); setMsg("تمت إضافة المستخدم ✅"); load(); }
+    if (d.success) {
+      setMsg(form.sendEmail ? `تمت إضافة المستخدم ✅ — أُرسلت بيانات الدخول إلى ${form.email}` : "تمت إضافة المستخدم ✅ (بلا بريد)");
+      setForm({ name: "", email: "", password: "", role: "member", surveyRole: "", sendEmail: true, mustChangePassword: true });
+      load();
+    }
     else setMsg(d.message || "تعذّرت الإضافة");
   };
 
@@ -89,6 +93,21 @@ export default function AdminUsers() {
           <option value="both">مدرّب ومتدرّب</option>
         </select>
         <button type="submit" style={{ background: "var(--mid)", color: "white", border: "none", padding: "10px 20px", borderRadius: "8px", cursor: "pointer", fontFamily: "inherit" }}>إضافة</button>
+
+        {/* خيارات البريد وكلمة المرور المؤقتة */}
+        <div style={{ width: "100%", display: "flex", gap: "20px", flexWrap: "wrap", borderTop: "1px solid #eef2f6", paddingTop: "12px", marginTop: "4px" }}>
+          <label style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+            <input type="checkbox" checked={form.sendEmail} onChange={(e) => setForm({ ...form, sendEmail: e.target.checked })} />
+            📧 أرسل له بيانات الدخول بالبريد
+          </label>
+          <label style={{ display: "flex", alignItems: "center", gap: "7px", fontSize: "13px", color: "#555", cursor: "pointer" }}>
+            <input type="checkbox" checked={form.mustChangePassword} onChange={(e) => setForm({ ...form, mustChangePassword: e.target.checked })} />
+            🔑 إلزامه بتغيير كلمة المرور عند أول دخول
+          </label>
+          <span style={{ fontSize: "12.5px", color: "#94a3b8" }}>
+            {form.surveyRole === "teacher" ? "سيتضمن البريد إرشادات إنشاء بروفايل المدرب 🧑‍🏫" : ""}
+          </span>
+        </div>
       </form>
 
       <div style={{ background: "white", borderRadius: "14px", overflowX: "auto", boxShadow: "0 8px 24px rgba(0,0,0,0.06)" }}>
