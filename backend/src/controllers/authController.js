@@ -1,6 +1,7 @@
 const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const { sendWelcomeEmail, enrollInNewsletter } = require("../lib/notifyEmails");
 
 const registerUser = async (req, res) => {
   try {
@@ -32,6 +33,19 @@ const registerUser = async (req, res) => {
         email: user.email,
       },
     });
+
+    // 📧 بعد الرد (غير معطِّل): رسالة ترحيب لكل حساب جديد
+    try { sendWelcomeEmail(user); } catch (e) { console.error("📧 ترحيب:", e.message); }
+    // واختياريًا: من علّم مربع النشرة → اشتراك pending + بريد تأكيد (Double Opt-in)
+    if (req.body.newsletter === true || req.body.newsletter === "true" || req.body.newsletter === "on") {
+      enrollInNewsletter({
+        email: user.email,
+        name: user.name,
+        ip: req.ip || "",
+        userAgent: req.headers["user-agent"] || "",
+      }).catch((e) => console.error("📧 نشرة التسجيل:", e.message));
+    }
+    return;
   } catch (error) {
     res.status(500).json({
       success: false,

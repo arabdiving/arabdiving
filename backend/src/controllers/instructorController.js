@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { sendInstructorDecisionEmail, sendFingerprintResultEmail, sendFitResultEmail } = require("../lib/notifyEmails");
 const InstructorProfile = require("../models/InstructorProfile");
 const InstructorMessage = require("../models/InstructorMessage");
 const PartnerCenter = require("../models/PartnerCenter");
@@ -210,6 +211,11 @@ const saveFingerprint = async (req, res) => {
     );
     const { strengths, weakness } = analyze(scores);
     res.json({ success: true, fingerprint: p.fingerprint, strengths, weakness });
+
+    // 📧 بعد الرد: نتيجة البصمة كاملة على إيميل المدرب (المجال الأضعف يبقى بينه وبين بريده)
+    try { sendFingerprintResultEmail(req.user, scores, strengths, weakness); }
+    catch (e) { console.error("📧 بصمة:", e.message); }
+    return;
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
@@ -231,6 +237,11 @@ const saveFit = async (req, res) => {
       { upsert: true, new: true }
     );
     res.json({ success: true, fit: p.fit });
+
+    // 📧 بعد الرد: خلاصة «من يناسبني» على إيميل المدرب
+    try { sendFitResultEmail(req.user, fit); }
+    catch (e) { console.error("📧 ملاءمة:", e.message); }
+    return;
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
@@ -329,12 +340,20 @@ const adminListApplications = async (req, res) => {
 // أدمن: موافقة مبدئية / رفض / توثيق
 const adminSetApplicationStatus = async (req, res) => {
   try {
-    const p = await InstructorProfile.findById(req.params.id);
+    const p = await InstructorProfile.findById(req.params.id).populate("user", "name email");
     if (!p) return res.status(404).json({ success: false, message: "الطلب غير موجود" });
+    const prevStatus = p.applicationStatus;
     if (["pending", "approved", "rejected"].includes(req.body.status)) p.applicationStatus = req.body.status;
     if (typeof req.body.verified === "boolean") p.verified = req.body.verified;
     await p.save();
     res.json({ success: true, applicationStatus: p.applicationStatus, verified: p.verified });
+
+    // 📧 بعد الرد: أخطر المدرب بالقرار (فقط عند تغيّر الحالة إلى موافقة/رفض)
+    if (p.user?.email && p.applicationStatus !== prevStatus && ["approved", "rejected"].includes(p.applicationStatus)) {
+      try { sendInstructorDecisionEmail(p.user, p.applicationStatus, p.slug || String(p._id)); }
+      catch (e) { console.error("📧 قرار مدرب:", e.message); }
+    }
+    return;
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 

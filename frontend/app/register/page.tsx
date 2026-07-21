@@ -11,6 +11,7 @@ export default function RegisterPage() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [newsletter, setNewsletter] = useState(false); // اختياري — غير معلَّم افتراضيًا (موافقة صريحة)
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,7 +28,7 @@ export default function RegisterPage() {
       const res = await fetch(`${API_BASE}/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify({ name, email, password, newsletter }),
       });
 
       const data = await res.json();
@@ -107,8 +108,14 @@ export default function RegisterPage() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
-            style={{ ...inputStyle, marginBottom: "24px" }}
+            style={{ ...inputStyle, marginBottom: "16px" }}
           />
+
+          {/* اشتراك النشرة — اختياري وبموافقة صريحة (يُرسل بريد تأكيد Double Opt-in) */}
+          <label style={{ display: "flex", alignItems: "flex-start", gap: "9px", cursor: "pointer", marginBottom: "20px", fontSize: "12.5px", color: "var(--muted,#64748b)", lineHeight: 1.7, fontWeight: 400 }}>
+            <input type="checkbox" checked={newsletter} onChange={(e) => setNewsletter(e.target.checked)} style={{ width: "16px", height: "16px", marginTop: "2px", accentColor: "var(--mid,#0891b2)" }} />
+            <span>📬 أرغب باستقبال نشرة ArabDiving: أفضل مواقع الغوص والعروض ونصائح المدربين — ويمكنني إلغاء الاشتراك في أي وقت (سيصلك بريد لتأكيد الاشتراك)</span>
+          </label>
 
           <button
             type="submit"

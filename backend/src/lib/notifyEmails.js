@@ -1,0 +1,208 @@
+/**
+ * رسائل الأحداث (Transactional) — ترحيب التسجيل، قرار المدرب، نتائج الاستبيانات.
+ * هذه رسائل خدمة يحق للمستخدم استقبالها بحكم تعامله مع المنصة (ليست تسويقًا)،
+ * لذا تذييلها يوضح سبب الوصول دون ادعاء «اشتراك بالنشرة».
+ * كل الدوال غير معطِّلة: تُستدعى بـ .catch وتسجّل نتيجتها فقط.
+ */
+const { sendMail } = require("./mailer");
+const { APP_URL } = require("./emailTemplates");
+
+const SENDER_NAME = process.env.MAIL_SENDER_NAME || "ArabDiving";
+const SENDER_ADDRESS =
+  process.env.MAIL_SENDER_ADDRESS || "ArabDiving — info@arabdiving.com";
+const SITE_URL = process.env.SITE_URL || "https://arabdiving.com";
+
+// غلاف رسائل الخدمة (بدون رابط إلغاء نشرة — ليست نشرة)
+function wrapService(contentHtml) {
+  return `<!doctype html>
+<html lang="ar" dir="rtl">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;background:#f4f7fa;font-family:Tahoma,Arial,sans-serif;color:#1a2b3c;">
+  <div style="max-width:600px;margin:0 auto;padding:24px;">
+    <div style="background:#0b6ea8;color:#fff;padding:18px 24px;border-radius:12px 12px 0 0;font-size:20px;font-weight:bold;">
+      🤿 ${SENDER_NAME}
+    </div>
+    <div style="background:#ffffff;padding:24px;border-radius:0 0 12px 12px;line-height:1.9;font-size:15px;">
+      ${contentHtml}
+    </div>
+    <div style="text-align:center;color:#7a8a99;font-size:12px;padding:18px 8px;line-height:1.8;">
+      <div>${SENDER_ADDRESS}</div>
+      <div>وصلتك هذه الرسالة لأن لديك حسابًا أو طلبًا على منصة ${SENDER_NAME}.</div>
+    </div>
+  </div>
+</body>
+</html>`;
+}
+
+const log = (label) => (r) => {
+  if (r?.ok) console.log(`📧 ${label}: أُرسلت ✅`);
+  else console.error(`📧 ${label}: فشلت ❌ ${r?.error || ""}`);
+};
+
+/* ── 1) ترحيب بعد إنشاء الحساب ── */
+function sendWelcomeEmail(user) {
+  if (!user?.email) return;
+  const html = wrapService(`
+    <h2 style="color:#0b6ea8;">أهلًا بك في مجتمع الغوص العربي 🌊</h2>
+    <p>مرحبًا ${user.name || "صديقنا الغوّاص"}،</p>
+    <p>تم إنشاء حسابك بنجاح. إليك أفضل نقطة بداية حسب هدفك:</p>
+    <ul style="line-height:2.2;">
+      <li>🧑‍🏫 <a href="${SITE_URL}/instructors" style="color:#0b6ea8;">دليل المدربين</a> — اعرف مدربك ببصمته التدريبية قبل أول غطسة</li>
+      <li>📏 <a href="${SITE_URL}/course-standards" style="color:#0b6ea8;">معايير الكورسات الدولية</a> — حقك في الأوبن ووتر بالأرقام</li>
+      <li>🤝 <a href="${SITE_URL}/training-fit" style="color:#0b6ea8;">استبيان التوافق</a> — أي مدرب يناسب شخصيتك؟</li>
+    </ul>
+    <p>ولو كنت <b>مدرب غوص</b>: أنشئ بروفايلك من
+      <a href="${SITE_URL}/instructors/join" style="color:#0b6ea8;">انضم كمدرب</a> 🤿</p>
+    <p style="color:#7a8a99;font-size:13px;">أسئلتك تصلنا بالرد على هذه الرسالة مباشرة.</p>`);
+  sendMail({ to: user.email, subject: "أهلًا بك في ArabDiving 🤿", html })
+    .then(log(`ترحيب ${user.email}`)).catch((e) => console.error("📧 ترحيب:", e.message));
+}
+
+/* ── 2) قرار طلب المدرب (موافقة مبدئية / رفض) ── */
+function sendInstructorDecisionEmail(user, status, slugOrId = "") {
+  if (!user?.email) return;
+  const profileUrl = `${SITE_URL}/instructors/${encodeURIComponent(slugOrId)}`;
+  const html = status === "approved"
+    ? wrapService(`
+      <h2 style="color:#1e7e34;">مبروك كابتن ${user.name || ""} — تمت الموافقة المبدئية ✅</h2>
+      <p>بروفايلك أصبح ظاهرًا في دليل المدربين، والمتدربون يمكنهم الآن مراسلتك مباشرة.</p>
+      <p style="text-align:center;margin:24px 0;">
+        <a href="${profileUrl}" style="background:#0b6ea8;color:#fff;text-decoration:none;padding:13px 30px;border-radius:10px;font-weight:bold;">شاهد بروفايلك العام</a>
+      </p>
+      <p><b>خطوتان تضاعفان فرصك:</b></p>
+      <ul style="line-height:2.2;">
+        <li>أكمل استبياني «بصمة المدرب» و«من يناسبني» إن لم تفعل — البروفايلات المكتملة تتصدر</li>
+        <li>شارك رابط بروفايلك في حساباتك — من يبحث عن اسمك يجدك</li>
+      </ul>
+      <p style="color:#7a8a99;font-size:13px;">التوثيق ✅ (الشارة الزرقاء) خطوة لاحقة بعد التحقق من رقمك لدى منظمتك.</p>`)
+    : wrapService(`
+      <h2 style="color:#b45309;">بخصوص طلب انضمامك كمدرب</h2>
+      <p>مرحبًا كابتن ${user.name || ""}،</p>
+      <p>لم نتمكن من الموافقة المبدئية على طلبك في هذه المرحلة — السبب الأكثر شيوعًا صور كارنيه غير واضحة أو ناقصة (المطلوب: وش وضهر لكل كارنيه).</p>
+      <p>عدّل صورك من صفحة <a href="${SITE_URL}/instructors/join" style="color:#0b6ea8;">ملف المدرب</a> واحفظ — يعود طلبك تلقائيًا لقائمة المراجعة.</p>
+      <p style="color:#7a8a99;font-size:13px;">ولأي استفسار رُدّ على هذه الرسالة مباشرة.</p>`);
+  sendMail({
+    to: user.email,
+    subject: status === "approved" ? "تمت الموافقة على انضمامك كمدرب ✅ — ArabDiving" : "بخصوص طلب انضمامك كمدرب — ArabDiving",
+    html,
+  }).then(log(`قرار مدرب ${user.email}`)).catch((e) => console.error("📧 قرار مدرب:", e.message));
+}
+
+/* ── 3) نتيجة استبيان «بصمة المدرب» ── */
+const AXES_AR = {
+  planning: "🎯 التخطيط والبريفينج",
+  strategies: "📚 استراتيجيات الشرح",
+  management: "🛡️ إدارة المجموعة والوعي الظرفي",
+  engagement: "❤️ التحفيز واحتواء الخوف",
+  watermanship: "🌊 الإتقان المائي والعرض",
+  professionalism: "📈 الاحترافية والتطوير",
+};
+
+function sendFingerprintResultEmail(user, scores = {}, strengths = [], weakness = null) {
+  if (!user?.email) return;
+  const bars = Object.entries(AXES_AR).map(([k, label]) => {
+    const v = scores[k] || 0;
+    const pct = Math.round((v / 5) * 100);
+    const star = strengths.includes(k) ? " ⭐" : "";
+    return `<tr>
+      <td style="padding:6px 0;font-size:13.5px;white-space:nowrap;">${label}${star}</td>
+      <td style="width:55%;padding:6px 10px;">
+        <div style="background:#e8eef4;border-radius:6px;height:12px;"><div style="width:${pct}%;height:12px;border-radius:6px;background:${strengths.includes(k) ? "#c9952a" : "#0b6ea8"};"></div></div>
+      </td>
+      <td style="font-size:13px;color:#7a8a99;">${v}/5</td></tr>`;
+  }).join("");
+  const html = wrapService(`
+    <h2 style="color:#0b6ea8;">🧬 بصمتك التدريبية — النتيجة الكاملة</h2>
+    <p>كابتن ${user.name || ""}، هذا ملخص تقييمك الذاتي (مبني على TSES وDanielson ومعايير مدربي الغوص):</p>
+    <table style="width:100%;border-collapse:collapse;margin:14px 0;">${bars}</table>
+    <p>⭐ <b>نقطتا تميّزك المعلنتان:</b> ${strengths.map((s) => AXES_AR[s] || s).join(" · ") || "—"}</p>
+    ${weakness ? `<div style="background:#fff7e6;border:1px solid #f0d9a8;border-radius:10px;padding:12px 16px;font-size:13.5px;">
+      🔒 <b>مجال تطويرك (سرّي — لك وحدك):</b> ${AXES_AR[weakness] || weakness}.
+      لا يظهر في بروفايلك العام إلا إذا اخترت إظهاره بنفسك — والشجاعة في إظهاره تُحترم.</div>` : ""}
+    <p style="margin-top:16px;">احتفظ بهذه الرسالة — وأعد الاستبيان بعد كل موسم لترى تطورك.</p>`);
+  sendMail({ to: user.email, subject: "🧬 نتيجة بصمتك التدريبية — ArabDiving", html })
+    .then(log(`بصمة ${user.email}`)).catch((e) => console.error("📧 بصمة:", e.message));
+}
+
+/* ── 4) نتيجة استبيان «من يناسبني؟» ── */
+const FIT_AR = {
+  level: { beginner: "المبتدئ والخائف من الماء", advanced: "المتقدم الباحث عن التحدي" },
+  pace: { patient: "من يحتاج صبرًا وتكرارًا", fast: "سريع التعلم ومحب الإيقاع السريع" },
+  age: { kids: "الأطفال والنشء", adults: "البالغون" },
+  style: { structured: "محبو النظام والخطط", fun: "من يتعلم بالمرح والمرونة" },
+  group: { private: "التدريب الفردي الخاص", group: "المجموعات والطاقة الجماعية" },
+  special: { adaptive: "ذوو الهمم والحالات الخاصة", standard: "الحالات القياسية بإتقان" },
+};
+
+function sendFitResultEmail(user, fit = {}) {
+  if (!user?.email) return;
+  const suits = Object.entries(FIT_AR)
+    .map(([k, m]) => m[fit[k]])
+    .filter(Boolean)
+    .map((t) => `<li>✅ ${t}</li>`)
+    .join("");
+  const html = wrapService(`
+    <h2 style="color:#0b6ea8;">🤝 «من يناسبك؟» — اختياراتك الصادقة</h2>
+    <p>كابتن ${user.name || ""}، هذه خلاصة اختياراتك القسرية — وهي ما سيظهر للمتدربين في بروفايلك:</p>
+    <ul style="line-height:2.2;">${suits || "<li>—</li>"}</ul>
+    <p>تذكّر فلسفتها: <b>كل اختيار له ثمن، وهذا سرّ صدقه</b> — الصادق يحصل على طلاب يناسبونه فيبدع وتعلو تقييماته.</p>
+    <p>يمكنك إعادة الاستبيان في أي وقت من صفحة <a href="${SITE_URL}/instructors/join" style="color:#0b6ea8;">ملف المدرب</a>.</p>`);
+  sendMail({ to: user.email, subject: "🤝 نتيجة «من يناسبك؟» — ArabDiving", html })
+    .then(log(`ملاءمة ${user.email}`)).catch((e) => console.error("📧 ملاءمة:", e.message));
+}
+
+/* ── 5) تسجيل اختياري في النشرة أثناء إنشاء الحساب ──
+   ينشئ مشتركًا pending ويرسل بريد التأكيد (Double Opt-in يبقى إلزاميًا). */
+async function enrollInNewsletter({ email, name = "", ip = "", userAgent = "" }) {
+  try {
+    const Subscriber = require("../models/Subscriber");
+    const { build } = require("./emailTemplates");
+    const clean = String(email || "").toLowerCase().trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) return;
+
+    const consentRecord = {
+      given: true,
+      at: new Date(),
+      ip,
+      userAgent,
+      text: "وافقت أثناء إنشاء الحساب على استلام النشرة البريدية من ArabDiving، مع علمي بإمكانية إلغاء الاشتراك في أي وقت.",
+    };
+
+    let sub = await Subscriber.findOne({ email: clean });
+    if (sub && sub.status === "confirmed") return; // مشترك مؤكد بالفعل
+    if (sub) {
+      sub.name = name || sub.name;
+      sub.status = "pending";
+      sub.consent = consentRecord;
+      sub.source = "register-form";
+      await sub.save();
+    } else {
+      sub = await Subscriber.create({ email: clean, name, status: "pending", source: "register-form", consent: consentRecord });
+    }
+
+    const confirmUrl = `${APP_URL}/api/newsletter/confirm?token=${sub.confirmToken}`;
+    const html = build({
+      subscriber: sub,
+      html: `
+        <h2 style="color:#0b6ea8;">خطوة أخيرة لتأكيد اشتراكك في النشرة 🌊</h2>
+        <p>مرحبًا {{name}}،</p>
+        <p>اخترت أثناء إنشاء حسابك الاشتراك في نشرة ArabDiving. اضغط الزر لتأكيد اشتراكك:</p>
+        <p style="text-align:center;margin:28px 0;">
+          <a href="${confirmUrl}" style="background:#0b6ea8;color:#fff;text-decoration:none;padding:14px 34px;border-radius:10px;font-weight:bold;">تأكيد الاشتراك</a>
+        </p>
+        <p style="color:#7a8a99;font-size:13px;">إن لم تكن أنت، تجاهل هذه الرسالة ولن تصلك النشرة.</p>`,
+    });
+    sendMail({ to: sub.email, subject: "أكّد اشتراكك في نشرة ArabDiving 🤿", html })
+      .then(log(`تأكيد نشرة ${sub.email}`));
+  } catch (e) {
+    console.error("📧 تسجيل النشرة من إنشاء الحساب:", e.message);
+  }
+}
+
+module.exports = {
+  sendWelcomeEmail,
+  sendInstructorDecisionEmail,
+  sendFingerprintResultEmail,
+  sendFitResultEmail,
+  enrollInNewsletter,
+};
