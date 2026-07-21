@@ -21,7 +21,7 @@ export const FOCUS_ALLOWED: string[] = [
   "/survey",               // استبيان: التعلم
   "/learning-difficulties",// استبيان: صعوبات التعلم
   // أساسيات التشغيل (لا تظهر في القوائم لكنها تعمل)
-  "/login", "/register", "/profile", "/admin", "/my-store",
+  "/login", "/register", "/profile", "/admin", "/my-store", "/change-password",
 ];
 
 export function isAllowedInFocus(pathname: string): boolean {

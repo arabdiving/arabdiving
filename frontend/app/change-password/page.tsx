@@ -34,10 +34,27 @@ export default function ChangePasswordPage() {
   const [busy, setBusy] = useState(false);
 
   useEffect(() => {
+    // لا بد من تسجيل الدخول لتغيير كلمة المرور
+    const token = localStorage.getItem("token");
+    if (!token) { window.location.href = "/login"; return; }
     try {
       const u = JSON.parse(localStorage.getItem("user") || "{}");
       setForced(!!u.mustChangePassword);
     } catch {}
+    // المصدر الموثوق هو الخادم — نزامن العلم منه (يمنع بقاءه بعد التغيير أو ضياعه)
+    fetch(`${API_BASE}/api/users/profile`, { headers: { Authorization: `Bearer ${token}` } })
+      .then((r) => r.json())
+      .then((d) => {
+        if (!d?.user) return;
+        setForced(!!d.user.mustChangePassword);
+        try {
+          const u = JSON.parse(localStorage.getItem("user") || "{}");
+          if (d.user.mustChangePassword) u.mustChangePassword = true;
+          else delete u.mustChangePassword;
+          localStorage.setItem("user", JSON.stringify(u));
+        } catch {}
+      })
+      .catch(() => {});
   }, []);
 
   const submit = async (e: React.FormEvent) => {
