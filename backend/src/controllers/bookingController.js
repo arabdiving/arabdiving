@@ -50,6 +50,13 @@ const createBooking = async (req, res) => {
     }
 
     res.status(201).json({ success: true, booking });
+
+    // 📧 بعد الرد: أخطر الأدمن بحجز جديد
+    try {
+      const { notifyAdminNewBooking } = require("../lib/notifyEmails");
+      notifyAdminNewBooking(booking);
+    } catch (e) { console.error("📧 إشعار حجز:", e.message); }
+    return;
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

@@ -39,6 +39,19 @@ const log = (label) => (r) => {
   else console.error(`📧 ${label}: فشلت ❌ ${r?.error || ""}`);
 };
 
+// عنوان الأدمن: ADMIN_EMAIL من البيئة، وإلا أول حساب أدمن في القاعدة (يُخزَّن مؤقتًا)
+let _adminEmailCache = null;
+async function resolveAdminEmail() {
+  if (process.env.ADMIN_EMAIL) return process.env.ADMIN_EMAIL.trim();
+  if (_adminEmailCache) return _adminEmailCache;
+  try {
+    const User = require("../models/User");
+    const admin = await User.findOne({ role: "admin" }, "email").sort({ createdAt: 1 });
+    _adminEmailCache = admin?.email || null;
+    return _adminEmailCache;
+  } catch { return null; }
+}
+
 /* ── 1) ترحيب بعد إنشاء الحساب ── */
 function sendWelcomeEmail(user) {
   if (!user?.email) return;
@@ -225,9 +238,68 @@ function sendAdminCreatedAccountEmail(user, tempPassword, opts = {}) {
     .then(log(`حساب أدمن ${user.email}`)).catch((e) => console.error("📧 حساب أدمن:", e.message));
 }
 
+/* ── 7) إشعار المدرب برسالة جديدة وصلته عبر «راسلني» ── */
+function sendInstructorNewMessageEmail(user, msg = {}) {
+  if (!user?.email) return;
+  const html = wrapService(`
+    <h2 style="color:#0b6ea8;">📬 وصلتك رسالة جديدة من زائر</h2>
+    <p>كابتن ${user.name || ""}، أرسل لك <b>${msg.name || "زائر"}</b> رسالة عبر بروفايلك:</p>
+    <div style="background:#f4f7fa;border-right:4px solid #0b6ea8;border-radius:8px;padding:14px 16px;margin:14px 0;font-size:14px;line-height:1.9;white-space:pre-wrap;">${(msg.message || "").slice(0, 800)}</div>
+    ${msg.contact ? `<p>📞 وسيلة تواصله للرد: <b dir="ltr">${msg.contact}</b></p>` : `<p style="color:#b45309;">لم يترك وسيلة تواصل — رُدّ من صندوق رسائلك في الموقع.</p>`}
+    <p style="text-align:center;margin:22px 0;">
+      <a href="${SITE_URL}/instructors/join" style="background:#0b6ea8;color:#fff;text-decoration:none;padding:13px 30px;border-radius:10px;font-weight:bold;">افتح صندوق رسائلي</a>
+    </p>`);
+  sendMail({ to: user.email, subject: `📬 رسالة جديدة من ${msg.name || "زائر"} — ArabDiving`, html })
+    .then(log(`رسالة مدرب ${user.email}`)).catch((e) => console.error("📧 رسالة مدرب:", e.message));
+}
+
+/* ── 8) إشعار الأدمن بحجز جديد ── */
+async function notifyAdminNewBooking(booking = {}) {
+  const to = await resolveAdminEmail();
+  if (!to) return;
+  const html = wrapService(`
+    <h2 style="color:#0b6ea8;">🎟️ حجز جديد وصل المنصة</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;line-height:2;">
+      <tr><td style="color:#7a8a99;">رقم الحجز:</td><td><b>${booking.ticketCode || "—"}</b></td></tr>
+      <tr><td style="color:#7a8a99;">النوع:</td><td>${booking.type === "course" ? "دورة" : "رحلة"}${booking.centerName ? " · " + booking.centerName : ""}</td></tr>
+      <tr><td style="color:#7a8a99;">العميل:</td><td>${booking.contact?.name || "—"}</td></tr>
+      <tr><td style="color:#7a8a99;">الجوال:</td><td dir="ltr">${booking.contact?.phone || "—"}</td></tr>
+      <tr><td style="color:#7a8a99;">التاريخ:</td><td>${booking.date || "—"} · ${booking.peopleCount || 1} فرد</td></tr>
+      <tr><td style="color:#7a8a99;">التواصل المفضّل:</td><td>${booking.contactMethod === "phone" ? "مكالمة" : booking.contactMethod === "email" ? "بريد" : "واتساب"}${booking.bestCallTime ? " · " + booking.bestCallTime : ""}</td></tr>
+    </table>
+    <p style="text-align:center;margin:22px 0;">
+      <a href="${SITE_URL}/admin/bookings" style="background:#0b6ea8;color:#fff;text-decoration:none;padding:13px 30px;border-radius:10px;font-weight:bold;">إدارة الحجوزات</a>
+    </p>`);
+  sendMail({ to, subject: `🎟️ حجز جديد (${booking.contact?.name || "عميل"}) — ArabDiving`, html })
+    .then(log(`حجز للأدمن ${to}`)).catch((e) => console.error("📧 حجز أدمن:", e.message));
+}
+
+/* ── 9) إشعار الأدمن بطلب انضمام مدرب جديد للمراجعة ── */
+async function notifyAdminNewInstructorApplication(user = {}, profile = {}) {
+  const to = await resolveAdminEmail();
+  if (!to) return;
+  const html = wrapService(`
+    <h2 style="color:#0b6ea8;">🧑‍🏫 طلب انضمام مدرب جديد — بانتظار مراجعتك</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;line-height:2;">
+      <tr><td style="color:#7a8a99;">المدرب:</td><td><b>${user.name || "—"}</b> · <span dir="ltr">${user.email || ""}</span></td></tr>
+      <tr><td style="color:#7a8a99;">المنظمة/الرتبة:</td><td>${profile.agency || "—"} · ${profile.rank || "—"}</td></tr>
+      <tr><td style="color:#7a8a99;">المدينة:</td><td>${profile.city || "—"}</td></tr>
+      <tr><td style="color:#7a8a99;">صور الكارنيه:</td><td>${(profile.cardImages || []).length} صورة مرفوعة</td></tr>
+    </table>
+    <p>راجع صور الكارنيه وبياناته ثم وافق مبدئيًا أو ارفض:</p>
+    <p style="text-align:center;margin:22px 0;">
+      <a href="${SITE_URL}/admin/instructors" style="background:#0b6ea8;color:#fff;text-decoration:none;padding:13px 30px;border-radius:10px;font-weight:bold;">مراجعة طلبات المدربين</a>
+    </p>`);
+  sendMail({ to, subject: `🧑‍🏫 طلب مدرب جديد (${user.name || "—"}) — ArabDiving`, html })
+    .then(log(`طلب مدرب للأدمن ${to}`)).catch((e) => console.error("📧 طلب مدرب أدمن:", e.message));
+}
+
 module.exports = {
   sendWelcomeEmail,
   sendAdminCreatedAccountEmail,
+  sendInstructorNewMessageEmail,
+  notifyAdminNewBooking,
+  notifyAdminNewInstructorApplication,
   sendInstructorDecisionEmail,
   sendFingerprintResultEmail,
   sendFitResultEmail,

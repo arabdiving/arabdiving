@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { sendInstructorDecisionEmail, sendFingerprintResultEmail, sendFitResultEmail } = require("../lib/notifyEmails");
+const { sendInstructorDecisionEmail, sendFingerprintResultEmail, sendFitResultEmail, sendInstructorNewMessageEmail, notifyAdminNewInstructorApplication } = require("../lib/notifyEmails");
 const InstructorProfile = require("../models/InstructorProfile");
 const InstructorMessage = require("../models/InstructorMessage");
 const PartnerCenter = require("../models/PartnerCenter");
@@ -184,6 +184,8 @@ const upsertMyInstructorProfile = async (req, res) => {
     } else if (CITY_COORDS[fields.city]) {
       fields.location = CITY_COORDS[fields.city];
     }
+    // هل هذا أول إنشاء للبروفايل؟ (لإشعار الأدمن بطلب انضمام جديد مرة واحدة فقط)
+    const existedBefore = await InstructorProfile.exists({ user: req.user._id });
     const p = await InstructorProfile.findOneAndUpdate(
       { user: req.user._id },
       { $set: fields, $setOnInsert: { user: req.user._id } },
@@ -195,6 +197,13 @@ const upsertMyInstructorProfile = async (req, res) => {
       if (slug) { p.slug = slug; await p.save(); }
     }
     res.json({ success: true, profile: p });
+
+    // 📧 بعد الرد: عند أول إنشاء لبروفايل مع صور كارنيه → أخطر الأدمن بطلب مراجعة جديد
+    if (!existedBefore && (p.cardImages || []).length) {
+      try { notifyAdminNewInstructorApplication(req.user, p); }
+      catch (e) { console.error("📧 إشعار طلب مدرب:", e.message); }
+    }
+    return;
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
@@ -366,15 +375,17 @@ const sendMessageToInstructor = async (req, res) => {
     if (!ins || !ins.active) return res.status(404).json({ success: false, message: "المدرب غير موجود" });
     const name = String(req.body.name || "").trim().slice(0, 80);
     const message = String(req.body.message || "").trim().slice(0, 1500);
+    const contact = String(req.body.contact || "").trim().slice(0, 120);
     if (!name || !message) return res.status(400).json({ success: false, message: "الاسم والرسالة مطلوبان" });
-    await InstructorMessage.create({
-      instructor: ins._id,
-      name,
-      contact: String(req.body.contact || "").trim().slice(0, 120),
-      message,
-      fromUser: req.user?._id || undefined,
-    });
+    await InstructorMessage.create({ instructor: ins._id, name, contact, message, fromUser: req.user?._id || undefined });
     res.status(201).json({ success: true, message: "وصلت رسالتك للمدرب ✅ — سيرد عليك عبر وسيلة التواصل التي تركتها" });
+
+    // 📧 بعد الرد: أخطر المدرب بالبريد بوصول رسالة جديدة
+    try {
+      const owner = await ins.populate("user", "name email");
+      if (owner.user?.email) sendInstructorNewMessageEmail(owner.user, { name, contact, message });
+    } catch (e) { console.error("📧 إشعار رسالة مدرب:", e.message); }
+    return;
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 };
 
