@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
+import GoogleSignIn from "@/app/components/GoogleSignIn";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -136,6 +137,14 @@ export default function RegisterPage() {
             {loading ? "جارٍ الإنشاء..." : "إنشاء الحساب"}
           </button>
         </form>
+
+        {/* أو التسجيل بجوجل */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "18px 0" }}>
+          <div style={{ flex: 1, height: "1px", background: "var(--border,#e2e8f0)" }} />
+          <span style={{ color: "var(--muted,#94a3b8)", fontSize: "13px" }}>أو</span>
+          <div style={{ flex: 1, height: "1px", background: "var(--border,#e2e8f0)" }} />
+        </div>
+        <GoogleSignIn text="signup_with" />
 
         {error && (
           <p style={{ color: "#c0392b", marginTop: "16px", textAlign: "center" }}>

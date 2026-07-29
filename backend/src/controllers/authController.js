@@ -2,6 +2,13 @@ const User = require("../models/User");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const { sendWelcomeEmail, enrollInNewsletter } = require("../lib/notifyEmails");
+const { OAuth2Client } = require("google-auth-library");
+
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || "";
+const googleClient = GOOGLE_CLIENT_ID ? new OAuth2Client(GOOGLE_CLIENT_ID) : null;
+
+const signToken = (user) =>
+  jwt.sign({ id: user._id, role: user.role }, process.env.JWT_SECRET, { expiresIn: "30d" });
 
 const registerUser = async (req, res) => {
   try {
@@ -139,8 +146,68 @@ const changePassword = async (req, res) => {
   }
 };
 
+// ── POST /api/auth/google ──────────────────────────────────
+// يستقبل credential (Google ID token) من زر الدخول، يتحقق منه لدى جوجل،
+// ثم يوجد المستخدم أو ينشئه (بلا كلمة مرور) ويعيد JWT.
+const googleAuth = async (req, res) => {
+  try {
+    if (!googleClient) {
+      return res.status(500).json({ success: false, message: "الدخول بجوجل غير مُفعّل — GOOGLE_CLIENT_ID مفقود على الخادم" });
+    }
+    const credential = req.body.credential || req.body.token;
+    if (!credential) return res.status(400).json({ success: false, message: "لم يصل رمز جوجل" });
+
+    // التحقق من صحة الرمز وأنه صادر لتطبيقنا
+    const ticket = await googleClient.verifyIdToken({ idToken: credential, audience: GOOGLE_CLIENT_ID });
+    const payload = ticket.getPayload();
+    if (!payload?.email || !payload.email_verified) {
+      return res.status(400).json({ success: false, message: "بريد جوجل غير موثّق" });
+    }
+
+    const email = payload.email.toLowerCase();
+    const name = payload.name || email.split("@")[0];
+    const googleId = payload.sub;
+    const picture = payload.picture || "";
+
+    let user = await User.findOne({ email });
+    let isNew = false;
+
+    if (user) {
+      // اربط حساب جوجل بحساب موجود بنفس البريد (لأول مرة)
+      if (!user.googleId) {
+        user.googleId = googleId;
+        user.authProvider = user.authProvider || "google";
+        if (!user.profileImage && picture) user.profileImage = picture;
+        await user.save();
+      }
+    } else {
+      isNew = true;
+      user = await User.create({
+        name, email, googleId, authProvider: "google",
+        profileImage: picture, role: "member",
+      });
+    }
+
+    const token = signToken(user);
+    res.json({
+      success: true,
+      message: "Login successful",
+      token,
+      mustChangePassword: false, // حسابات جوجل لا تحتاج كلمة مرور
+      user: { id: user._id, name: user.name, email: user.email, role: user.role },
+    });
+
+    // 📧 ترحيب للحساب الجديد فقط (بعد الرد)
+    if (isNew) { try { sendWelcomeEmail(user); } catch (e) { console.error("📧 ترحيب جوجل:", e.message); } }
+    return;
+  } catch (error) {
+    return res.status(401).json({ success: false, message: "تعذّر التحقق من حساب جوجل" });
+  }
+};
+
 module.exports = {
   changePassword,
+  googleAuth,
   registerUser,
   loginUser,
 };

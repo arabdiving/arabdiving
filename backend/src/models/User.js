@@ -23,10 +23,14 @@ bio: {
   default: "",
   maxlength: 300,
 },
+    // كلمة المرور مطلوبة للحسابات العادية فقط — حسابات جوجل بلا كلمة مرور
     password: {
       type: String,
-      required: true,
+      required: function () { return !this.googleId; },
     },
+    // معرّف حساب جوجل (sub) — يُملأ لمن سجّل/دخل عبر جوجل
+    googleId: { type: String, default: "", index: true },
+    authProvider: { type: String, enum: ["local", "google"], default: "local" },
 
     country: {
       type: String,

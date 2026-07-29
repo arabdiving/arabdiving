@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
+import GoogleSignIn from "@/app/components/GoogleSignIn";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -114,6 +115,14 @@ export default function LoginPage() {
             {loading ? "جارٍ الدخول..." : "تسجيل الدخول"}
           </button>
         </form>
+
+        {/* أو الدخول بجوجل */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", margin: "18px 0" }}>
+          <div style={{ flex: 1, height: "1px", background: "var(--border,#e2e8f0)" }} />
+          <span style={{ color: "var(--muted,#94a3b8)", fontSize: "13px" }}>أو</span>
+          <div style={{ flex: 1, height: "1px", background: "var(--border,#e2e8f0)" }} />
+        </div>
+        <GoogleSignIn text="signin_with" />
 
         {message && (
           <p style={{ color: "#c0392b", marginTop: "16px", textAlign: "center" }}>
