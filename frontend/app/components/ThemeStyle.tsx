@@ -124,13 +124,9 @@ export default function ThemeStyle() {
     let adminPalette: Record<string, string> = {};
 
     const resolveAndApply = () => {
-      // اختيار الزائر (زر 🌊/☀️ في الهيدر) يتقدم على إعدادات الأدمن
-      let choice = "";
-      try { choice = localStorage.getItem(THEME_KEY) || ""; } catch {}
-      if (choice && THEMES[choice]) { apply(THEMES[choice]); return; }
-      // «ثابت كما في المستند»: البحر العميق هو الافتراضي الثابت للموقع.
-      // لوحة ألوان الأدمن لم تعد تؤثر (adminPalette متجاهل عمدا)،
-      // لكن زر البحر/الشمس في الهيدر ما زال يسمح للزائر بالتبديل يدويا.
+      // ✅ الوضع الكلاسيكي أُلغي نهائيًا — البحر العميق (Dark Ocean) ثابت في كل الصفحات.
+      // نتجاهل أي اختيار قديم محفوظ ونمسحه حتى لا يعود الوضع الفاتح على الأجهزة المخزّنة.
+      try { localStorage.removeItem(THEME_KEY); } catch {}
       void adminPalette;
       apply(THEMES.ocean);
     };
