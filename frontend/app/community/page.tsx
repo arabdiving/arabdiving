@@ -218,6 +218,9 @@ export default function CommunityPage() {
   const shownPosts = posts.filter((p) => (filter === "images" ? !!p.image : filter === "videos" ? !!p.video : true));
 
   return (
+    // صفحة المجتمع مصممة بنصوص فاتحة على زجاج داكن — نثبّت خلفية داكنة دائمًا
+    // (في الوضعين) حتى لا يختفي النص الأبيض على خلفية بيضاء في الوضع الكلاسيكي.
+    <div style={{ background: "#040d1a", minHeight: "100vh" }}>
     <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "28px 18px 60px" }}>
       <div style={{ position: "relative", overflow: "hidden", background: "radial-gradient(ellipse at 80% 0%, #1a2f5e 0%, #0a1428 62%)", color: "white", borderRadius: "24px", padding: "44px 32px", marginBottom: "24px", border: "1px solid rgba(255,255,255,0.06)" }}>
         <span style={{ display: "inline-flex", alignItems: "center", gap: "8px", background: "rgba(168,85,247,0.15)", border: "1px solid rgba(168,85,247,0.35)", color: "#c084fc", fontSize: "13px", fontWeight: 700, padding: "7px 16px", borderRadius: "30px", marginBottom: "16px" }}>● 12,000+ غوّاص من 18 دولة</span>
@@ -229,7 +232,7 @@ export default function CommunityPage() {
       <div className="community-grid" style={{ display: "grid", gridTemplateColumns: "300px 1fr", gap: "22px", alignItems: "start" }}>
         <aside style={{ position: "sticky", top: "90px", display: "grid", gap: "16px" }}>
           {currentUser ? (
-            <div style={{ background: "var(--glass-bg,rgba(8,20,48,0.78))", border: "1px solid var(--glass-border,rgba(255,255,255,0.08))", borderRadius: "18px", padding: "20px", backdropFilter: "blur(14px)" }}>
+            <div style={{ background: "rgba(8,20,48,0.92)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "18px", padding: "20px", backdropFilter: "blur(14px)" }}>
               <div style={{ display: "flex", alignItems: "center", gap: "14px", marginBottom: "18px" }}>
                 <div style={{ width: "54px", height: "54px", borderRadius: "50%", background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "#04121f", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 900, fontSize: "22px", flexShrink: 0 }}>{(currentUser.name || "؟").trim().charAt(0)}</div>
                 <div style={{ minWidth: 0 }}>
@@ -244,7 +247,7 @@ export default function CommunityPage() {
               <a href="/profile" style={{ display: "block", textAlign: "center", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", padding: "11px", borderRadius: "11px", fontWeight: 700, fontSize: "14px" }}>عرض ملفي الشخصي</a>
             </div>
           ) : (
-            <div style={{ background: "var(--glass-bg,rgba(8,20,48,0.78))", border: "1px solid var(--glass-border,rgba(255,255,255,0.08))", borderRadius: "18px", padding: "22px", textAlign: "center", backdropFilter: "blur(14px)" }}>
+            <div style={{ background: "rgba(8,20,48,0.92)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "18px", padding: "22px", textAlign: "center", backdropFilter: "blur(14px)" }}>
               <div style={{ fontSize: "38px", marginBottom: "8px" }}>🤿</div>
               <p style={{ color: "#fff", fontWeight: 700, marginBottom: "12px" }}>انضم لمجتمع الغوّاصين</p>
               <a href="/register" style={{ display: "block", background: "linear-gradient(135deg,#c9952a,#e8a830)", color: "#04121f", padding: "11px", borderRadius: "11px", fontWeight: 800, marginBottom: "8px" }}>أنشئ حساب</a>
@@ -273,10 +276,10 @@ export default function CommunityPage() {
             ))}
           </div>
 
-      <form id="composer" onSubmit={createPost} style={{ background: "var(--glass-bg,rgba(8,20,48,0.78))", padding: "20px", borderRadius: "18px", border: "1px solid var(--glass-border,rgba(255,255,255,0.08))", marginBottom: "26px", backdropFilter: "blur(14px)" }}>
+      <form id="composer" onSubmit={createPost} style={{ background: "rgba(8,20,48,0.92)", padding: "20px", borderRadius: "18px", border: "1px solid rgba(255,255,255,0.1)", marginBottom: "26px", backdropFilter: "blur(14px)" }}>
         <textarea rows={3} placeholder="شارك تجربتك في الغوص... أو الصق رابطًا" value={content}
           onChange={(e) => handleContentChange(e.target.value)}
-          style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "var(--text)", fontFamily: "inherit" }} />
+          style={{ width: "100%", padding: "12px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "#fff", fontFamily: "inherit" }} />
 
         {previewLoading && <p style={{ color: "#888", fontSize: "13px", marginTop: "8px" }}>جارٍ جلب معاينة الرابط...</p>}
         {linkPreview && !previewDismissed && !previewLoading && (
@@ -286,7 +289,7 @@ export default function CommunityPage() {
         {postImage && <img src={postImage} alt="" style={{ maxHeight: "180px", borderRadius: "10px", marginTop: "10px" }} />}
         <div style={{ marginTop: "10px", display: "flex", gap: "8px", flexWrap: "wrap", alignItems: "center" }}>
           <input value={postVideo} onChange={(e) => setPostVideo(e.target.value)} placeholder="رابط فيديو (YouTube/Vimeo) أو ارفع ملفًا"
-            style={{ flex: "1 1 220px", padding: "10px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "var(--text)", fontFamily: "inherit" }} />
+            style={{ flex: "1 1 220px", padding: "10px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "#fff", fontFamily: "inherit" }} />
           <label style={{ ...btn("#64748b"), display: "inline-flex", alignItems: "center", gap: "6px", fontSize: "13px" }}>
             رفع فيديو <input type="file" accept="video/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setPostVideo)} />
           </label>
@@ -307,7 +310,7 @@ export default function CommunityPage() {
         const canManage = currentUser?.role === "admin" || myId === post.user?._id;
         const isEditing = editingPost === post._id;
         return (
-          <div key={post._id} style={{ background: "var(--glass-bg,rgba(8,20,48,0.78))", border: "1px solid var(--glass-border,rgba(255,255,255,0.08))", borderRadius: "18px", padding: "20px", marginBottom: "18px", backdropFilter: "blur(14px)" }}>
+          <div key={post._id} style={{ background: "rgba(8,20,48,0.92)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "18px", padding: "20px", marginBottom: "18px", backdropFilter: "blur(14px)" }}>
             <div style={{ display: "flex", alignItems: "center", gap: "10px", marginBottom: "4px" }}>
               <div style={{ width: "42px", height: "42px", borderRadius: "50%", background: "linear-gradient(135deg,#2e75b6,#0d2c54)", color: "white", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 700, fontSize: "18px", flexShrink: 0 }}>
                 {(post.user?.name || "؟").trim().charAt(0)}
@@ -318,11 +321,11 @@ export default function CommunityPage() {
             {isEditing ? (
               <div style={{ marginTop: "10px" }}>
                 <textarea rows={3} value={editPostText} onChange={(e) => setEditPostText(e.target.value)}
-                  style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "var(--text)", fontFamily: "inherit" }} />
+                  style={{ width: "100%", padding: "10px", borderRadius: "10px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "#fff", fontFamily: "inherit" }} />
                 {editPostImage && <img src={editPostImage} alt="" style={{ maxHeight: "160px", borderRadius: "10px", marginTop: "8px" }} />}
                 <div style={{ display: "flex", gap: "8px", marginTop: "8px", flexWrap: "wrap", alignItems: "center" }}>
                   <input value={editPostVideo} onChange={(e) => setEditPostVideo(e.target.value)} placeholder="رابط فيديو"
-                    style={{ flex: "1 1 200px", padding: "8px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "var(--text)", fontFamily: "inherit" }} />
+                    style={{ flex: "1 1 200px", padding: "8px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "#fff", fontFamily: "inherit" }} />
                   <label style={{ ...btn("#64748b"), padding: "6px 12px", fontSize: "13px", display: "inline-flex", alignItems: "center", gap: "6px" }}>
                     رفع فيديو <input type="file" accept="video/*" hidden onChange={(e) => pickImage(e.target.files?.[0], setEditPostVideo)} />
                   </label>
@@ -366,7 +369,7 @@ export default function CommunityPage() {
                 <>
                   <input type="text" placeholder="اكتب تعليقًا..." value={commentInputs[post._id] || ""}
                     onChange={(e) => setCommentInputs((prev) => ({ ...prev, [post._id]: e.target.value }))}
-                    style={{ width: "100%", padding: "10px", marginTop: "10px", marginBottom: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "var(--text)", fontFamily: "inherit" }} />
+                    style={{ width: "100%", padding: "10px", marginTop: "10px", marginBottom: "10px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "#fff", fontFamily: "inherit" }} />
                   <button onClick={() => createComment(post._id)} style={btn("#0f3d75")}>اضف تعليقًا</button>
                 </>
               ) : <p style={{ color: "#9a6f1f", marginTop: "10px" }}>التعليقات معطّلة حاليًا.</p>}
@@ -380,7 +383,7 @@ export default function CommunityPage() {
                       {editing ? (
                         <div style={{ marginTop: "6px" }}>
                           <input value={editingCommentText} onChange={(e) => setEditingCommentText(e.target.value)}
-                            style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "var(--text)", fontFamily: "inherit", marginBottom: "8px" }} />
+                            style={{ width: "100%", padding: "8px", borderRadius: "8px", border: "1px solid rgba(255,255,255,0.14)", background: "rgba(255,255,255,0.05)", color: "#fff", fontFamily: "inherit", marginBottom: "8px" }} />
                           <div style={{ display: "flex", gap: "8px" }}>
                             <button onClick={() => saveCommentEdit(post._id, c._id)} style={{ ...btn("#1e7e34"), padding: "6px 14px", fontSize: "13px" }}>حفظ</button>
                             <button onClick={() => { setEditingComment(null); setEditingCommentText(""); }} style={{ ...btn("#64748b"), padding: "6px 14px", fontSize: "13px" }}>الغاء</button>
@@ -404,6 +407,7 @@ export default function CommunityPage() {
       })}
         </div>
       </div>
+    </div>
     </div>
   );
 }
