@@ -184,8 +184,6 @@ const upsertMyInstructorProfile = async (req, res) => {
     } else if (CITY_COORDS[fields.city]) {
       fields.location = CITY_COORDS[fields.city];
     }
-    // هل هذا أول إنشاء للبروفايل؟ (لإشعار الأدمن بطلب انضمام جديد مرة واحدة فقط)
-    const existedBefore = await InstructorProfile.exists({ user: req.user._id });
     const p = await InstructorProfile.findOneAndUpdate(
       { user: req.user._id },
       { $set: fields, $setOnInsert: { user: req.user._id } },
@@ -198,10 +196,15 @@ const upsertMyInstructorProfile = async (req, res) => {
     }
     res.json({ success: true, profile: p });
 
-    // 📧 بعد الرد: عند أول إنشاء لبروفايل مع صور كارنيه → أخطر الأدمن بطلب مراجعة جديد
-    if (!existedBefore && (p.cardImages || []).length) {
-      try { notifyAdminNewInstructorApplication(req.user, p); }
-      catch (e) { console.error("📧 إشعار طلب مدرب:", e.message); }
+    // 📧 بعد الرد: أخطر الأدمن أول مرة يكتمل فيها الطلب (صور كارنيه + قيد المراجعة + لم يُشعَر بعد)
+    // لا يعتمد على «أول إنشاء» — يضمن الإرسال حتى لو رفع الكارنيه في حفظة لاحقة.
+    const isPending = (p.applicationStatus || "pending") === "pending";
+    if (isPending && (p.cardImages || []).length && !p.applicationNotifiedAt) {
+      try {
+        await InstructorProfile.updateOne({ _id: p._id }, { $set: { applicationNotifiedAt: new Date() } });
+        notifyAdminNewInstructorApplication(req.user, p);
+        console.log(`📧 إشعار طلب مدرب جديد: ${req.user.email}`);
+      } catch (e) { console.error("📧 إشعار طلب مدرب:", e.message); }
     }
     return;
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }

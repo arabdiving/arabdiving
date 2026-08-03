@@ -153,8 +153,14 @@ const health = async (req, res) => {
   } catch (e) {
     dbError = e.message;
   }
+  // من يستقبل إشعارات الأدمن (حجوزات/طلبات مدربين)؟ — للتشخيص
+  let adminNotifyEmail = null;
+  try { adminNotifyEmail = await require("../lib/notifyEmails").resolveAdminEmail(); } catch {}
+
   res.json({
     success: true,
+    codeVersion: "notify-v2", // للتأكد أن النسخة الجديدة منشورة
+    adminNotifyEmail,          // بريد إشعارات الأدمن الفعلي
     database: {
       state: dbStates[mongoose.connection.readyState] || "غير معروف",
       subscribers: subscriberCount,

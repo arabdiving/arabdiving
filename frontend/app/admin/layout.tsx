@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { API_BASE } from "@/app/lib/api";
 
 const links = [
   { href: "/admin", label: "لوحة المعلومات", icon: "📊" },
@@ -28,6 +29,7 @@ const links = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [ok, setOk] = useState<boolean | null>(null);
   const [open, setOpen] = useState(false);
+  const [counts, setCounts] = useState<{ pendingInstructors: number; newBookings: number; total: number }>({ pendingInstructors: 0, newBookings: 0, total: 0 });
 
   useEffect(() => {
     try {
@@ -39,6 +41,28 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       setOk(false); window.location.href = "/login";
     }
   }, []);
+
+  // إشعارات الأدمن — تُحدَّث عند الدخول وكل 60 ثانية (لا تعتمد على البريد)
+  useEffect(() => {
+    if (!ok) return;
+    const load = () => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      fetch(`${API_BASE}/api/admin/notifications`, { headers: { Authorization: `Bearer ${token}` } })
+        .then((r) => r.json())
+        .then((d) => { if (d.counts) setCounts(d.counts); })
+        .catch(() => {});
+    };
+    load();
+    const t = setInterval(load, 60000);
+    return () => clearInterval(t);
+  }, [ok]);
+
+  // ربط الشارة بالرابط المناسب
+  const badgeFor = (href: string): number =>
+    href === "/admin/instructors" ? counts.pendingInstructors
+    : href === "/admin/bookings" ? counts.newBookings
+    : 0;
 
   if (ok === null) return <div style={{ padding: "60px", textAlign: "center", color: "#666" }}>جارٍ التحقق...</div>;
   if (!ok) return <div style={{ padding: "60px", textAlign: "center", color: "#c0392b" }}>هذه الصفحة للمشرفين فقط.</div>;
@@ -62,18 +86,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
       {/* Mobile top bar */}
       <div className="admin-topbar">
-        <strong style={{ fontSize: "17px" }}>لوحة الإدارة</strong>
+        <strong style={{ fontSize: "17px" }}>
+          لوحة الإدارة
+          {counts.total > 0 && <span style={{ background: "#e11d48", color: "#fff", borderRadius: "20px", fontSize: "12px", padding: "1px 8px", marginInlineStart: "8px", fontWeight: 700 }}>{counts.total}</span>}
+        </strong>
         <button onClick={() => setOpen((o) => !o)} aria-label="القائمة" style={{ background: "transparent", border: "none", color: "#fff", fontSize: "26px", cursor: "pointer", lineHeight: 1 }}>{open ? "✕" : "☰"}</button>
       </div>
 
       <aside className={`admin-side${open ? " open" : ""}`}>
         <h2 style={{ marginBottom: "20px", fontSize: "20px" }} className="admin-side-title">لوحة الإدارة</h2>
         <nav style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-          {links.map((l) => (
-            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} style={{ color: "white", padding: "12px 14px", borderRadius: "10px", fontSize: "15px" }}>
-              <span style={{ marginInlineEnd: "8px" }}>{l.icon}</span>{l.label}
+          {links.map((l) => {
+            const n = badgeFor(l.href);
+            return (
+            <Link key={l.href} href={l.href} onClick={() => setOpen(false)} style={{ color: "white", padding: "12px 14px", borderRadius: "10px", fontSize: "15px", display: "flex", alignItems: "center" }}>
+              <span style={{ marginInlineEnd: "8px" }}>{l.icon}</span>
+              <span>{l.label}</span>
+              {n > 0 && <span style={{ marginInlineStart: "auto", background: "#e11d48", color: "#fff", borderRadius: "20px", fontSize: "12px", minWidth: "20px", height: "20px", display: "inline-flex", alignItems: "center", justifyContent: "center", padding: "0 6px", fontWeight: 700 }}>{n}</span>}
             </Link>
-          ))}
+            );
+          })}
           <Link href="/" onClick={() => setOpen(false)} style={{ color: "rgba(255,255,255,0.7)", padding: "12px 14px", fontSize: "14px", marginTop: "10px" }}>← العودة للموقع</Link>
         </nav>
       </aside>

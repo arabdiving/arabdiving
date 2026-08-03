@@ -143,4 +143,35 @@ router.delete("/partner-centers/:id", async (req, res) => {
   }
 });
 
+// ── GET /api/admin/notifications ──────────────────────────
+// إشعارات الأدمن المرئية (لا تعتمد على البريد): أعداد ما يحتاج انتباهًا.
+const InstructorProfile = require("../models/InstructorProfile");
+const Booking = require("../models/Booking");
+router.get("/notifications", async (req, res) => {
+  try {
+    const [pendingInstructors, newBookings, totalBookings] = await Promise.all([
+      InstructorProfile.countDocuments({ active: true, applicationStatus: "pending" }),
+      Booking.countDocuments({ status: "pending_confirmation" }),
+      Booking.countDocuments({}),
+    ]);
+    // آخر 5 طلبات مدربين قيد المراجعة (للعرض السريع)
+    const recentInstructors = await InstructorProfile.find({ active: true, applicationStatus: "pending" })
+      .populate("user", "name email").sort({ createdAt: -1 }).limit(5)
+      .select("user agency city createdAt cardImages");
+    res.json({
+      success: true,
+      counts: {
+        pendingInstructors,   // طلبات مدربين قيد المراجعة
+        newBookings,          // حجوزات بانتظار التأكيد
+        total: pendingInstructors + newBookings,
+      },
+      recentInstructors: recentInstructors.map((p) => ({
+        _id: p._id, name: p.user?.name || "—", email: p.user?.email || "",
+        agency: p.agency, city: p.city, cards: (p.cardImages || []).length, at: p.createdAt,
+      })),
+      totalBookings,
+    });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
 module.exports = router;

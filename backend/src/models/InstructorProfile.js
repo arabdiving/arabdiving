@@ -73,6 +73,7 @@ const InstructorProfileSchema = new mongoose.Schema(
     // ملاحظة: البروفايلات القديمة بلا هذا الحقل تُعامل كمعتمدة (للتوافق الرجعي)
     applicationStatus: { type: String, enum: ["pending", "approved", "rejected"], default: "pending" },
     cardImages: { type: [String], default: [] }, // صور الكارنيهات — تظهر للإدارة فقط، لا تُعرض علنًا أبدًا
+    applicationNotifiedAt: { type: Date, default: null }, // متى أُشعر الأدمن بهذا الطلب (يمنع التكرار ويضمن الإرسال مرة)
 
     verified: { type: Boolean, default: false },     // توثيق الإدارة (بعد التحقق من رقم المدرب)
     active: { type: Boolean, default: true },

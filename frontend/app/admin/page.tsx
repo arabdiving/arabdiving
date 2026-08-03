@@ -20,12 +20,15 @@ const QUICK_LINKS = [
 export default function AdminDashboard() {
   const [stats, setStats] = useState<any>(null);
   const [err, setErr] = useState("");
+  const [notif, setNotif] = useState<any>(null);
 
   useEffect(() => {
     fetch(`${API_BASE}/api/admin/dashboard`, { headers: authHeaders() })
       .then((r) => r.json())
       .then((d) => (d.success ? setStats(d.stats) : setErr(d.message || "تعذّر التحميل")))
       .catch(() => setErr("تعذّر الاتصال بالخادم"));
+    fetch(`${API_BASE}/api/admin/notifications`, { headers: authHeaders() })
+      .then((r) => r.json()).then((d) => { if (d.success) setNotif(d); }).catch(() => {});
   }, []);
 
   const statCards = stats
@@ -42,6 +45,32 @@ export default function AdminDashboard() {
     <div>
       <h1 style={{ color: "var(--navy)", marginBottom: "24px" }}>لوحة المعلومات</h1>
       {err && <p style={{ color: "#c0392b" }}>{err}</p>}
+
+      {/* 🔔 إشعارات تحتاج انتباهك */}
+      {notif?.counts?.total > 0 && (
+        <div style={{ background: "linear-gradient(135deg,#fff1f2,#fee2e2)", border: "1px solid #fecaca", borderRadius: "16px", padding: "20px 22px", marginBottom: "28px" }}>
+          <h3 style={{ color: "#b91c1c", margin: "0 0 12px", fontSize: "17px" }}>🔔 يحتاج انتباهك الآن</h3>
+          <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+            {notif.counts.pendingInstructors > 0 && (
+              <Link href="/admin/instructors" style={{ background: "#fff", border: "1px solid #fca5a5", borderRadius: "12px", padding: "14px 20px", textDecoration: "none", display: "flex", alignItems: "center", gap: "12px", minWidth: "220px" }}>
+                <span style={{ background: "#e11d48", color: "#fff", borderRadius: "50%", width: "40px", height: "40px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "17px" }}>{notif.counts.pendingInstructors}</span>
+                <span><strong style={{ color: "var(--navy)" }}>🧑‍🏫 طلبات مدربين</strong><br /><span style={{ color: "#777", fontSize: "13px" }}>بانتظار مراجعتك ←</span></span>
+              </Link>
+            )}
+            {notif.counts.newBookings > 0 && (
+              <Link href="/admin/bookings" style={{ background: "#fff", border: "1px solid #fca5a5", borderRadius: "12px", padding: "14px 20px", textDecoration: "none", display: "flex", alignItems: "center", gap: "12px", minWidth: "220px" }}>
+                <span style={{ background: "#e11d48", color: "#fff", borderRadius: "50%", width: "40px", height: "40px", display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "17px" }}>{notif.counts.newBookings}</span>
+                <span><strong style={{ color: "var(--navy)" }}>🎟️ حجوزات جديدة</strong><br /><span style={{ color: "#777", fontSize: "13px" }}>بانتظار التأكيد ←</span></span>
+              </Link>
+            )}
+          </div>
+          {notif.recentInstructors?.length > 0 && (
+            <div style={{ marginTop: "14px", fontSize: "13px", color: "#7a1f1f" }}>
+              آخر الطلبات: {notif.recentInstructors.slice(0, 3).map((r: any) => r.name).join("، ")}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Stats */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(160px,1fr))", gap: "16px", marginBottom: "40px" }}>

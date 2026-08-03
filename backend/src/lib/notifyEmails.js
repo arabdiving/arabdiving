@@ -295,6 +295,7 @@ async function notifyAdminNewInstructorApplication(user = {}, profile = {}) {
 }
 
 module.exports = {
+  resolveAdminEmail,
   sendWelcomeEmail,
   sendAdminCreatedAccountEmail,
   sendInstructorNewMessageEmail,
