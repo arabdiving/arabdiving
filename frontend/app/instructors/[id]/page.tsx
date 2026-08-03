@@ -90,10 +90,16 @@ export default function InstructorProfilePage({ params }: { params: Promise<{ id
                 {ins.user?.name || "مدرب"} {ins.verified && <span title="موثق من المنصة" style={{ fontSize: "20px" }}>✅</span>}
               </h1>
               <p style={{ color: "rgba(255,255,255,0.65)", margin: "6px 0 0", fontSize: "14.5px" }}>
-                {ins.agency} · {ins.rank}{ins.yearsExp ? ` · مدرب منذ ${ins.sinceYear} (خبرة ${ins.yearsExp}+ سنة)` : ""} · 📍 {ins.city}
+                {ins.agency} · {ins.rank}{ins.yearsExp ? ` · مدرب منذ ${ins.sinceYear} (خبرة ${ins.yearsExp}+ سنة)` : ""} · 📍 {ins.city}{ins.country ? `، ${ins.country === "السعودية" ? "🇸🇦 السعودية" : "🇪🇬 مصر"}` : ""}
               </p>
+              {/* 🪪 الاعتماد المحلي (CDWS مصر / الاتحاد السعودي) */}
+              {ins.localLicense && (
+                <p style={{ display: "inline-flex", alignItems: "center", gap: "6px", background: "rgba(52,211,153,0.12)", border: "1px solid rgba(52,211,153,0.3)", color: "#6ee7b7", borderRadius: "20px", padding: "4px 12px", margin: "8px 0 0", fontSize: "12.5px", fontWeight: 700 }}>
+                  🪪 {ins.localLicense.label}
+                </p>
+              )}
               {ins.languages?.length > 0 && (
-                <p style={{ color: "rgba(255,255,255,0.45)", margin: "4px 0 0", fontSize: "13px" }}>🗣️ {ins.languages.join(" · ")}</p>
+                <p style={{ color: "rgba(255,255,255,0.45)", margin: "6px 0 0", fontSize: "13px" }}>🗣️ {ins.languages.join(" · ")}</p>
               )}
               {/* 🌐 السوشيال ميديا + الإيميل */}
               {(ins.email || Object.values(ins.social || {}).some(Boolean)) && (

@@ -23,7 +23,19 @@ const InstructorProfileSchema = new mongoose.Schema(
     specialties: { type: [String], default: [] },
     languages: { type: [String], default: ["العربية"] },
 
+    // الدولة تحدد الاعتماد المحلي المطلوب ومدن الغوص المتاحة
+    country: { type: String, enum: ["مصر", "السعودية"], default: "مصر" },
     city: { type: String, default: "" },
+
+    // الاعتماد المحلي:
+    // مصر  → عضوية غرفة الغوص المصرية CDWS (رقم البطاقة)
+    // السعودية → ترخيص الاتحاد السعودي للرياضات البحرية والغوص (رقم/حالة)
+    localAccreditation: {
+      cdwsNumber:     { type: String, default: "" }, // مصر
+      saudiLicense:   { type: String, default: "" }, // السعودية
+      hasLocalLicense:{ type: Boolean, default: false }, // هل لديه الاعتماد المحلي؟
+    },
+
     bio: { type: String, default: "" },
     whatsapp: { type: String, default: "" },
     email: { type: String, default: "" },          // إيميل التواصل (يظهر حسب إعدادات الإظهار)

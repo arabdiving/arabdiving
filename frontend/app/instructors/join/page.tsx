@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { API_BASE } from "@/app/lib/api";
-import { FIT_QUESTIONS, FIT_DISPLAY, FitKey } from "@/app/lib/instructorFit";
+import { FIT_QUESTIONS, FIT_DISPLAY, FitKey, COUNTRIES, CITIES_BY_COUNTRY } from "@/app/lib/instructorFit";
 
 /*
   انضمام المدرب — خطوتان:
@@ -58,7 +58,6 @@ const AGENCIES = ["CMAS", "NAUI", "PADI", "RAID", "SDI", "SSI", "TDI", "أخرى
 const RANKS = ["مساعد مدرب (AI)", "مدرب (OWSI / Instructor)", "MSDT", "IDC Staff", "Master Instructor", "Course Director / IT"];
 const SPECIALTIES = ["نيتروكس", "غوص عميق", "حطام", "ليلي", "ملاحة", "إتقان الطفو", "تصوير تحت الماء", "إنقاذ وEFR", "أطفال", "ذوو الهمم (تكيّفي)", "سايد ماونت", "غوص تقني", "غوص حر"];
 const LANGS = ["العربية", "الإنجليزية", "الفرنسية", "الألمانية", "الروسية", "الإيطالية"];
-const CITIES = ["شرم الشيخ", "دهب", "الغردقة", "مرسى علم", "الجونة", "سفاجا", "نويبع", "أخرى"];
 
 const glass: React.CSSProperties = { background: "var(--glass-bg,rgba(8,20,48,0.78))", border: "1px solid var(--glass-border,rgba(255,255,255,0.08))", backdropFilter: "blur(14px)", WebkitBackdropFilter: "blur(14px)" };
 const field: React.CSSProperties = { background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", borderRadius: "11px", padding: "11px", fontFamily: "inherit", fontSize: "14px", width: "100%", boxSizing: "border-box" };
@@ -68,7 +67,7 @@ export default function InstructorJoinPage() {
   const [step, setStep] = useState<"info" | "survey" | "fit" | "result">("info");
   const [fitAnswers, setFitAnswers] = useState<Partial<Record<FitKey, string>>>({});
   const [authed, setAuthed] = useState<boolean | null>(null);
-  const [form, setForm] = useState<any>({ agency: "", instructorNumber: "", rank: RANKS[1], sinceYear: "", specialties: [] as string[], languages: ["العربية"], city: "شرم الشيخ", bio: "", whatsapp: "", email: "", social: {}, video: "", showWeakness: false, showContact: true });
+  const [form, setForm] = useState<any>({ agency: "", instructorNumber: "", rank: RANKS[1], sinceYear: "", specialties: [] as string[], languages: ["العربية"], country: "مصر", city: "شرم الشيخ", localAccreditation: { cdwsNumber: "", saudiLicense: "", hasLocalLicense: false }, bio: "", whatsapp: "", email: "", social: {}, video: "", showWeakness: false, showContact: true });
   // حالة اكتمال بروفايلي (لشريط الخطوات) + صندوق الوارد + الموافقة المبدئية
   const [done, setDone] = useState({ info: false, fingerprint: false, fit: false });
   const [inbox, setInbox] = useState<any[]>([]);
@@ -267,9 +266,15 @@ export default function InstructorJoinPage() {
                 <input type="number" min={1960} max={new Date().getFullYear()} value={form.sinceYear} onChange={(e) => setForm({ ...form, sinceYear: e.target.value })} placeholder="2006" style={field} dir="ltr" required />
               </div>
               <div>
-                <label style={lbl}>المدينة</label>
+                <label style={lbl}>الدولة</label>
+                <select value={form.country} onChange={(e) => { const c = e.target.value; setForm({ ...form, country: c, city: (CITIES_BY_COUNTRY[c] || [])[0] || "" }); }} style={field}>
+                  {COUNTRIES.map((c) => <option key={c} value={c} style={{ color: "#0f172a" }}>{c === "مصر" ? "🇪🇬 مصر" : "🇸🇦 السعودية"}</option>)}
+                </select>
+              </div>
+              <div>
+                <label style={lbl}>مدينة الغوص</label>
                 <select value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} style={field}>
-                  {CITIES.map((c) => <option key={c} value={c} style={{ color: "#0f172a" }}>{c}</option>)}
+                  {(CITIES_BY_COUNTRY[form.country] || []).map((c) => <option key={c} value={c} style={{ color: "#0f172a" }}>{c}</option>)}
                 </select>
               </div>
               <div>
@@ -280,6 +285,32 @@ export default function InstructorJoinPage() {
                 <label style={lbl}>الإيميل (للتواصل)</label>
                 <input type="email" value={form.email || ""} onChange={(e) => setForm({ ...form, email: e.target.value })} placeholder="you@example.com" style={field} dir="ltr" />
               </div>
+            </div>
+
+            {/* 🪪 الاعتماد المحلي حسب الدولة */}
+            <div style={{ background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "16px" }}>
+              <label style={{ ...lbl, marginBottom: "8px" }}>
+                {form.country === "السعودية"
+                  ? "🇸🇦 الترخيص الوطني — الاتحاد السعودي للرياضات البحرية والغوص"
+                  : "🇪🇬 عضوية غرفة الغوص المصرية (CDWS)"}
+              </label>
+              <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "11.5px", lineHeight: 1.7, margin: "0 0 10px" }}>
+                {form.country === "السعودية"
+                  ? "التدريب الاحترافي في السعودية يتطلب ترخيصًا وطنيًا. أدخل رقمه إن وُجد."
+                  : "التدريب في مصر يتطلب عضوية CDWS سارية. أدخل رقم بطاقتك إن وُجد."}
+              </p>
+              {form.country === "السعودية" ? (
+                <input value={form.localAccreditation?.saudiLicense || ""} dir="ltr" placeholder="رقم الترخيص الوطني (اختياري)" style={field}
+                  onChange={(e) => setForm({ ...form, localAccreditation: { ...form.localAccreditation, saudiLicense: e.target.value } })} />
+              ) : (
+                <input value={form.localAccreditation?.cdwsNumber || ""} dir="ltr" placeholder="رقم بطاقة CDWS (اختياري)" style={field}
+                  onChange={(e) => setForm({ ...form, localAccreditation: { ...form.localAccreditation, cdwsNumber: e.target.value } })} />
+              )}
+              <label style={{ display: "flex", alignItems: "center", gap: "9px", cursor: "pointer", marginTop: "10px", color: "rgba(255,255,255,0.75)", fontSize: "13px", fontWeight: 400 }}>
+                <input type="checkbox" checked={!!form.localAccreditation?.hasLocalLicense} style={{ width: "16px", height: "16px", accentColor: "#22d3ee" }}
+                  onChange={(e) => setForm({ ...form, localAccreditation: { ...form.localAccreditation, hasLocalLicense: e.target.checked } })} />
+                <span>{form.country === "السعودية" ? "أؤكد أن لديّ ترخيصًا وطنيًا ساريًا للتدريب" : "أؤكد أن لديّ عضوية CDWS سارية"}</span>
+              </label>
             </div>
 
             <div>

@@ -40,8 +40,9 @@ async function contactAllowed() {
 const AXES = ["planning", "strategies", "management", "engagement", "watermanship", "professionalism"];
 const clamp5 = (v) => Math.max(1, Math.min(5, Number(v) || 0));
 
-// إحداثيات مدن التدريب — تُملأ تلقائيًا في location عند اختيار المدينة
+// إحداثيات مدن التدريب — تُملأ تلقائيًا في location عند اختيار المدينة (مصر + السعودية)
 const CITY_COORDS = {
+  // مصر
   "شرم الشيخ": { lat: 27.9158, lng: 34.3299 },
   "دهب":       { lat: 28.4913, lng: 34.5136 },
   "الغردقة":   { lat: 27.2579, lng: 33.8116 },
@@ -49,6 +50,18 @@ const CITY_COORDS = {
   "الجونة":    { lat: 27.3949, lng: 33.6782 },
   "سفاجا":     { lat: 26.7517, lng: 33.9344 },
   "نويبع":     { lat: 29.0327, lng: 34.6672 },
+  // السعودية — البحر الأحمر
+  "جدة":       { lat: 21.4858, lng: 39.1925 },
+  "ينبع":      { lat: 24.0895, lng: 38.0618 },
+  "أملج":      { lat: 25.0209, lng: 37.2685 },
+  "الوجه":     { lat: 26.2408, lng: 36.4632 },
+  "ضبا":       { lat: 27.3494, lng: 35.6907 },
+  "الليث":     { lat: 20.1500, lng: 40.2667 },
+  "جزر فرسان": { lat: 16.7000, lng: 42.1167 },
+  "نيوم":      { lat: 28.0000, lng: 35.2500 },
+  // السعودية — الخليج العربي
+  "الخبر":     { lat: 26.2794, lng: 50.2083 },
+  "الجبيل":    { lat: 27.0174, lng: 49.6583 },
 };
 
 const FIT_VALUES = {
@@ -78,6 +91,16 @@ function publicProfile(p, showContactGlobal = true) {
     agency: o.agency, rank: o.rank, sinceYear: o.sinceYear,
     yearsExp: o.sinceYear ? Math.max(0, new Date().getFullYear() - o.sinceYear) : null,
     specialties: o.specialties || [], languages: o.languages || [],
+    country: o.country || "مصر",
+    // الاعتماد المحلي: نعرض «موثّق محليًا» فقط (لا نكشف رقم الترخيص علنًا)
+    localLicense: (() => {
+      const la = o.localAccreditation || {};
+      const has = la.hasLocalLicense || !!la.cdwsNumber || !!la.saudiLicense;
+      if (!has) return null;
+      return o.country === "السعودية"
+        ? { label: "مرخّص من الاتحاد السعودي للرياضات البحرية والغوص", body: "الاتحاد السعودي" }
+        : { label: "عضو غرفة الغوص المصرية (CDWS)", body: "CDWS" };
+    })(),
     city: o.city, bio: o.bio,
     whatsapp: contactVisible ? (o.whatsapp || "") : "",
     email: contactVisible ? (o.email || "") : "",
@@ -154,7 +177,13 @@ const upsertMyInstructorProfile = async (req, res) => {
       sinceYear: b.sinceYear ? Math.max(1960, Math.min(new Date().getFullYear(), Number(b.sinceYear))) : null,
       specialties: Array.isArray(b.specialties) ? b.specialties.slice(0, 20).map((s) => String(s).slice(0, 40)) : [],
       languages: Array.isArray(b.languages) ? b.languages.slice(0, 10).map((s) => String(s).slice(0, 30)) : ["العربية"],
+      country: ["مصر", "السعودية"].includes(b.country) ? b.country : "مصر",
       city: String(b.city || "").slice(0, 40),
+      localAccreditation: {
+        cdwsNumber:      String(b.localAccreditation?.cdwsNumber || "").slice(0, 40),
+        saudiLicense:    String(b.localAccreditation?.saudiLicense || "").slice(0, 40),
+        hasLocalLicense: !!b.localAccreditation?.hasLocalLicense,
+      },
       bio: String(b.bio || "").slice(0, 600),
       whatsapp: String(b.whatsapp || "").slice(0, 20),
       email: String(b.email || "").slice(0, 120),

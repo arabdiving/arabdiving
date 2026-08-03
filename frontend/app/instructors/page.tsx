@@ -70,16 +70,29 @@ export default function InstructorsPage() {
     return m;
   }, [list]);
 
-  // مواقع المدن على الخريطة — مضبوطة يدويًا لتطابق شكل الساحل المصري:
-  // سيناء وخليج العقبة أعلى اليمين، وساحل البر الرئيسي (الجونة ← مرسى علم) قطر مائل نازل جنوبًا
+  // مواقع المدن على الخريطة — مضبوطة يدويًا: مصر على الساحل الغربي (يسار/وسط)،
+  // والسعودية على الساحل الشرقي للبحر الأحمر (يمين). الخليج العربي أسفل اليمين.
   const MAP_POS: Record<string, { x: number; y: number }> = {
-    "نويبع":     { x: 72, y: 12 },
-    "دهب":       { x: 66, y: 26 },
-    "شرم الشيخ": { x: 57, y: 40 },
-    "الجونة":    { x: 28, y: 46 },
-    "الغردقة":   { x: 33, y: 56 },
-    "سفاجا":     { x: 40, y: 67 },
-    "مرسى علم":  { x: 52, y: 86 },
+    // 🇪🇬 مصر — سيناء (أعلى وسط) وساحل البر الرئيسي (نازل جنوبًا)
+    "نويبع":     { x: 52, y: 10 },
+    "دهب":       { x: 47, y: 22 },
+    "شرم الشيخ": { x: 40, y: 34 },
+    "الجونة":    { x: 20, y: 40 },
+    "الغردقة":   { x: 24, y: 50 },
+    "سفاجا":     { x: 29, y: 60 },
+    "مرسى علم":  { x: 38, y: 80 },
+    // 🇸🇦 السعودية — ساحل البحر الأحمر الشرقي (من الشمال للجنوب)
+    "نيوم":      { x: 62, y: 12 },
+    "ضبا":       { x: 68, y: 20 },
+    "الوجه":     { x: 73, y: 32 },
+    "أملج":      { x: 72, y: 44 },
+    "ينبع":      { x: 70, y: 55 },
+    "جدة":       { x: 66, y: 72 },
+    "الليث":     { x: 70, y: 84 },
+    "جزر فرسان": { x: 60, y: 93 },
+    // 🇸🇦 الخليج العربي (أسفل اليمين)
+    "الخبر":     { x: 92, y: 84 },
+    "الجبيل":    { x: 94, y: 76 },
   };
   const project = (name: string, c: { lat: number; lng: number }) =>
     MAP_POS[name] || { x: ((c.lng - 33) / 2.5) * 100, y: ((29.5 - c.lat) / 5) * 100 };
@@ -123,7 +136,7 @@ export default function InstructorsPage() {
           <div style={{ position: "relative", height: "260px", borderRadius: "14px", overflow: "hidden", background: "radial-gradient(ellipse at 60% 40%, #0a2a4a 0%, #040d1a 75%)", border: "1px solid rgba(255,255,255,0.07)" }}>
             {/* شبكة ملاحية */}
             <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(100,180,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(100,180,255,1) 1px,transparent 1px)", backgroundSize: "40px 40px", opacity: 0.05 }} />
-            <span style={{ position: "absolute", top: "8px", insetInlineStart: "12px", color: "rgba(255,255,255,0.3)", fontSize: "11px" }}>البحر الأحمر وخليج العقبة</span>
+            <span style={{ position: "absolute", top: "8px", insetInlineStart: "12px", color: "rgba(255,255,255,0.3)", fontSize: "11px" }}>البحر الأحمر — مصر 🇪🇬 والسعودية 🇸🇦</span>
             {Object.entries(CITY_COORDS).map(([name, c]) => {
               const p = project(name, c);
               const count = cityCounts[name] || 0;
