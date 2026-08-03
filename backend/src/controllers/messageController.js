@@ -15,6 +15,13 @@ const createMessage = async (req, res) => {
       user: req.user ? req.user._id : undefined,
     });
     res.status(201).json({ success: true, id: doc._id });
+
+    // 📧 بعد الرد: أخطر الأدمن باستفسار جديد
+    try {
+      const { notifyAdminNewInquiry } = require("../lib/notifyEmails");
+      notifyAdminNewInquiry(doc);
+    } catch (e) { console.error("📧 إشعار استفسار:", e.message); }
+    return;
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

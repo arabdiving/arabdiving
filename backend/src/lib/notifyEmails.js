@@ -294,6 +294,43 @@ async function notifyAdminNewInstructorApplication(user = {}, profile = {}) {
     .then(log(`طلب مدرب للأدمن ${to}`)).catch((e) => console.error("📧 طلب مدرب أدمن:", e.message));
 }
 
+/* ── 10) إشعار الأدمن بمنشور مجتمع جديد ── */
+async function notifyAdminNewPost(user = {}, post = {}) {
+  const to = await resolveAdminEmail();
+  if (!to) return;
+  const snippet = String(post.content || "").slice(0, 300) || (post.image ? "📷 صورة" : post.video ? "🎬 فيديو" : "—");
+  const html = wrapService(`
+    <h2 style="color:#0b6ea8;">💬 منشور جديد في المجتمع</h2>
+    <p><b>${user.name || "عضو"}</b>${user.email ? ` · <span dir="ltr">${user.email}</span>` : ""} نشر:</p>
+    <div style="background:#f4f7fa;border-right:4px solid #0b6ea8;border-radius:8px;padding:14px 16px;margin:14px 0;font-size:14px;line-height:1.9;white-space:pre-wrap;">${snippet}</div>
+    <p style="text-align:center;margin:20px 0;">
+      <a href="${SITE_URL}/community" style="background:#0b6ea8;color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:bold;">فتح المجتمع</a>
+      &nbsp;·&nbsp;
+      <a href="${SITE_URL}/admin/comments" style="color:#0b6ea8;font-weight:bold;">إدارة المحتوى</a>
+    </p>`);
+  sendMail({ to, subject: `💬 منشور جديد من ${user.name || "عضو"} — ArabDiving`, html })
+    .then(log(`منشور للأدمن ${to}`)).catch((e) => console.error("📧 منشور أدمن:", e.message));
+}
+
+/* ── 11) إشعار الأدمن باستفسار/رسالة جديدة عبر نموذج التواصل ── */
+async function notifyAdminNewInquiry(msg = {}) {
+  const to = await resolveAdminEmail();
+  if (!to) return;
+  const html = wrapService(`
+    <h2 style="color:#0b6ea8;">✉️ استفسار جديد من زائر</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;line-height:2;">
+      <tr><td style="color:#7a8a99;">الاسم:</td><td><b>${msg.name || "—"}</b></td></tr>
+      ${msg.contact ? `<tr><td style="color:#7a8a99;">وسيلة التواصل:</td><td dir="ltr">${msg.contact}</td></tr>` : ""}
+      ${msg.page ? `<tr><td style="color:#7a8a99;">من صفحة:</td><td dir="ltr">${msg.page}</td></tr>` : ""}
+    </table>
+    ${msg.message ? `<div style="background:#f4f7fa;border-right:4px solid #0b6ea8;border-radius:8px;padding:14px 16px;margin:14px 0;font-size:14px;line-height:1.9;white-space:pre-wrap;">${String(msg.message).slice(0, 800)}</div>` : ""}
+    <p style="text-align:center;margin:20px 0;">
+      <a href="${SITE_URL}/admin/messages" style="background:#0b6ea8;color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:bold;">فتح الرسائل</a>
+    </p>`);
+  sendMail({ to, subject: `✉️ استفسار جديد (${msg.name || "زائر"}) — ArabDiving`, html })
+    .then(log(`استفسار للأدمن ${to}`)).catch((e) => console.error("📧 استفسار أدمن:", e.message));
+}
+
 module.exports = {
   resolveAdminEmail,
   sendWelcomeEmail,
@@ -301,6 +338,8 @@ module.exports = {
   sendInstructorNewMessageEmail,
   notifyAdminNewBooking,
   notifyAdminNewInstructorApplication,
+  notifyAdminNewPost,
+  notifyAdminNewInquiry,
   sendInstructorDecisionEmail,
   sendFingerprintResultEmail,
   sendFitResultEmail,

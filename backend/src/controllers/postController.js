@@ -35,6 +35,13 @@ const createPost = async (req, res) => {
       } : undefined,
     });
     res.status(201).json({ success: true, post });
+
+    // 📧 بعد الرد: أخطر الأدمن بمنشور مجتمع جديد
+    try {
+      const { notifyAdminNewPost } = require("../lib/notifyEmails");
+      notifyAdminNewPost(req.user, post);
+    } catch (e) { console.error("📧 إشعار منشور:", e.message); }
+    return;
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
