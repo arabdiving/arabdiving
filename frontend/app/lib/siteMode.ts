@@ -46,4 +46,5 @@ export const FOCUS_NAV_TOOLS = [
   { href: "/quiz", label: "🎨 اكتشف نمطك" },
   { href: "/training-fit", label: "🤝 استبيان التوافق" },
   { href: "/survey", label: "🧠 استبيان التعلم" },
+  { href: "/suunto-story", label: "🤿 قصتي مع Suunto" },
 ];

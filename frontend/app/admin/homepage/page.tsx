@@ -65,13 +65,14 @@ const FOCUS_REGISTRY: Record<string, { label: string; icon: string; desc: string
   focus_gates:       { label: "بوابتا الدليلين",     icon: "🚪", desc: "بطاقتان كبيرتان: دليل المدربين ودليل المراكز" },
   focus_tools:       { label: "شبكة الأدوات",        icon: "🧰", desc: "حاسبة الأوزان، خريطة المواقع، والاستبيانات الثلاثة" },
   focus_community:   { label: "مجتمع الغواصين",      icon: "💬", desc: "آخر منشورات المجتمع + زر الدخول والمشاركة" },
+  focus_suunto:      { label: "قصة Suunto D6",       icon: "🤿", desc: "بطاقة ترويجية لصفحة تجربتك مع كمبيوتر Suunto (بخمس لغات)" },
   focus_map:         { label: "خريطة البحر الأحمر",  icon: "🗺️", desc: "خريطة الموقع التفاعلية" },
   focus_instructors: { label: "بروموشن المدربين",    icon: "🧑‍🏫", desc: "قسم ترويجي لدليل المدربين وبصماتهم" },
   focus_centers:     { label: "شبكة المراكز",        icon: "🤿", desc: "صف المراكز الشريكة المميزة" },
 };
 
 const DEFAULT_FOCUS: Block[] = Object.entries(FOCUS_REGISTRY).map(([key, cfg], i) => ({
-  key, label: cfg.label, visible: i < 6, order: i, // ظاهرة افتراضيًا: الرسالة، الأيزو، التعصب، البوابتان، الأدوات، المجتمع
+  key, label: cfg.label, visible: i < 7, order: i, // ظاهرة افتراضيًا حتى بلوك قصة Suunto
 }));
 
 export default function HomepageBlocksAdmin() {

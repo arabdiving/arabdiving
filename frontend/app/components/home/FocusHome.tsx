@@ -19,9 +19,10 @@ export const DEFAULT_FOCUS_BLOCKS: FocusBlock[] = [
   { key: "focus_gates",       visible: true,  order: 3 },
   { key: "focus_tools",       visible: true,  order: 4 },
   { key: "focus_community",   visible: true,  order: 5 },
-  { key: "focus_map",         visible: false, order: 6 },
-  { key: "focus_instructors", visible: false, order: 7 },
-  { key: "focus_centers",     visible: false, order: 8 },
+  { key: "focus_suunto",      visible: true,  order: 6 },
+  { key: "focus_map",         visible: false, order: 7 },
+  { key: "focus_instructors", visible: false, order: 8 },
+  { key: "focus_centers",     visible: false, order: 9 },
 ];
 
 // 🎨 لوحة انستجرام
@@ -304,6 +305,23 @@ export default function FocusHome({ blocks, promoImages = {} }: { blocks?: Focus
               💬 ادخل المجتمع وشارك ←
             </Link>
           </div>
+        </section>
+      );
+      case "focus_suunto":      return (
+        <section key={key} style={{ maxWidth: "1100px", margin: "0 auto", padding: "20px 18px 40px" }}>
+          <Link href="/suunto-story" style={{ display: "block", textDecoration: "none", ...IG.glass, borderRadius: "20px", padding: "28px", borderTop: "3px solid #E1306C" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+              <div style={{ fontSize: "46px" }}>🤿</div>
+              <div style={{ flex: 1, minWidth: "240px" }}>
+                <div style={{ color: "#FCAF45", fontSize: "12.5px", fontWeight: 800, letterSpacing: "1px", marginBottom: "4px" }}>شهادة شخصية · بخمس لغات</div>
+                <h2 style={{ color: "#fff", fontSize: "clamp(19px,4vw,25px)", fontWeight: 900, margin: "0 0 6px" }}>قصتي مع كمبيوتر الغوص Suunto D6</h2>
+                <p style={{ color: "rgba(255,255,255,0.6)", fontSize: "14px", lineHeight: 1.9, margin: 0 }}>
+                  373 ساعة غوص فقط، بطارية استُبدلت بمركز معتمد... ثم تضبيب وشاشة تالفة، ورد Suunto: «الجهاز أكثر من 24 سنة». اقرأ التجربة كاملة واحكم بنفسك.
+                </p>
+                <span style={{ display: "inline-block", marginTop: "12px", background: IG.gradBtn, color: "#fff", padding: "10px 22px", borderRadius: "11px", fontWeight: 800, fontSize: "13.5px" }}>اقرأ القصة ←</span>
+              </div>
+            </div>
+          </Link>
         </section>
       );
       case "focus_map":         return <RedSeaMap key={key} embedded />;
