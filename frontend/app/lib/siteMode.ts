@@ -14,6 +14,7 @@ export const FOCUS_ALLOWED: string[] = [
   "/family-booking",       // دليل مراكز الغوص + الحجز
   "/store",                // صفحات المراكز العامة
   "/community",            // مجتمع الغواصين (المنشورات وصفحاتها المنفردة)
+  "/suunto-story",         // شهادة شخصية بخمس لغات
   "/weight-calculator",    // أداة: حاسبة الأوزان
   "/dive-sites",           // أداة: خريطة مواقع الغوص
   "/course-standards",     // معايير الأوبن ووتر والأدفانس الدولية

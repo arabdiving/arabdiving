@@ -34,6 +34,7 @@ const NAV_MORE: MItem[] = [
   { href: "/quiz", label: "اكتشف نمطك" },
   { href: "/survey", label: "استبيان التعلم" },
   { href: "/stories", label: "القصص" },
+  { href: "/suunto-story", label: "قصتي مع Suunto 🤿" },
   { href: "/youth", label: "الشباب" },
   { href: "/women", label: "النساء" },
   { href: "/kids", label: "الأطفال" },
