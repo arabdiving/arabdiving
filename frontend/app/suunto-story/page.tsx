@@ -36,6 +36,7 @@ const T: Record<Lang, {
   quoteLabel: string;
   conclusionTitle: string; conclusion: string[];
   disclaimer: string;
+  topicsLabel: string; topics: string[];
 }> = {
   ar: {
     badge: "🤿 شهادة شخصية",
@@ -63,9 +64,12 @@ const T: Record<Lang, {
     conclusion: [
       "بحسب Suunto، عمر كمبيوتري «أكثر من 24 سنة». ومع ذلك لم يسجّل سوى 373 ساعة غوص — أي نحو 2.5 ساعة استخدام فعلي في السنة.",
       "يصعب عليّ أن أتقبّل أن كمبيوتر غوص — عاملته بكل هذه العناية — يُفترض أن يعمل 24 سنة فقط بغضّ النظر عن قِلّة استخدامه. وأنا على يقين أن كثيرًا من أجهزة الغوص الأخرى ما زالت تعمل لفترات أطول بكثير.",
+      "وأمر آخر يستحق الذكر: على حدّ علمي، لا تملك Suunto في مصر كلها سوى ثلاثة مراكز صيانة معتمدة فقط — وكلها تتبع العائلة نفسها. هذا يعني أن خيارات الغوّاص المصري للصيانة المعتمدة محدودة للغاية، ولا مجال عمليًا للحصول على رأيٍ معتمدٍ ثانٍ.",
       "أشارك تجربتي كاملة هنا حتى يقرأها كل غوّاص ويحكم بنفسه. هذه شهادتي الشخصية الصادقة، كعميل ومدرب غوص.",
     ],
     disclaimer: "هذه رواية شخصية لتجربتي ورأيي كعميل. أوردت الوقائع كما مررت بها، ورد Suunto كما وصلني نصًّا. الأسماء التجارية مذكورة لأغراض التعريف فقط.",
+    topicsLabel: "مواضيع ذات صلة",
+    topics: ["كمبيوتر غوص سونتو D6", "صيانة سونتو في مصر", "استبدال بطارية كمبيوتر الغوص", "تضبيب كمبيوتر الغوص", "أفضل كمبيوتر غوص", "الغوص في البحر الأحمر", "الغوص في دهب", "دليل مدربي الغوص العرب"],
   },
   en: {
     badge: "🤿 A Personal Account",
@@ -93,9 +97,12 @@ const T: Record<Lang, {
     conclusion: [
       "According to Suunto, my dive computer is “more than 24 years old.” Yet it logged only 373 hours of diving — around 2.5 hours of actual use per year.",
       "I find it hard to accept that a dive computer — one I cared for so carefully — is expected to last only 24 years regardless of how lightly it was used. I'm certain that many other dive computers keep working far longer.",
+      "There's another point worth mentioning: to my knowledge, Suunto has only three authorized service centers in all of Egypt — and they all belong to the same family. This means an Egyptian diver's options for authorized service are extremely limited, with virtually no way to obtain a second authorized opinion.",
       "I'm sharing my full experience here so that every diver can read it and judge for themselves. This is my personal, honest account, as a customer and a diving instructor.",
     ],
     disclaimer: "This is a personal account of my own experience and opinion as a customer. I've stated the facts as I lived them, and Suunto's reply verbatim as I received it. Brand names are mentioned for identification only.",
+    topicsLabel: "Related topics",
+    topics: ["Suunto D6 dive computer", "Suunto service center Egypt", "dive computer battery replacement", "dive computer fogging", "best dive computer", "Red Sea diving", "diving in Dahab", "Arab dive instructors directory"],
   },
   de: {
     badge: "🤿 Ein persönlicher Bericht",
@@ -123,9 +130,12 @@ const T: Record<Lang, {
     conclusion: [
       "Laut Suunto ist mein Tauchcomputer „über 24 Jahre alt“. Dennoch protokollierte er nur 373 Tauchstunden — etwa 2,5 Stunden tatsächliche Nutzung pro Jahr.",
       "Es fällt mir schwer zu akzeptieren, dass ein Tauchcomputer — den ich so sorgfältig pflegte — nur 24 Jahre halten soll, unabhängig davon, wie wenig er genutzt wurde. Ich bin sicher, dass viele andere Tauchcomputer weit länger funktionieren.",
+      "Ein weiterer erwähnenswerter Punkt: Meines Wissens hat Suunto in ganz Ägypten nur drei autorisierte Servicezentren — und alle gehören derselben Familie. Das bedeutet, dass die Möglichkeiten eines ägyptischen Tauchers für einen autorisierten Service äußerst begrenzt sind, praktisch ohne Möglichkeit einer zweiten autorisierten Meinung.",
       "Ich teile meine gesamte Erfahrung hier, damit jeder Taucher sie lesen und selbst urteilen kann. Dies ist mein persönlicher, ehrlicher Bericht — als Kunde und Tauchlehrer.",
     ],
     disclaimer: "Dies ist ein persönlicher Bericht über meine eigene Erfahrung und Meinung als Kunde. Ich habe die Fakten so geschildert, wie ich sie erlebte, und Suuntos Antwort wörtlich, wie ich sie erhielt. Markennamen dienen nur der Identifikation.",
+    topicsLabel: "Verwandte Themen",
+    topics: ["Suunto D6 Tauchcomputer", "Suunto Service Ägypten", "Tauchcomputer Batteriewechsel", "Tauchcomputer Beschlag", "bester Tauchcomputer", "Tauchen im Roten Meer", "Tauchen in Dahab", "Arabisches Tauchlehrer-Verzeichnis"],
   },
   es: {
     badge: "🤿 Un relato personal",
@@ -153,9 +163,12 @@ const T: Record<Lang, {
     conclusion: [
       "Según Suunto, mi ordenador de buceo tiene “más de 24 años”. Sin embargo, solo registró 373 horas de buceo — unas 2,5 horas de uso real al año.",
       "Me cuesta aceptar que un ordenador de buceo — que cuidé con tanto esmero — deba durar solo 24 años sin importar lo poco que se use. Estoy seguro de que muchos otros ordenadores de buceo siguen funcionando mucho más tiempo.",
+      "Otro punto que vale la pena mencionar: hasta donde sé, Suunto solo tiene tres centros de servicio autorizados en todo Egipto — y todos pertenecen a la misma familia. Esto significa que las opciones de un buceador egipcio para un servicio autorizado son muy limitadas, prácticamente sin forma de obtener una segunda opinión autorizada.",
       "Comparto aquí mi experiencia completa para que cada buceador la lea y juzgue por sí mismo. Este es mi relato personal y sincero, como cliente e instructor de buceo.",
     ],
     disclaimer: "Este es un relato personal de mi propia experiencia y opinión como cliente. He expuesto los hechos tal como los viví, y la respuesta de Suunto literalmente como la recibí. Las marcas se mencionan solo con fines de identificación.",
+    topicsLabel: "Temas relacionados",
+    topics: ["ordenador de buceo Suunto D6", "servicio Suunto Egipto", "cambio de batería ordenador de buceo", "empañamiento ordenador de buceo", "mejor ordenador de buceo", "buceo en el Mar Rojo", "buceo en Dahab", "directorio de instructores de buceo árabes"],
   },
   zh: {
     badge: "🤿 个人经历",
@@ -183,9 +196,12 @@ const T: Record<Lang, {
     conclusion: [
       "据 Suunto 所说，我的潜水电脑“已超过 24 年”。然而它只记录了 373 小时的潜水 —— 每年约 2.5 小时的实际使用。",
       "我很难接受：一台我如此精心保养的潜水电脑，无论使用多么少，都只被期望使用 24 年。我确信许多其他潜水电脑仍能使用更久。",
+      "还有一点值得一提：据我所知，Suunto 在整个埃及只有三家授权服务中心 —— 而且它们都属于同一个家族。这意味着埃及潜水员获得授权维修的选择极为有限，几乎无法获得第二个授权意见。",
       "我在此分享我的完整经历，让每位潜水员都能阅读并自行判断。这是我作为客户和潜水教练的个人真实陈述。",
     ],
     disclaimer: "这是我作为客户的个人经历与意见陈述。我如实叙述了我所经历的事实，并原文引用了我收到的 Suunto 回复。品牌名称仅用于识别。",
+    topicsLabel: "相关主题",
+    topics: ["Suunto D6 潜水电脑", "埃及 Suunto 维修中心", "潜水电脑更换电池", "潜水电脑起雾", "最佳潜水电脑", "红海潜水", "达哈布潜水", "阿拉伯潜水教练目录"],
   },
 };
 
@@ -260,8 +276,18 @@ export default function SuuntoStoryPage() {
           ))}
         </div>
 
+        {/* مواضيع ذات صلة — تعزيز طبيعي للكلمات المفتاحية */}
+        <div style={{ marginTop: "26px" }}>
+          <div style={{ color: "rgba(255,255,255,0.5)", fontSize: "12.5px", fontWeight: 700, marginBottom: "10px" }}>{t.topicsLabel}</div>
+          <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+            {t.topics.map((tp) => (
+              <span key={tp} style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.7)", borderRadius: "20px", padding: "6px 13px", fontSize: "12.5px" }}>{tp}</span>
+            ))}
+          </div>
+        </div>
+
         {/* تنويه */}
-        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "12px", lineHeight: 1.85, marginTop: "20px" }}>{t.disclaimer}</p>
+        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "12px", lineHeight: 1.85, marginTop: "22px" }}>{t.disclaimer}</p>
 
         <div style={{ textAlign: "center", marginTop: "26px" }}>
           <Link href="/" style={{ color: "#22d3ee", fontWeight: 700, fontSize: "14px" }}>← ArabDiving</Link>
