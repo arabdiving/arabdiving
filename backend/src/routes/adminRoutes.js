@@ -147,12 +147,14 @@ router.delete("/partner-centers/:id", async (req, res) => {
 // إشعارات الأدمن المرئية (لا تعتمد على البريد): أعداد ما يحتاج انتباهًا.
 const InstructorProfile = require("../models/InstructorProfile");
 const Booking = require("../models/Booking");
+const StoryTestimonial = require("../models/StoryTestimonial");
 router.get("/notifications", async (req, res) => {
   try {
-    const [pendingInstructors, newBookings, totalBookings] = await Promise.all([
+    const [pendingInstructors, newBookings, totalBookings, pendingTestimonials] = await Promise.all([
       InstructorProfile.countDocuments({ active: true, applicationStatus: "pending" }),
       Booking.countDocuments({ status: "pending_confirmation" }),
       Booking.countDocuments({}),
+      StoryTestimonial.countDocuments({ status: "pending" }),
     ]);
     // آخر 5 طلبات مدربين قيد المراجعة (للعرض السريع)
     const recentInstructors = await InstructorProfile.find({ active: true, applicationStatus: "pending" })
@@ -163,7 +165,8 @@ router.get("/notifications", async (req, res) => {
       counts: {
         pendingInstructors,   // طلبات مدربين قيد المراجعة
         newBookings,          // حجوزات بانتظار التأكيد
-        total: pendingInstructors + newBookings,
+        pendingTestimonials,  // تجارب بانتظار النشر
+        total: pendingInstructors + newBookings + pendingTestimonials,
       },
       recentInstructors: recentInstructors.map((p) => ({
         _id: p._id, name: p.user?.name || "—", email: p.user?.email || "",

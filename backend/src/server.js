@@ -34,6 +34,7 @@ const travelRoutes = require("./routes/travelRoutes");
 const instructorRoutes = require("./routes/instructorRoutes");
 const newsletterRoutes = require("./routes/newsletterRoutes");
 const emailAdminRoutes = require("./routes/emailAdminRoutes");
+const testimonialRoutes = require("./routes/testimonialRoutes");
 const { startAutomation } = require("./lib/emailAutomation");
 
 const app = express();
@@ -107,6 +108,7 @@ app.use("/api/dm", dmRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/og-preview", ogPreviewRoutes);
 app.use("/api/newsletter", newsletterRoutes);
+app.use("/api/testimonials", testimonialRoutes);
 app.use("/api/email-admin", emailAdminRoutes);
 app.use("/uploads", express.static("uploads"));
 

@@ -19,6 +19,7 @@ const links = [
   { href: "/admin/courses", label: "الدورات", icon: "🎓" },
   { href: "/admin/bookings", label: "الحجوزات", icon: "🎟️" },
   { href: "/admin/messages", label: "الرسائل والتواصل", icon: "📨" },
+  { href: "/admin/testimonials", label: "تجارب وشكاوى الزوار", icon: "✍️" },
   { href: "/admin/size-profiles", label: "مقاسات الأعضاء", icon: "📏" },
   { href: "/admin/comments", label: "التعليقات والمنشورات", icon: "💬" },
   { href: "/admin/users", label: "المستخدمون", icon: "👥" },
@@ -29,7 +30,7 @@ const links = [
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [ok, setOk] = useState<boolean | null>(null);
   const [open, setOpen] = useState(false);
-  const [counts, setCounts] = useState<{ pendingInstructors: number; newBookings: number; total: number }>({ pendingInstructors: 0, newBookings: 0, total: 0 });
+  const [counts, setCounts] = useState<{ pendingInstructors: number; newBookings: number; pendingTestimonials?: number; total: number }>({ pendingInstructors: 0, newBookings: 0, total: 0 });
 
   useEffect(() => {
     try {
@@ -62,6 +63,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const badgeFor = (href: string): number =>
     href === "/admin/instructors" ? counts.pendingInstructors
     : href === "/admin/bookings" ? counts.newBookings
+    : href === "/admin/testimonials" ? (counts.pendingTestimonials || 0)
     : 0;
 
   if (ok === null) return <div style={{ padding: "60px", textAlign: "center", color: "#666" }}>جارٍ التحقق...</div>;

@@ -331,6 +331,27 @@ async function notifyAdminNewInquiry(msg = {}) {
     .then(log(`استفسار للأدمن ${to}`)).catch((e) => console.error("📧 استفسار أدمن:", e.message));
 }
 
+/* ── 12) إشعار الأدمن بتجربة/شكوى جديدة من صندوق «شاركنا» ── */
+async function notifyAdminNewTestimonial(t = {}) {
+  const to = await resolveAdminEmail();
+  if (!to) return;
+  const pub = t.wantsPublic;
+  const html = wrapService(`
+    <h2 style="color:#0b6ea8;">${pub ? "📝 تجربة جديدة (طلب نشر عام)" : "🔒 رسالة/شكوى خاصة"}</h2>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;line-height:2;">
+      <tr><td style="color:#7a8a99;">من:</td><td><b>${t.name || "—"}</b></td></tr>
+      ${t.contact ? `<tr><td style="color:#7a8a99;">وسيلة التواصل:</td><td dir="ltr">${t.contact}</td></tr>` : ""}
+      ${t.brand ? `<tr><td style="color:#7a8a99;">بخصوص:</td><td>${t.brand}</td></tr>` : ""}
+      <tr><td style="color:#7a8a99;">الرغبة:</td><td>${pub ? "🌍 نشر عام (بانتظار موافقتك)" : "🔒 خاص للإدارة فقط"}</td></tr>
+    </table>
+    <div style="background:#f4f7fa;border-right:4px solid #0b6ea8;border-radius:8px;padding:14px 16px;margin:14px 0;font-size:14px;line-height:1.9;white-space:pre-wrap;">${String(t.message || "").slice(0, 1200)}</div>
+    ${pub ? `<p style="text-align:center;margin:20px 0;">
+      <a href="${SITE_URL}/admin/testimonials" style="background:#0b6ea8;color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-weight:bold;">مراجعة ونشر</a>
+    </p>` : ""}`);
+  sendMail({ to, subject: `${pub ? "📝 تجربة جديدة للنشر" : "🔒 شكوى/رسالة خاصة"} من ${t.name || "زائر"} — ArabDiving`, html })
+    .then(log(`تجربة للأدمن ${to}`)).catch((e) => console.error("📧 تجربة أدمن:", e.message));
+}
+
 module.exports = {
   resolveAdminEmail,
   sendWelcomeEmail,
@@ -340,6 +361,7 @@ module.exports = {
   notifyAdminNewInstructorApplication,
   notifyAdminNewPost,
   notifyAdminNewInquiry,
+  notifyAdminNewTestimonial,
   sendInstructorDecisionEmail,
   sendFingerprintResultEmail,
   sendFitResultEmail,
