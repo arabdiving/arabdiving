@@ -20,6 +20,8 @@ export default function AdminBookings() {
       .then((d) => setBookings(d.bookings || []))
       .catch(() => setMsg("تعذّر تحميل الحجوزات"));
     fetch(`${API_BASE}/api/settings`).then((r) => r.json()).then((d) => setAddons(d.settings?.addons || [])).catch(() => {});
+    // اطّلعت على الحجوزات → صفّر تنبيه «حجوزات جديدة»
+    fetch(`${API_BASE}/api/admin/notifications/seen/bookings`, { method: "POST", headers: authHeaders() }).catch(() => {});
   }, []);
 
   const updAddon = (i: number, patch: any) => setAddons((a) => a.map((x, j) => (j === i ? { ...x, ...patch } : x)));

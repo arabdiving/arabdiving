@@ -99,6 +99,10 @@ const updateSettings = async (req, res) => {
         order:   typeof b.order === "number" ? b.order : i,
       }));
     }
+    // براند صندوق «شاركنا تجربتك»
+    if (typeof req.body.shareBoxBrand === "string") {
+      s.shareBoxBrand = req.body.shareBoxBrand.trim().slice(0, 60);
+    }
     // بلوكات رئيسية وضع «يحل مشكلة»
     if (Array.isArray(req.body.focusHomeBlocks)) {
       s.focusHomeBlocks = req.body.focusHomeBlocks.map((b, i) => ({
@@ -167,7 +171,7 @@ const updateSettings = async (req, res) => {
       s.markModified("branding");
     }
     await s.save();
-    res.json({ success: true, settings: { siteMode: s.siteMode || "full", commentsEnabled: s.commentsEnabled, directContactEnabled: s.directContactEnabled !== false, focusHomeBlocks: s.focusHomeBlocks || [], hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {}, travelWidgets: s.travelWidgets || [] } });
+    res.json({ success: true, settings: { siteMode: s.siteMode || "full", commentsEnabled: s.commentsEnabled, directContactEnabled: s.directContactEnabled !== false, focusHomeBlocks: s.focusHomeBlocks || [], shareBoxBrand: s.shareBoxBrand || "Suunto", hiddenPages: s.hiddenPages || [], whatsappNumber: s.whatsappNumber || "", chatEnabled: s.chatEnabled !== false, addons: s.addons || [], homeBlocks: s.homeBlocks || [], mapPoints: s.mapPoints || [], sections: s.sections || [], promoImages: s.promoImages || {}, navStyle: s.navStyle || "buttons", homeCards: s.homeCards || [], theme: s.theme || {}, dayNight: s.dayNight || { enabled: false }, navGroups: s.navGroups || [], branding: s.branding || {}, affiliates: s.affiliates || {}, travelWidgets: s.travelWidgets || [] } });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

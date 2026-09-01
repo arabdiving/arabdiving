@@ -3,6 +3,7 @@ import RedSeaMap from "@/app/components/RedSeaMap";
 import HomeDiveCenters from "@/app/components/home/HomeDiveCenters";
 import HomePromoSection from "@/app/components/home/HomePromoSection";
 import HomeCommunityFeed from "@/app/components/home/HomeCommunityFeed";
+import TestimonialBox from "@/app/components/TestimonialBox";
 
 /*
   الرئيسية المختصرة لوضع «موقع يحل مشكلة» — بهوية لونية مستوحاة من انستجرام:
@@ -274,7 +275,7 @@ function FocusTools() {
   );
 }
 
-export default function FocusHome({ blocks, promoImages = {} }: { blocks?: FocusBlock[]; promoImages?: Record<string, string> }) {
+export default function FocusHome({ blocks, promoImages = {}, shareBoxBrand = "Suunto" }: { blocks?: FocusBlock[]; promoImages?: Record<string, string>; shareBoxBrand?: string }) {
   // دمج البلوكات الجديدة غير الموجودة في إعدادات قديمة (بظهورها الافتراضي) حتى لا تختفي القصة
   const base = blocks && blocks.length ? blocks : DEFAULT_FOCUS_BLOCKS;
   const have = new Set(base.map((b) => b.key));
@@ -322,6 +323,11 @@ export default function FocusHome({ blocks, promoImages = {} }: { blocks?: Focus
               </div>
             </div>
           </Link>
+        </section>
+      );
+      case "focus_share":       return (
+        <section key={key} style={{ maxWidth: "820px", margin: "0 auto", padding: "20px 18px 34px" }}>
+          <TestimonialBox brand={shareBoxBrand} lang="ar" />
         </section>
       );
       case "focus_map":         return <RedSeaMap key={key} embedded />;

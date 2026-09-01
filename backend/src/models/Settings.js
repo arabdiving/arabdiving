@@ -36,6 +36,11 @@ const SettingsSchema = new mongoose.Schema(
     directContactEnabled: { type: Boolean, default: true },
 
     commentsEnabled: { type: Boolean, default: true },
+
+    // آخر مرة اطّلع فيها الأدمن على الحجوزات — يُصفّر تنبيه «حجوزات جديدة» عند الفتح
+    adminBookingsSeenAt: { type: Date, default: null },
+    // براند صندوق «شاركنا تجربتك» عند إدراجه في الصفحة الرئيسية (قابل للتغيير)
+    shareBoxBrand: { type: String, default: "Suunto" },
     hiddenPages: { type: [String], default: [] },
     whatsappNumber: { type: String, default: "" },
     chatEnabled: { type: Boolean, default: true },

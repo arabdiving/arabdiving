@@ -13,6 +13,7 @@ import HomeMarketplace from "./components/home/HomeMarketplace";
 import RedSeaMap from "./components/RedSeaMap";
 import HomeSections from "./components/home/HomeSections";
 import FocusHome from "./components/home/FocusHome";
+import TestimonialBox from "./components/TestimonialBox";
 import { API_BASE } from "./lib/api";
 import { ReactNode } from "react";
 
@@ -36,15 +37,17 @@ const DEFAULT_BLOCKS: HomeBlock[] = [
   { key: "weight_calculator", visible: false, order: 9 },
   { key: "community_survey",  visible: false, order: 10 },
   { key: "page_cards",        visible: true,  order: 11 },
+  { key: "share_box",         visible: false, order: 12 },
 ];
 
-async function getHomeData(): Promise<{ blocks: HomeBlock[]; promoImages: Record<string, string>; siteMode: string; focusBlocks: HomeBlock[] }> {
+async function getHomeData(): Promise<{ blocks: HomeBlock[]; promoImages: Record<string, string>; siteMode: string; focusBlocks: HomeBlock[]; shareBoxBrand: string }> {
   try {
     const res = await fetch(`${API_BASE}/api/settings`, { next: { revalidate: 60 } });
     if (!res.ok) return { blocks: DEFAULT_BLOCKS, promoImages: {}, siteMode: "full", focusBlocks: [] };
     const data = await res.json();
     const siteMode: string = data.settings?.siteMode === "focus" ? "focus" : "full";
     const focusBlocks: HomeBlock[] = data.settings?.focusHomeBlocks || [];
+    const shareBoxBrand: string = data.settings?.shareBoxBrand || "Suunto";
     const promoImages: Record<string, string> = data.settings?.promoImages || {};
     const hb: HomeBlock[] = data.settings?.homeBlocks;
     if (hb && hb.length > 0) {
@@ -55,11 +58,11 @@ async function getHomeData(): Promise<{ blocks: HomeBlock[]; promoImages: Record
           .filter((d) => !dbKeys.has(d.key))
           .map((d) => ({ ...d, order: d.key === "sea_map" ? 0.5 : d.key === "sections_hub" ? 0.6 : hb.length + d.order })),
       ];
-      return { blocks: merged.sort((a, b) => a.order - b.order), promoImages, siteMode, focusBlocks };
+      return { blocks: merged.sort((a, b) => a.order - b.order), promoImages, siteMode, focusBlocks, shareBoxBrand };
     }
-    return { blocks: DEFAULT_BLOCKS, promoImages, siteMode, focusBlocks };
+    return { blocks: DEFAULT_BLOCKS, promoImages, siteMode, focusBlocks, shareBoxBrand };
   } catch {}
-  return { blocks: DEFAULT_BLOCKS, promoImages: {}, siteMode: "full", focusBlocks: [] };
+  return { blocks: DEFAULT_BLOCKS, promoImages: {}, siteMode: "full", focusBlocks: [], shareBoxBrand: "Suunto" };
 }
 
 function renderBlock(key: string, promoImages: Record<string, string> = {}) {
@@ -110,9 +113,9 @@ function renderBlock(key: string, promoImages: Record<string, string> = {}) {
 }
 
 export default async function Home() {
-  const { blocks, promoImages, siteMode, focusBlocks } = await getHomeData();
+  const { blocks, promoImages, siteMode, focusBlocks, shareBoxBrand } = await getHomeData();
   // وضع «موقع يحل مشكلة»: رئيسية مختصرة ببلوكات مستقلة يتحكم فيها الأدمن
-  if (siteMode === "focus") return <FocusHome blocks={focusBlocks as any} promoImages={promoImages} />;
+  if (siteMode === "focus") return <FocusHome blocks={focusBlocks as any} promoImages={promoImages} shareBoxBrand={shareBoxBrand} />;
   const visible = blocks.filter((b) => b.visible);
   const out: ReactNode[] = [];
   let run: HomeBlock[] = [];
@@ -127,6 +130,14 @@ export default async function Home() {
   };
   for (const b of visible) {
     if (b.key.endsWith("_promo")) run.push(b);
+    else if (b.key === "share_box") {
+      flush();
+      out.push(
+        <section key="share_box" style={{ maxWidth: "820px", margin: "0 auto", padding: "34px 20px" }}>
+          <TestimonialBox brand={shareBoxBrand} lang="ar" />
+        </section>
+      );
+    }
     else { flush(); out.push(renderBlock(b.key, promoImages)); }
   }
   flush();

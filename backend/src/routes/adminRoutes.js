@@ -148,11 +148,15 @@ router.delete("/partner-centers/:id", async (req, res) => {
 const InstructorProfile = require("../models/InstructorProfile");
 const Booking = require("../models/Booking");
 const StoryTestimonial = require("../models/StoryTestimonial");
+const { getSettings } = require("../controllers/settingsController");
 router.get("/notifications", async (req, res) => {
   try {
+    const s = await getSettings();
+    // «حجوزات جديدة» = التي وصلت بعد آخر اطّلاع للأدمن (تُصفّر عند فتح صفحة الحجوزات)
+    const bookingsSince = s.adminBookingsSeenAt ? { createdAt: { $gt: s.adminBookingsSeenAt } } : {};
     const [pendingInstructors, newBookings, totalBookings, pendingTestimonials] = await Promise.all([
       InstructorProfile.countDocuments({ active: true, applicationStatus: "pending" }),
-      Booking.countDocuments({ status: "pending_confirmation" }),
+      Booking.countDocuments(bookingsSince),
       Booking.countDocuments({}),
       StoryTestimonial.countDocuments({ status: "pending" }),
     ]);
@@ -174,6 +178,16 @@ router.get("/notifications", async (req, res) => {
       })),
       totalBookings,
     });
+  } catch (e) { res.status(500).json({ success: false, message: e.message }); }
+});
+
+// POST /api/admin/notifications/seen/bookings — يصفّر تنبيه الحجوزات (يُستدعى عند فتح صفحة الحجوزات)
+router.post("/notifications/seen/bookings", async (req, res) => {
+  try {
+    const s = await getSettings();
+    s.adminBookingsSeenAt = new Date();
+    await s.save();
+    res.json({ success: true });
   } catch (e) { res.status(500).json({ success: false, message: e.message }); }
 });
 

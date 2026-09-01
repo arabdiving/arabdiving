@@ -55,6 +55,7 @@ const BLOCK_REGISTRY: Record<string, { label: string; icon: string; desc: string
   standards_promo:   { label: "معايير اعتماد المراكز",   icon: "🛡️", desc: "قسم ترويجي لصفحة الميثاق المعلن /standards" },
   travel_promo:      { label: "رحلتك: طيران وفنادق",     icon: "✈️", desc: "قسم ترويجي لصفحة حجز الطيران والفنادق /travel" },
   instructors_promo: { label: "دليل المدربين",           icon: "🧑‍🏫", desc: "قسم ترويجي لدليل المدربين وبصماتهم /instructors" },
+  share_box:         { label: "صندوق شاركنا تجربتك",     icon: "✍️", desc: "صندوق يستقبل تجارب وشكاوى الزوار (البراند يُضبط بالأسفل)" },
 };
 
 // بلوكات رئيسية وضع «موقع يحل مشكلة» — مستقلة تمامًا عن بلوكات الموقع الكامل
@@ -66,6 +67,7 @@ const FOCUS_REGISTRY: Record<string, { label: string; icon: string; desc: string
   focus_tools:       { label: "شبكة الأدوات",        icon: "🧰", desc: "حاسبة الأوزان، خريطة المواقع، والاستبيانات الثلاثة" },
   focus_community:   { label: "مجتمع الغواصين",      icon: "💬", desc: "آخر منشورات المجتمع + زر الدخول والمشاركة" },
   focus_suunto:      { label: "قصة Suunto D6",       icon: "🤿", desc: "بطاقة ترويجية لصفحة تجربتك مع كمبيوتر Suunto (بخمس لغات)" },
+  focus_share:       { label: "صندوق شاركنا تجربتك",  icon: "✍️", desc: "صندوق يستقبل تجارب وشكاوى الزوار (البراند يُضبط بالأسفل)" },
   focus_map:         { label: "خريطة البحر الأحمر",  icon: "🗺️", desc: "خريطة الموقع التفاعلية" },
   focus_instructors: { label: "بروموشن المدربين",    icon: "🧑‍🏫", desc: "قسم ترويجي لدليل المدربين وبصماتهم" },
   focus_centers:     { label: "شبكة المراكز",        icon: "🤿", desc: "صف المراكز الشريكة المميزة" },
@@ -79,6 +81,7 @@ export default function HomepageBlocksAdmin() {
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [focusBlocks, setFocusBlocks] = useState<Block[]>([]);
   const [promoImages, setPromoImages] = useState<Record<string, string>>({});
+  const [shareBrand, setShareBrand] = useState("Suunto");
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
   const [error, setError] = useState("");
@@ -110,6 +113,7 @@ export default function HomepageBlocksAdmin() {
         const all = [...enriched, ...missing].sort((a, b) => a.order - b.order);
         setBlocks(all);
         setPromoImages(d.settings?.promoImages || {});
+        setShareBrand(d.settings?.shareBoxBrand || "Suunto");
 
         // بلوكات وضع «يحل مشكلة»: من القاعدة + المفقود من السجل
         const fb: Block[] = d.settings?.focusHomeBlocks || [];
@@ -163,6 +167,7 @@ export default function HomepageBlocksAdmin() {
           homeBlocks: payload,
           focusHomeBlocks: focusBlocks.map((b, i) => ({ key: b.key, label: FOCUS_REGISTRY[b.key]?.label || b.label, visible: b.visible, order: i })),
           promoImages,
+          shareBoxBrand: shareBrand,
         }),
       });
       const data = await res.json();
@@ -378,6 +383,16 @@ export default function HomepageBlocksAdmin() {
           )}
         </div>
       )}
+
+      {/* ✍️ براند صندوق «شاركنا تجربتك» */}
+      <div style={{ background: "#fff", borderRadius: "14px", border: "1px solid #dde8f4", padding: "16px 18px", marginBottom: "20px" }}>
+        <label style={{ display: "block", fontWeight: 700, color: "var(--navy)", marginBottom: "4px" }}>✍️ براند صندوق «شاركنا تجربتك»</label>
+        <p style={{ color: "#888", fontSize: "12.5px", lineHeight: 1.7, margin: "0 0 10px" }}>
+          حين تفعّل بلوك «صندوق شاركنا تجربتك» في الرئيسية، هذا هو البراند المرتبط بالتجارب (يُفلتر عرض تجارب الآخرين، ويظهر في بريد الأدمن). اتركه فارغًا لتجارب عامة.
+        </p>
+        <input value={shareBrand} onChange={(e) => { setShareBrand(e.target.value); setSaved(false); }} placeholder="Suunto"
+          style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid #d4dae3", fontFamily: "inherit", fontSize: "14px", width: "260px", maxWidth: "100%" }} />
+      </div>
 
       {/* Save bar */}
       <div style={{ display: "flex", gap: "12px", alignItems: "center" }}>
