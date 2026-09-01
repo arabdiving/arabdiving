@@ -159,7 +159,7 @@ const health = async (req, res) => {
 
   res.json({
     success: true,
-    codeVersion: "notify-v2", // للتأكد أن النسخة الجديدة منشورة
+    codeVersion: "notify-v3", // للتأكد أن النسخة الجديدة منشورة (v3 = تصفير تنبيه الحجوزات + التجارب)
     adminNotifyEmail,          // بريد إشعارات الأدمن الفعلي
     database: {
       state: dbStates[mongoose.connection.readyState] || "غير معروف",

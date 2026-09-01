@@ -49,7 +49,19 @@ export default function AdminDashboard() {
       {/* 🔔 إشعارات تحتاج انتباهك */}
       {notif?.counts?.total > 0 && (
         <div style={{ background: "linear-gradient(135deg,#fff1f2,#fee2e2)", border: "1px solid #fecaca", borderRadius: "16px", padding: "20px 22px", marginBottom: "28px" }}>
-          <h3 style={{ color: "#b91c1c", margin: "0 0 12px", fontSize: "17px" }}>🔔 يحتاج انتباهك الآن</h3>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: "10px", marginBottom: "12px" }}>
+            <h3 style={{ color: "#b91c1c", margin: 0, fontSize: "17px" }}>🔔 يحتاج انتباهك الآن</h3>
+            {notif.counts.newBookings > 0 && (
+              <button
+                onClick={async () => {
+                  try { await fetch(`${API_BASE}/api/admin/notifications/seen/bookings`, { method: "POST", headers: authHeaders() }); } catch {}
+                  setNotif((n: any) => n ? { ...n, counts: { ...n.counts, newBookings: 0, total: (n.counts.pendingInstructors || 0) + (n.counts.pendingTestimonials || 0) } } : n);
+                }}
+                style={{ background: "#fff", border: "1px solid #fca5a5", color: "#b91c1c", borderRadius: "9px", padding: "6px 14px", fontSize: "12.5px", fontWeight: 700, cursor: "pointer", fontFamily: "inherit" }}>
+                ✓ اطّلعت على الحجوزات
+              </button>
+            )}
+          </div>
           <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
             {notif.counts.pendingInstructors > 0 && (
               <Link href="/admin/instructors" style={{ background: "#fff", border: "1px solid #fca5a5", borderRadius: "12px", padding: "14px 20px", textDecoration: "none", display: "flex", alignItems: "center", gap: "12px", minWidth: "220px" }}>
