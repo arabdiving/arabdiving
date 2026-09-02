@@ -43,7 +43,7 @@ const DEFAULT_BLOCKS: HomeBlock[] = [
 async function getHomeData(): Promise<{ blocks: HomeBlock[]; promoImages: Record<string, string>; siteMode: string; focusBlocks: HomeBlock[]; shareBoxBrand: string }> {
   try {
     const res = await fetch(`${API_BASE}/api/settings`, { next: { revalidate: 60 } });
-    if (!res.ok) return { blocks: DEFAULT_BLOCKS, promoImages: {}, siteMode: "full", focusBlocks: [] };
+    if (!res.ok) return { blocks: DEFAULT_BLOCKS, promoImages: {}, siteMode: "full", focusBlocks: [], shareBoxBrand: "Suunto" };
     const data = await res.json();
     const siteMode: string = data.settings?.siteMode === "focus" ? "focus" : "full";
     const focusBlocks: HomeBlock[] = data.settings?.focusHomeBlocks || [];
