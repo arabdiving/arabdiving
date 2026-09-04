@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 const TITLE =
   "My Suunto D6 Story — Battery Replacement, Fogging & Screen Failure | قصتي مع Suunto D6 | ArabDiving";
 const DESC =
-  "A scuba diving instructor's honest experience with a Suunto D6 dive computer in Egypt: authorized battery replacement, internal fogging/condensation, screen damage, back-casing gap, dead backlight — and Suunto's official response. Read it in Arabic, English, German, Spanish & Chinese. تجربة مدرب غوص مع كمبيوتر الغوص سونتو D6: استبدال البطارية، التضبيب، تلف الشاشة، ورد سونتو الرسمي.";
+  "A scuba diving instructor's honest experience with a Suunto D6 dive computer in Egypt: authorized battery replacement, internal fogging/condensation, screen damage, back-casing gap, dead backlight — Suunto's official responses, their 30% upgrade offer, and why I declined it. Read it in Arabic, English, German, Spanish & Chinese. تجربة مدرب غوص مع كمبيوتر الغوص سونتو D6: استبدال البطارية، التضبيب، تلف الشاشة، الفجوة في الظهر، ورد سونتو وعرض الترقية.";
 
 const KEYWORDS = [
   // Suunto — إنجليزي

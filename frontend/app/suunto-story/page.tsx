@@ -206,6 +206,74 @@ const T: Record<Lang, {
   },
 };
 
+// 📌 تحديث القصة — تسلسل المراسلات الإضافي مع Suunto وعرض الترقية ورفضه
+const UPD: Record<Lang, { title: string; paras: string[] }> = {
+  ar: {
+    title: "📌 تحديث: كيف تطوّرت القصة",
+    paras: [
+      "بعد نشر تجربتي، تبادلت رسائل إضافية مع Suunto — وأصررت على نقطتين تجاهلتها ردودهم الأولى:",
+      "1) الفجوة في الغطاء الخلفي بعد الصيانة: حين أُعيد إليّ الجهاز من المركز المعتمد في دهب، لم يكن الغطاء الخلفي مغلقًا بإحكام — كانت هناك فجوة واضحة، واحتاج نحو أربع لفّات مفتاح ليستقر صحيحًا. في كمبيوتر الغوص، الغطاء غير المُحكم ليس تفصيلًا شكليًا، بل مسار مباشر لدخول الرطوبة. وحين نبّهت الفني عرض «إغلاقه فقط ليُطمئنني» بدل معالجته كعيب.",
+      "2) الإضاءة الخلفية توقفت تمامًا عن العمل — ولم يُشِر إليها أيٌّ من ردودهم.",
+      "طلبت من Suunto أن تتواصل مع مركزها المعتمد في مصر وتتحقق مما فُعل أثناء تغيير البطارية، قبل أن تحسم الأمر بحجة العمر — وعرضت أن آخذ الجهاز لفحص مستقل في مركز آخر بالقاهرة.",
+      "أوضحت Suunto أنها لم تقصد أن الجهاز يُفترض أن يعطب بعد 24 سنة، وأن العمر «عامل محتمل» لا سبب مؤكد، وأن الفحص المادي ضروري لتحديد السبب.",
+      "ثم عرضت Suunto «برنامج ترقية» بخصم 30% على ساعة جديدة.",
+      "شكرتهم على العرض لكني رفضته: الخصم لا يحل مشكلتي — بل يعيدني إلى نفس الخطر. أي ساعة جديدة ستحتاج أول تغيير بطارية لدى نفس المركز المعتمد في مصر (وهي ثلاثة مراكز فقط تتبع العائلة نفسها)، الذي أثبتت تجربتي أنه قد يخرّب الجهاز ثم لا يعترف — لا هو ولا Suunto الدولية. بعد ما تعلّمته من تجربتي، لا أستطيع أن أستثمر ثانيةً في Suunto.",
+      "خلاصتي: لم أطلب اعترافًا بالخطأ دون فحص — طلبت التحقيق في الخدمة التي أُجريت، بدل تجاهل المشكلة بحجة العمر. والعرض المالي، رغم تقديري له، لم يعالج ذلك.",
+    ],
+  },
+  en: {
+    title: "📌 Update: how the story developed",
+    paras: [
+      "After publishing my experience, I exchanged further emails with Suunto — and insisted on two points their first replies had ignored:",
+      "1) The gap in the case back after service: when the watch was returned to me by the authorized center in Dahab, the case back was not properly sealed — there was a visible gap, and it took about four full turns of a screwdriver to seat it correctly. On a dive computer, an improperly closed case back is not cosmetic; it is a direct path for moisture into the housing. When I raised it, the technician offered to \"just close it to make me feel better\" rather than treat it as the fault it was.",
+      "2) The backlight stopped working entirely — and none of their replies acknowledged it.",
+      "I asked Suunto to contact its authorized center in Egypt and verify what was done during the battery replacement, before concluding anything about age — and I offered to take the watch for an independent inspection at a different center in Cairo.",
+      "Suunto clarified that they did not mean the device should be expected to fail after 24 years, that age was \"one possible factor\" rather than a confirmed cause, and that a physical inspection would be required.",
+      "Suunto then offered an \"Upgrade Program\" with a 30% discount on a new watch.",
+      "I thanked them but declined: the discount does not solve my problem — it puts me right back under the same risk. Any new watch would need its first battery replacement at the same authorized center in Egypt (only three centers, all belonging to the same family), which my experience showed can damage a computer and then decline to acknowledge it — neither the center nor Suunto International. After what I learned, I cannot invest in Suunto again.",
+      "My conclusion: I never asked them to accept fault unseen — I asked them to investigate the service that was performed, instead of dismissing the problem as age. The financial offer, which I do appreciate, did not address that.",
+    ],
+  },
+  de: {
+    title: "📌 Update: wie sich die Geschichte entwickelte",
+    paras: [
+      "Nach der Veröffentlichung tauschte ich weitere E-Mails mit Suunto aus — und bestand auf zwei Punkten, die ihre ersten Antworten ignoriert hatten:",
+      "1) Der Spalt im Gehäuseboden nach dem Service: Als die Uhr vom autorisierten Center in Dahab zurückkam, war der Boden nicht richtig verschlossen — ein sichtbarer Spalt, und es brauchte etwa vier volle Umdrehungen eines Schraubendrehers, um ihn korrekt zu setzen. Bei einem Tauchcomputer ist ein nicht dicht verschlossener Boden nicht kosmetisch, sondern ein direkter Weg für Feuchtigkeit ins Gehäuse. Der Techniker bot an, ihn \"nur zu schließen, damit ich mich besser fühle\", statt ihn als Fehler zu behandeln.",
+      "2) Die Hintergrundbeleuchtung funktionierte gar nicht mehr — und keine ihrer Antworten erwähnte das.",
+      "Ich bat Suunto, ihr autorisiertes Center in Ägypten zu kontaktieren und zu prüfen, was beim Batteriewechsel getan wurde, bevor über das Alter geurteilt wird — und bot an, die Uhr zu einer unabhängigen Prüfung in ein anderes Center in Kairo zu bringen.",
+      "Suunto stellte klar, dass sie nicht meinten, das Gerät solle nach 24 Jahren ausfallen, dass das Alter „ein möglicher Faktor“ und keine gesicherte Ursache sei, und dass eine physische Prüfung nötig wäre.",
+      "Dann bot Suunto ein „Upgrade-Programm“ mit 30% Rabatt auf eine neue Uhr an.",
+      "Ich dankte, lehnte aber ab: Der Rabatt löst mein Problem nicht — er bringt mich zurück in dasselbe Risiko. Jede neue Uhr bräuchte ihren ersten Batteriewechsel beim selben autorisierten Center in Ägypten (nur drei Center, alle derselben Familie), das laut meiner Erfahrung einen Computer beschädigen und es dann nicht eingestehen kann — weder das Center noch Suunto International. Nach dem Gelernten kann ich nicht erneut in Suunto investieren.",
+      "Mein Fazit: Ich bat nie um ein Schuldeingeständnis ohne Prüfung — ich bat um eine Untersuchung des durchgeführten Service, statt das Problem als Alter abzutun. Das finanzielle Angebot, das ich schätze, ging darauf nicht ein.",
+    ],
+  },
+  es: {
+    title: "📌 Actualización: cómo evolucionó la historia",
+    paras: [
+      "Tras publicar mi experiencia, intercambié más correos con Suunto — e insistí en dos puntos que sus primeras respuestas habían ignorado:",
+      "1) La separación en la tapa trasera tras el servicio: cuando el centro autorizado de Dahab me devolvió el reloj, la tapa no estaba bien sellada — había una separación visible, y hicieron falta unas cuatro vueltas completas de destornillador para asentarla correctamente. En un ordenador de buceo, una tapa mal cerrada no es estética; es una vía directa para la humedad hacia la carcasa. Cuando lo señalé, el técnico ofreció \"solo cerrarla para que me sintiera mejor\" en vez de tratarlo como el fallo que era.",
+      "2) La retroiluminación dejó de funcionar por completo — y ninguna de sus respuestas lo reconoció.",
+      "Pedí a Suunto que contactara con su centro autorizado en Egipto y verificara qué se hizo durante el cambio de batería, antes de concluir nada sobre la edad — y ofrecí llevar el reloj a una inspección independiente en otro centro de El Cairo.",
+      "Suunto aclaró que no quisieron decir que el dispositivo debiera fallar a los 24 años, que la edad era \"un factor posible\" y no una causa confirmada, y que se requeriría una inspección física.",
+      "Luego Suunto ofreció un \"Programa de Actualización\" con un 30% de descuento en un reloj nuevo.",
+      "Se lo agradecí pero lo rechacé: el descuento no resuelve mi problema — me devuelve al mismo riesgo. Cualquier reloj nuevo necesitaría su primer cambio de batería en el mismo centro autorizado de Egipto (solo tres centros, todos de la misma familia), que según mi experiencia puede dañar un ordenador y luego no reconocerlo — ni el centro ni Suunto Internacional. Tras lo aprendido, no puedo volver a invertir en Suunto.",
+      "Mi conclusión: nunca pedí que aceptaran la culpa sin examinar — pedí que investigaran el servicio realizado, en vez de descartar el problema como edad. La oferta económica, que agradezco, no abordó eso.",
+    ],
+  },
+  zh: {
+    title: "📌 更新：事情的后续发展",
+    paras: [
+      "在公开我的经历后，我与 Suunto 又往来了几封邮件 —— 并坚持指出他们最初回复所忽略的两点：",
+      "1) 维修后后盖的缝隙：当达哈布的授权中心把手表还给我时，后盖没有正确密封 —— 有一道明显的缝隙，用螺丝刀转了大约四整圈才装到位。对潜水电脑而言，后盖未密封不是外观问题，而是湿气进入外壳的直接通道。当我指出时，技师却提出\"只是把它盖上让我安心\"，而非把它当作应有的故障来处理。",
+      "2) 背光完全不再工作 —— 而他们的任何回复都没有提及这一点。",
+      "我请求 Suunto 联系其在埃及的授权中心，核实更换电池时做了什么，然后再对\"年龄\"下结论 —— 并提出把手表送到开罗另一家中心做独立检查。",
+      "Suunto 澄清说，他们并非指设备应在 24 年后损坏，年龄只是\"一个可能的因素\"而非确定原因，且需要实物检查才能确定。",
+      "随后 Suunto 提供了\"升级计划\"，购买新表可享 30% 折扣。",
+      "我感谢他们，但予以谢绝：折扣并不能解决我的问题 —— 它只会让我重新置身同样的风险。任何新表首次更换电池仍要送到埃及同一家授权中心（仅三家，且都属于同一家族），而我的经历表明它可能损坏电脑却不予承认 —— 无论是该中心还是 Suunto 国际。在吸取教训之后，我无法再投资于 Suunto。",
+      "我的结论：我从未要求他们在未检查的情况下承认过错 —— 我要求的是调查所做的维修，而不是以\"年龄\"来搪塞问题。那份我确实心存感激的经济提议，并没有解决这一点。",
+    ],
+  },
+};
 
 const glass: React.CSSProperties = {
   background: "var(--glass-bg,rgba(8,20,48,0.78))",
@@ -276,6 +344,14 @@ export default function SuuntoStoryPage() {
           <h2 style={{ color: "#fff", fontSize: "19px", fontWeight: 900, marginBottom: "12px" }}>{t.conclusionTitle}</h2>
           {t.conclusion.map((c, i) => (
             <p key={i} style={{ color: "rgba(255,255,255,0.82)", fontSize: "15px", lineHeight: 2, margin: "0 0 14px" }}>{c}</p>
+          ))}
+        </div>
+
+        {/* 📌 تحديث القصة — تطورات المراسلات وعرض الترقية */}
+        <div style={{ ...glass, borderRadius: "18px", padding: "26px", marginTop: "22px", borderColor: "rgba(232,168,48,0.3)" }}>
+          <h2 style={{ color: "#e8a830", fontSize: "19px", fontWeight: 900, marginBottom: "12px" }}>{UPD[lang].title}</h2>
+          {UPD[lang].paras.map((p, i) => (
+            <p key={i} style={{ color: "rgba(255,255,255,0.82)", fontSize: "14.5px", lineHeight: 2, margin: "0 0 14px" }}>{p}</p>
           ))}
         </div>
 
