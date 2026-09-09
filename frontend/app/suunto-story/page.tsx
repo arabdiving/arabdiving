@@ -218,7 +218,10 @@ const UPD: Record<Lang, { title: string; paras: string[] }> = {
       "أوضحت Suunto أنها لم تقصد أن الجهاز يُفترض أن يعطب بعد 24 سنة، وأن العمر «عامل محتمل» لا سبب مؤكد، وأن الفحص المادي ضروري لتحديد السبب.",
       "ثم عرضت Suunto «برنامج ترقية» بخصم 30% على ساعة جديدة.",
       "شكرتهم على العرض لكني رفضته: الخصم لا يحل مشكلتي — بل يعيدني إلى نفس الخطر. أي ساعة جديدة ستحتاج أول تغيير بطارية لدى نفس المركز المعتمد في مصر (وهي ثلاثة مراكز فقط تتبع العائلة نفسها)، الذي أثبتت تجربتي أنه قد يخرّب الجهاز ثم لا يعترف — لا هو ولا Suunto الدولية. بعد ما تعلّمته من تجربتي، لا أستطيع أن أستثمر ثانيةً في Suunto.",
-      "خلاصتي: لم أطلب اعترافًا بالخطأ دون فحص — طلبت التحقيق في الخدمة التي أُجريت، بدل تجاهل المشكلة بحجة العمر. والعرض المالي، رغم تقديري له، لم يعالج ذلك.",
+      "طلبت منهم عنوان مركز محايد في القاهرة وتأكيدًا بأن الفحص لن يكلّفني إن ثبت أن العطل من الصيانة. فأحالوني إلى قائمة مراكزهم المعتمدة الرسمية — وهنا تأكّد جوهر القصة كله بالدليل من موقعهم نفسه:",
+      "🔴 مراكز Suunto المعتمدة الثلاثة في مصر — في القاهرة ودهب والغردقة — كلها «TVR Amir»: شركة واحدة، بنفس الاسم ونفس النطاق (tvramirsports.com)، تملكها العائلة نفسها. ومركز القاهرة الذي أحالوني إليه يديره قريبٌ لفنّي دهب الذي غيّر البطارية وأعاد الجهاز بغطاء غير محكم.",
+      "معنى ذلك عمليًا: لا يوجد فحص معتمد محايد في مصر إطلاقًا. يطلبون مني أن أرسل جهازي — بعطل أعتقد أنه نشأ أثناء صيانتهم — ليحكم عليه ويسعّر إصلاحه نفس العائلة التي أجرت تلك الصيانة. هذا ليس تقييمًا محايدًا، ولا يمكنني الاعتماد عليه.",
+      "لذلك أُغلق هذا الملف من جانبي. أعطيت Suunto كل فرصة معقولة للتحقيق في الخدمة بدل التذرّع بعمر الجهاز، وأقدّر لموظفيها لباقتهم — لكن ما دام المسار المعتمد الوحيد يعيدني إلى الطرف الذي أشكو منه، ولا خيار مستقلًا، فلا معنى للاستمرار. أنشر تجربتي كاملة — بما فيها قائمة مراكز Suunto الرسمية — كي يقرّر كل غوّاص بنفسه.",
     ],
   },
   en: {
@@ -231,7 +234,10 @@ const UPD: Record<Lang, { title: string; paras: string[] }> = {
       "Suunto clarified that they did not mean the device should be expected to fail after 24 years, that age was \"one possible factor\" rather than a confirmed cause, and that a physical inspection would be required.",
       "Suunto then offered an \"Upgrade Program\" with a 30% discount on a new watch.",
       "I thanked them but declined: the discount does not solve my problem — it puts me right back under the same risk. Any new watch would need its first battery replacement at the same authorized center in Egypt (only three centers, all belonging to the same family), which my experience showed can damage a computer and then decline to acknowledge it — neither the center nor Suunto International. After what I learned, I cannot invest in Suunto again.",
-      "My conclusion: I never asked them to accept fault unseen — I asked them to investigate the service that was performed, instead of dismissing the problem as age. The financial offer, which I do appreciate, did not address that.",
+      "I asked them for the address of a neutral center in Cairo, and for confirmation that the inspection would not cost me if the fault was traced to the service. They directed me to their official list of authorized centers — and there, the entire heart of this story was confirmed by Suunto's own website:",
+      "🔴 All three authorized Suunto service centers in Egypt — in Cairo, Dahab, and Hurghada — are \"TVR Amir\": one and the same business, under the same name and the same domain (tvramirsports.com), owned by the same family. The Cairo center they directed me to is run by a relative of the Dahab technician who replaced the battery and returned my watch with an unsealed case back.",
+      "In practice, this means there is no independent authorized inspection in Egypt at all. They are asking me to send my device — for a fault I believe arose during their service — to be judged and priced for repair by the very same family that performed that service. That is not a neutral assessment, and I cannot rely on it.",
+      "So I am closing this case on my side. I gave Suunto every reasonable opportunity to investigate the service rather than default to the age of the device, and I appreciate the courteous tone of their staff — but as long as the only authorized path leads back to the very party my complaint concerns, with no independent option, there is no point in continuing. I'm publishing my full experience — including Suunto's own service-center listing — so every diver can decide for themselves.",
     ],
   },
   de: {
@@ -244,7 +250,10 @@ const UPD: Record<Lang, { title: string; paras: string[] }> = {
       "Suunto stellte klar, dass sie nicht meinten, das Gerät solle nach 24 Jahren ausfallen, dass das Alter „ein möglicher Faktor“ und keine gesicherte Ursache sei, und dass eine physische Prüfung nötig wäre.",
       "Dann bot Suunto ein „Upgrade-Programm“ mit 30% Rabatt auf eine neue Uhr an.",
       "Ich dankte, lehnte aber ab: Der Rabatt löst mein Problem nicht — er bringt mich zurück in dasselbe Risiko. Jede neue Uhr bräuchte ihren ersten Batteriewechsel beim selben autorisierten Center in Ägypten (nur drei Center, alle derselben Familie), das laut meiner Erfahrung einen Computer beschädigen und es dann nicht eingestehen kann — weder das Center noch Suunto International. Nach dem Gelernten kann ich nicht erneut in Suunto investieren.",
-      "Mein Fazit: Ich bat nie um ein Schuldeingeständnis ohne Prüfung — ich bat um eine Untersuchung des durchgeführten Service, statt das Problem als Alter abzutun. Das finanzielle Angebot, das ich schätze, ging darauf nicht ein.",
+      "Ich bat um die Adresse eines neutralen Centers in Kairo und um die Bestätigung, dass die Prüfung mich nichts kostet, falls der Fehler auf den Service zurückgeht. Man verwies mich auf die offizielle Liste autorisierter Center — und dort bestätigte Suuntos eigene Website den Kern dieser Geschichte:",
+      "🔴 Alle drei autorisierten Suunto-Servicecenter in Ägypten — in Kairo, Dahab und Hurghada — sind „TVR Amir\": ein und dasselbe Unternehmen, unter demselben Namen und derselben Domain (tvramirsports.com), im Besitz derselben Familie. Das Center in Kairo, zu dem man mich verwies, wird von einem Verwandten des Dahab-Technikers geführt, der die Batterie wechselte und meine Uhr mit unversiegeltem Gehäuseboden zurückgab.",
+      "Das bedeutet praktisch: In Ägypten gibt es überhaupt keine unabhängige autorisierte Prüfung. Man verlangt, dass ich mein Gerät — wegen eines Fehlers, der meiner Ansicht nach während ihres Service entstand — von genau derselben Familie beurteilen und für die Reparatur bepreisen lasse, die diesen Service durchführte. Das ist keine neutrale Bewertung, und darauf kann ich mich nicht verlassen.",
+      "Deshalb schließe ich diesen Fall meinerseits ab. Ich gab Suunto jede vernünftige Gelegenheit, den Service zu untersuchen, statt auf das Alter zu verweisen, und ich schätze den höflichen Ton der Mitarbeiter — aber solange der einzige autorisierte Weg zurück zu genau der Partei führt, die meine Beschwerde betrifft, ohne unabhängige Option, hat ein Fortsetzen keinen Sinn. Ich veröffentliche meine gesamte Erfahrung — samt Suuntos eigener Center-Liste — damit jeder Taucher selbst entscheiden kann.",
     ],
   },
   es: {
@@ -257,7 +266,10 @@ const UPD: Record<Lang, { title: string; paras: string[] }> = {
       "Suunto aclaró que no quisieron decir que el dispositivo debiera fallar a los 24 años, que la edad era \"un factor posible\" y no una causa confirmada, y que se requeriría una inspección física.",
       "Luego Suunto ofreció un \"Programa de Actualización\" con un 30% de descuento en un reloj nuevo.",
       "Se lo agradecí pero lo rechacé: el descuento no resuelve mi problema — me devuelve al mismo riesgo. Cualquier reloj nuevo necesitaría su primer cambio de batería en el mismo centro autorizado de Egipto (solo tres centros, todos de la misma familia), que según mi experiencia puede dañar un ordenador y luego no reconocerlo — ni el centro ni Suunto Internacional. Tras lo aprendido, no puedo volver a invertir en Suunto.",
-      "Mi conclusión: nunca pedí que aceptaran la culpa sin examinar — pedí que investigaran el servicio realizado, en vez de descartar el problema como edad. La oferta económica, que agradezco, no abordó eso.",
+      "Pedí la dirección de un centro neutral en El Cairo y la confirmación de que la inspección no me costaría si el fallo se atribuía al servicio. Me remitieron a su lista oficial de centros autorizados — y allí, el núcleo de toda esta historia quedó confirmado por la propia web de Suunto:",
+      "🔴 Los tres centros de servicio autorizados de Suunto en Egipto — en El Cairo, Dahab y Hurghada — son \"TVR Amir\": una misma empresa, con el mismo nombre y el mismo dominio (tvramirsports.com), propiedad de la misma familia. El centro de El Cairo al que me remitieron lo dirige un familiar del técnico de Dahab que cambió la batería y me devolvió el reloj con la tapa sin sellar.",
+      "En la práctica, esto significa que no existe ninguna inspección autorizada independiente en Egipto. Me piden enviar mi dispositivo — por un fallo que creo surgido durante su servicio — para que lo juzgue y cotice su reparación la misma familia que realizó ese servicio. Eso no es una evaluación neutral, y no puedo fiarme de ella.",
+      "Por eso cierro este caso por mi parte. Di a Suunto toda oportunidad razonable de investigar el servicio en lugar de recurrir a la edad del aparato, y agradezco el tono cortés de su personal — pero mientras el único camino autorizado conduce de vuelta a la parte que motiva mi queja, sin opción independiente, no tiene sentido continuar. Publico mi experiencia completa — incluida la propia lista de centros de Suunto — para que cada buceador decida por sí mismo.",
     ],
   },
   zh: {
@@ -270,7 +282,10 @@ const UPD: Record<Lang, { title: string; paras: string[] }> = {
       "Suunto 澄清说，他们并非指设备应在 24 年后损坏，年龄只是\"一个可能的因素\"而非确定原因，且需要实物检查才能确定。",
       "随后 Suunto 提供了\"升级计划\"，购买新表可享 30% 折扣。",
       "我感谢他们，但予以谢绝：折扣并不能解决我的问题 —— 它只会让我重新置身同样的风险。任何新表首次更换电池仍要送到埃及同一家授权中心（仅三家，且都属于同一家族），而我的经历表明它可能损坏电脑却不予承认 —— 无论是该中心还是 Suunto 国际。在吸取教训之后，我无法再投资于 Suunto。",
-      "我的结论：我从未要求他们在未检查的情况下承认过错 —— 我要求的是调查所做的维修，而不是以\"年龄\"来搪塞问题。那份我确实心存感激的经济提议，并没有解决这一点。",
+      "我请他们提供开罗一家中立中心的地址，并确认若故障归因于维修则检查不会向我收费。他们把我引向其官方授权中心名单 —— 而在那里，整个故事的核心被 Suunto 自己的网站所证实：",
+      "🔴 Suunto 在埃及的三家授权服务中心 —— 开罗、达哈布和赫尔格达 —— 全都是\"TVR Amir\"：同一家企业，同一名称、同一域名（tvramirsports.com），由同一个家族拥有。他们让我去的开罗中心，由更换电池并把后盖未密封的手表还给我的那位达哈布技师的亲属经营。",
+      "这实际上意味着：在埃及根本不存在独立的授权检查。他们要我把设备 —— 因我认为在其维修过程中产生的故障 —— 送去，由做了那次维修的同一家族来评判并报价维修。这不是中立的评估，我无法依赖它。",
+      "因此我这边就此结案。我给了 Suunto 一切合理的机会去调查维修，而不是以设备年龄搪塞；我也感谢其员工的礼貌 —— 但只要唯一的授权途径又通回我所投诉的那一方，且没有独立选项，继续下去便毫无意义。我公开我的完整经历 —— 包括 Suunto 自己的服务中心名单 —— 让每位潜水员自行判断。",
     ],
   },
 };
@@ -353,6 +368,26 @@ export default function SuuntoStoryPage() {
           {UPD[lang].paras.map((p, i) => (
             <p key={i} style={{ color: "rgba(255,255,255,0.82)", fontSize: "14.5px", lineHeight: 2, margin: "0 0 14px" }}>{p}</p>
           ))}
+
+          {/* الدليل: قائمة Suunto الرسمية — المراكز الثلاثة كلها TVR Amir / عائلة واحدة */}
+          <div dir="ltr" style={{ textAlign: "left", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "12px", padding: "16px 18px", marginTop: "6px" }}>
+            <div style={{ color: "#fbbf24", fontSize: "12px", fontWeight: 800, marginBottom: "10px", letterSpacing: "0.5px" }}>
+              SOURCE — suunto.com/Support/Service-Centers · Egypt
+            </div>
+            {[
+              { c: "TVR Amir — Cairo", a: "53 Gerges Grees St, Sheraton, Heliopolis, Cairo · roger@tvramirsports.com" },
+              { c: "TVR Amir — Dahab", a: "El Fanar St., in front of Mirage Hotel, Dahab · amir@tvramirsports.com" },
+              { c: "TVR Amir — Hurghada", a: "Sayed Korayem St., in front of Al Ahly Bank, El Dahar, Hurghada" },
+            ].map((x) => (
+              <div key={x.c} style={{ padding: "8px 0", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+                <div style={{ color: "#fff", fontWeight: 700, fontSize: "13.5px" }}>🏢 {x.c}</div>
+                <div style={{ color: "rgba(255,255,255,0.55)", fontSize: "12px", marginTop: "2px" }}>{x.a}</div>
+              </div>
+            ))}
+            <div style={{ color: "#6ee7b7", fontSize: "12px", marginTop: "10px", fontWeight: 700 }}>
+              → Same name, same domain (tvramirsports.com), same family — three branches, one owner.
+            </div>
+          </div>
         </div>
 
         {/* ✍️ صندوق شاركنا تجربتك + تجارب الآخرين */}
