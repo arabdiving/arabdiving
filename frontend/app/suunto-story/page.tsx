@@ -297,6 +297,43 @@ const glass: React.CSSProperties = {
 };
 
 
+// ─── JSON-LD: Review schema (fixes Google "missing offers/review/aggregateRating") ──
+const REVIEW_LD = {
+  "@context": "https://schema.org",
+  "@type": "Review",
+  "name": "My Suunto D6 Story — A Diving Instructor's Honest Account",
+  "description": "A personal review of the Suunto D6 dive computer after 373 logged hours and a battery replacement at an authorized service center in Dahab, Egypt.",
+  "url": "https://arabdiving.com/suunto-story",
+  "inLanguage": ["ar", "en", "de", "es", "zh"],
+  "author": {
+    "@type": "Person",
+    "name": "Ibrahim El-Mekkawi",
+    "jobTitle": "Scuba Diving Instructor",
+    "url": "https://arabdiving.com/instructors"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "ArabDiving",
+    "url": "https://arabdiving.com",
+    "logo": { "@type": "ImageObject", "url": "https://arabdiving.com/icon-192.png" }
+  },
+  "itemReviewed": {
+    "@type": "Product",
+    "name": "Suunto D6",
+    "category": "Dive Computer",
+    "brand": { "@type": "Brand", "name": "Suunto" },
+    "description": "A professional dive computer used for 373 hours over multiple years in the Red Sea."
+  },
+  "reviewRating": {
+    "@type": "Rating",
+    "ratingValue": "2",
+    "bestRating": "5",
+    "worstRating": "1"
+  },
+  "reviewBody": "After 373 logged dive hours and a battery replacement at a Suunto authorized service center in Dahab (TVR), the watch developed fogging and screen damage. Suunto's response attributed the issue to the device being over 24 years old. A personal, detailed account of the events, Suunto's official reply, and the follow-up correspondence including an upgrade offer that was declined.",
+  "datePublished": "2026-10-10"
+};
+
 export default function SuuntoStoryPage() {
   const [lang, setLang] = useState<Lang>("ar");
   const t = T[lang];
@@ -304,6 +341,11 @@ export default function SuuntoStoryPage() {
 
   return (
     <main dir={rtl ? "rtl" : "ltr"} style={{ background: "var(--bg-deep,#040d1a)", minHeight: "100vh", textAlign: rtl ? "right" : "left" }}>
+      {/* JSON-LD structured data — Review schema for Google rich results */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(REVIEW_LD) }}
+      />
       {/* الهيرو */}
       <section style={{ position: "relative", overflow: "hidden", background: "radial-gradient(ellipse at 50% 0%, #0a2a4a 0%, #040d1a 62%)", color: "#fff", padding: "48px 20px 34px" }}>
         <div style={{ position: "absolute", inset: 0, backgroundImage: "linear-gradient(rgba(100,180,255,1) 1px,transparent 1px),linear-gradient(90deg,rgba(100,180,255,1) 1px,transparent 1px)", backgroundSize: "55px 55px", opacity: 0.04, pointerEvents: "none" }} />
